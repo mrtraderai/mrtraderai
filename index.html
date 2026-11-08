@@ -220,6 +220,10 @@
     .badge-tp1 { background: #ffd70055; color: #fff; }
     .badge-tp2 { background: #26a69a55; color: #fff; }
     .badge-sl { background: #ef535022; color: #ef5350; }
+
+    /* New Copy Button Style */
+    .btn-copy-active { width: 100%; margin-top: 12px; padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 6px; }
+    .btn-copy-active:active { background: #ffd700; color: #000; }
   </style>
 </head>
 <body id="mainBody">
@@ -1091,7 +1095,6 @@
       if (currentLang === 'ar') document.getElementById('mainBody').classList.add('rtl'); else document.getElementById('mainBody').classList.remove('rtl');
       const el = document.getElementById('loadingText'); if (el) el.innerText = dict[currentLang].loading;
       
-      // تحديث أسماء الأزرار في الشريط السفلي
       const navs = document.querySelectorAll('.nav-text');
       if (navs[0]) navs[0].innerText = dict[currentLang].home;
       if (navs[1]) navs[1].innerText = dict[currentLang].live;
@@ -1392,7 +1395,7 @@
           </div>
 
           <div class="calc-box"><div class="calc-title">Profit / Loss ($) @ 0.02 Lots</div><div class="calc-row"><span>Stop Loss:</span> <span class="calc-val-red">-$${dollarLoss}</span></div><div class="calc-row"><span>Take Profit 1:</span> <span class="calc-val-green">+$${dollarTP1}</span></div><div class="calc-row"><span>Take Profit 2:</span> <span class="calc-val-green">+$${dollarTP2}</span></div></div>
-          <button class="btn-copy-signal" onclick="copySignal(${trade.entry}, ${trade.sl}, ${trade.tp1}, ${trade.tp2}, '${trade.dir}', '${asset}')">📋 Copy Signal</button>
+          <button class="btn-copy-signal" onclick="copySignal(${trade.entry}, ${trade.sl}, ${trade.tp1}, ${trade.tp2}, '${trade.dir}', '${asset}', '${trade.tf}')">📋 Copy Signal</button>
         </div>`;
       drawTradeLines(trade);
     }
@@ -1409,8 +1412,14 @@
             return;
         }
 
-        // ترتيب الإشارات من الأحدث للأقدم
-        let sortedTrades = activeKeys.map(k => activeTrades[k]).sort((a, b) => b.id - a.id);
+        // ترتيب الإشارات: أولاً حسب الفريم (الأصغر أولاً)، ثم حسب الوقت (الأحدث أولاً)
+        const tfOrder = { '1min': 1, '3min': 2, '5min': 3, '15min': 4, '30min': 5, '1h': 6, '4h': 7, '1day': 8 };
+        let sortedTrades = activeKeys.map(k => activeTrades[k]).sort((a, b) => {
+            let tfA = tfOrder[a.tf] || 99;
+            let tfB = tfOrder[b.tf] || 99;
+            if (tfA !== tfB) return tfA - tfB; // ترتيب حسب الفريم
+            return b.id - a.id; // ترتيب حسب الوقت
+        });
 
         let html = '';
         sortedTrades.forEach(trade => {
@@ -1440,15 +1449,43 @@
                         <span>TP1: ${trade.tp1.toFixed(dp)}</span>
                         <span>TP2: ${trade.tp2.toFixed(dp)}</span>
                     </div>
+                    <button class="btn-copy-active" onclick="copyActiveSignal(${trade.entry}, ${trade.sl}, ${trade.tp1}, ${trade.tp2}, '${trade.dir}', '${asset}', '${trade.tf}')">
+                        <i class="fa-solid fa-copy"></i> Copy Trade
+                    </button>
                 </div>
             `;
         });
         list.innerHTML = html;
     }
 
-    function copySignal(entry, sl, tp1, tp2, dir, asset) {
+    // دالة النسخ المخصصة للإشارات النشطة
+    function copyActiveSignal(entry, sl, tp1, tp2, dir, asset, tf) {
         const dp = asset === 'EUR/USD' ? 5 : 2;
-        const text = `🚨 SIGNAL: ${asset} ${dir} LIMIT\n\nEntry: ${entry.toFixed(dp)}\nSL: ${sl.toFixed(dp)}\nTP1: ${tp1.toFixed(dp)}\nTP2: ${tp2.toFixed(dp)}`;
+        const assetName = asset.replace('/USD', ''); // تحويل XAU/USD إلى XAU
+        
+        let tfName = tf;
+        if (tf === '1min') tfName = '1m';
+        else if (tf === '3min') tfName = '3m';
+        else if (tf === '5min') tfName = '5m';
+        else if (tf === '15min') tfName = '15m';
+        else if (tf === '30min') tfName = '30m';
+        else if (tf === '1h') tfName = '1h';
+        else if (tf === '4h') tfName = '4h';
+        else if (tf === '1day') tfName = '1d';
+
+        const text = `${assetName} ${dir} LIMIT\nEntry: ${entry.toFixed(dp)}\nSL: ${sl.toFixed(dp)}\nTP1: ${tp1.toFixed(dp)}\nTP2: ${tp2.toFixed(dp)}\n\n${tfName} timeframe`;
+        
+        navigator.clipboard.writeText(text)
+            .then(() => alert("Trade Copied!"))
+            .catch(err => {
+                console.error("Clipboard Error: ", err);
+                alert("Failed to copy. Please check browser permissions.");
+            });
+    }
+
+    function copySignal(entry, sl, tp1, tp2, dir, asset, tf) {
+        const dp = asset === 'EUR/USD' ? 5 : 2;
+        const text = `🚨 SIGNAL: ${asset} ${dir} LIMIT\n\nEntry: ${entry.toFixed(dp)}\nSL: ${sl.toFixed(dp)}\nTP1: ${tp1.toFixed(dp)}\nTP2: ${tp2.toFixed(dp)}\n\n${tf} timeframe`;
         navigator.clipboard.writeText(text).then(() => alert("Signal Copied!")).catch(err => alert("Failed to copy."));
     }
 
