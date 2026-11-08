@@ -50,6 +50,11 @@
     header { padding: 16px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; background: #000; position: sticky; top: 0; z-index: 50; }
     header h1 { margin: 0; font-size: 18px; font-weight: 700; }
     .header-icons { display: flex; align-items: center; gap: 12px; }
+    
+    /* أيقونة الحساب الجديدة */
+    .profile-icon { font-size: 22px; color: #fff; cursor: pointer; padding: 0 5px; transition: color 0.2s; }
+    .profile-icon:hover { color: #ffd700; }
+    
     .bell-icon { font-size: 20px; cursor: pointer; position: relative; color: #fff; }
     .bell-badge { position: absolute; top: -4px; right: -4px; background: #ef5350; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 10px; }
 
@@ -257,6 +262,7 @@
         <div class="bell-icon" onclick="openNotifications()">
           🔔<div class="bell-badge" id="notifBadge" style="display:none;">0</div>
         </div>
+        <i class="fa-solid fa-user-circle profile-icon" onclick="goToAccount()"></i>
         <button class="lang-btn" id="langBtn2" onclick="toggleLanguage()" style="padding: 4px 8px; font-size: 10px;">AR</button>
       </div>
     </header>
@@ -264,7 +270,6 @@
     <!-- Home / Dashboard Page -->
     <div id="page-home" class="page active">
       <div class="welcome-card">
-        <!-- صورة ترحيبية تعبر عن التداول -->
         <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=600&q=80" alt="Trading Welcome">
         <h2>Welcome to MR.Trader AI</h2>
         <p>Your journey to profitable trading starts here. Use our advanced AI to scan the markets, find high-probability SMC setups, and manage your risk with confidence.</p>
@@ -281,7 +286,7 @@
         </div>
       </div>
 
-      <button class="btn-primary" onclick="switchTab('live', document.querySelectorAll('.nav-item')[0])" style="padding: 16px; font-size: 18px;">
+      <button class="btn-primary" onclick="switchTab('live', document.querySelectorAll('.nav-item')[1])" style="padding: 16px; font-size: 18px;">
         <i class="fa-solid fa-bolt"></i> Go to Live Analysis
       </button>
     </div>
@@ -354,7 +359,6 @@
         <div id="newsList"><div style="font-size:11px;color:#666;">Fetching economic calendar...</div></div>
       </div>
 
-      <!-- Timeframes (Dynamic based on mode) -->
       <div class="tf-selector" id="tfSelector">
         <!-- Will be populated by JS -->
       </div>
@@ -823,10 +827,18 @@
       setMode('scalp', document.querySelector('.mode-btn'));
     };
 
+    // دالة الانتقال لصفحة الحساب
+    function goToAccount() {
+        const accountNav = document.querySelectorAll('.nav-item')[4]; // Account is the 5th item (index 4)
+        if (accountNav) {
+            switchTab('account', accountNav);
+        }
+    }
+
     function setMode(mode, element) {
         currentMode = mode;
         document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-        element.classList.add('active');
+        if (element) element.classList.add('active');
         
         const tfSelector = document.getElementById('tfSelector');
         tfSelector.innerHTML = '';
@@ -1056,8 +1068,22 @@
     }
 
     const dict = {
-      en: { analyze: "⚡ ANALYZE MARKET", loading: "Press Analyze to scan, or wait for Auto.", scanning: "Scanning FVG & OB...", buy: "BUY LIMIT", sell: "SELL LIMIT", activeBuy: "ACTIVE BUY", activeSell: "ACTIVE SELL", tp1hit: "TP1 HIT", tp2hit: "TP2 HIT", pending: "PENDING (WAIT)", entry: "SNIPER ENTRY", sl: "STOP LOSS", tp1: "TAKE PROFIT 1", tp2: "TAKE PROFIT 2", live: "Live", account: "Account", history: "History", auto: "Auto", noHistory: "No previous trades yet.", waitBuy: "WAITING FOR BUY AT", waitSell: "WAITING FOR SELL AT" },
-      ar: { analyze: "⚡ تحليل السوق", loading: "اضغط تحليل، أو انتظر الأوتو.", scanning: "جاري تحليل FVG و OB...", buy: "شراء معلق", sell: "بيع معلق", activeBuy: "شراء نشط", activeSell: "بيع نشط", tp1hit: "تم تحقيق الهدف 1", tp2hit: "تم تحقيق الهدف 2", pending: "معلق (انتظار)", entry: "الدخول", sl: "وقف خسارة", tp1: "هدف 1", tp2: "هدف 2", live: "مباشر", account: "الحساب", history: "السجل", auto: "أوتو", noHistory: "لا يوجد صفقات سابقة.", waitBuy: "في انتظار شراء عند", waitSell: "في انتظار بيع عند" }
+      en: { 
+        analyze: "⚡ ANALYZE MARKET", loading: "Press Analyze to scan, or wait for Auto.", scanning: "Scanning FVG & OB...", 
+        buy: "BUY LIMIT", sell: "SELL LIMIT", activeBuy: "ACTIVE BUY", activeSell: "ACTIVE SELL", 
+        tp1hit: "TP1 HIT", tp2hit: "TP2 HIT", pending: "PENDING (WAIT)", entry: "SNIPER ENTRY", 
+        sl: "STOP LOSS", tp1: "TAKE PROFIT 1", tp2: "TAKE PROFIT 2", 
+        home: "Home", live: "Live", active: "Active", account: "Account", history: "History", auto: "Auto",
+        noHistory: "No previous trades yet.", waitBuy: "WAITING FOR BUY AT", waitSell: "WAITING FOR SELL AT" 
+      },
+      ar: { 
+        analyze: "⚡ تحليل السوق", loading: "اضغط تحليل، أو انتظر الأوتو.", scanning: "جاري تحليل FVG و OB...", 
+        buy: "شراء معلق", sell: "بيع معلق", activeBuy: "شراء نشط", activeSell: "بيع نشط", 
+        tp1hit: "تم تحقيق الهدف 1", tp2hit: "تم تحقيق الهدف 2", pending: "معلق (انتظار)", entry: "الدخول", 
+        sl: "وقف خسارة", tp1: "هدف 1", tp2: "هدف 2", 
+        home: "الرئيسية", live: "مباشر", active: "إشارات نشطة", account: "الحساب", history: "السجل", auto: "أوتو",
+        noHistory: "لا يوجد صفقات سابقة.", waitBuy: "في انتظار شراء عند", waitSell: "في انتظار بيع عند" 
+      }
     };
 
     function applyLanguage() {
@@ -1065,6 +1091,7 @@
       if (currentLang === 'ar') document.getElementById('mainBody').classList.add('rtl'); else document.getElementById('mainBody').classList.remove('rtl');
       const el = document.getElementById('loadingText'); if (el) el.innerText = dict[currentLang].loading;
       
+      // تحديث أسماء الأزرار في الشريط السفلي
       const navs = document.querySelectorAll('.nav-text');
       if (navs[0]) navs[0].innerText = dict[currentLang].home;
       if (navs[1]) navs[1].innerText = dict[currentLang].live;
@@ -1104,7 +1131,7 @@
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('page-' + tabId).classList.add('active');
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      element.classList.add('active');
+      if (element) element.classList.add('active');
       if (tabId === 'live' && chart) setTimeout(() => chart.applyOptions({ width: document.getElementById('chart-container').clientWidth }), 50);
     }
 
