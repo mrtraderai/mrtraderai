@@ -51,7 +51,6 @@
     header h1 { margin: 0; font-size: 18px; font-weight: 700; }
     .header-icons { display: flex; align-items: center; gap: 12px; }
     
-    /* أيقونة الحساب الجديدة */
     .profile-icon { font-size: 22px; color: #fff; cursor: pointer; padding: 0 5px; transition: color 0.2s; }
     .profile-icon:hover { color: #ffd700; }
     
@@ -1265,9 +1264,21 @@
       
       let { dir, entry, sl } = setup;
       const pipSize = getPipSize(currentAsset); const maxSLPips = parseInt(maxSL); const maxSLPrice = maxSLPips * pipSize;
-      if (Math.abs(entry - sl) > maxSLPrice) { sl = dir === 'BUY' ? entry - maxSLPrice : entry + maxSLPrice; }
+      
+      // فرض الحد الأدنى للـ SL
+      const minSLPips = currentMode === 'scalp' ? 20 : 50;
+      const minSLPrice = minSLPips * pipSize;
+      let slDistance = Math.abs(entry - sl);
+      
+      if (slDistance < minSLPrice) {
+          sl = dir === 'BUY' ? entry - minSLPrice : entry + minSLPrice;
+      } else if (slDistance > maxSLPrice) {
+          sl = dir === 'BUY' ? entry - maxSLPrice : entry + maxSLPrice;
+      }
+
       const slPips = toPips(Math.abs(entry - sl), currentAsset);
       if (slPips > maxSLPips) { signalBox.innerHTML = `<div class="loading text-red">Setup SL too wide.</div>`; btn.disabled = false; return; }
+      
       const risk = Math.abs(entry - sl); const tp1 = dir === 'BUY' ? entry + (risk * 1.5) : entry - (risk * 1.5); const tp2 = dir === 'BUY' ? entry + (risk * 3.5) : entry - (risk * 3.5);
       activeTrades[key] = { id: Date.now(), asset: currentAsset, dir, entry, sl, tp1, tp2, tf: currentTF, status: 'PENDING', date: new Date().toLocaleString(), tp1Hit: false };
       addNotification(dir, entry, sl, tp1, tp2, currentTF, currentAsset);
@@ -1313,7 +1324,16 @@
             let { dir, entry, sl } = setup;
             const pipSize = getPipSize(currentAsset); const maxSLPips = currentMode === 'scalp' ? 70 : 150; const maxSLPrice = maxSLPips * pipSize;
             
-            if (Math.abs(entry - sl) > maxSLPrice) { sl = dir === 'BUY' ? entry - maxSLPrice : entry + maxSLPrice; }
+            // فرض الحد الأدنى للـ SL
+            const minSLPips = currentMode === 'scalp' ? 20 : 50;
+            const minSLPrice = minSLPips * pipSize;
+            let slDistance = Math.abs(entry - sl);
+            
+            if (slDistance < minSLPrice) {
+                sl = dir === 'BUY' ? entry - minSLPrice : entry + minSLPrice;
+            } else if (slDistance > maxSLPrice) {
+                sl = dir === 'BUY' ? entry - maxSLPrice : entry + maxSLPrice;
+            }
             
             const recentHistory = tradeHistory.slice(-5); let isDuplicate = false;
             for (const t of recentHistory) { if ((t.asset || 'XAU/USD') === currentAsset && t.tf === tf && Math.abs(t.entry - entry) < pipSize * 10) { isDuplicate = true; break; } }
