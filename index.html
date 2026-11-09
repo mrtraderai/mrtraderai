@@ -14,7 +14,7 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-height: 100vh; padding-bottom: 90px; overflow-x: hidden; }
     body.rtl { direction: rtl; }
-    .text-green { color: #26a69a; } .text-red { color: #ef5350; } .text-yellow { color: #ffd700; }
+    .text-green { color: #26a69a; } .text-red { color: #ef5350; } .text-yellow { color: #ffd700; } .text-blue { color: #2196f3; }
 
     /* ================= Splash Screen (Welcome) ================= */
     #splashScreen {
@@ -214,6 +214,7 @@
     .badge-tp1 { background: #ffd70055; color: #fff; }
     .badge-tp2 { background: #26a69a55; color: #fff; }
     .badge-sl { background: #ef535022; color: #ef5350; }
+    .badge-be { background: #2196f355; color: #fff; }
 
     /* New Copy Button Style */
     .btn-copy-active { width: 100%; margin-top: 12px; padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 6px; }
@@ -455,7 +456,7 @@
       </div>
     </div>
 
-    <!-- Bottom Nav (Removed History) -->
+    <!-- Bottom Nav -->
     <div class="bottom-nav">
       <div class="nav-item active" onclick="switchTab('home', this)">
         <span class="nav-icon"><i class="fa-solid fa-house"></i></span> 
@@ -1456,12 +1457,13 @@
             const asset = trade.asset || currentAsset;
             const dp = asset === 'EUR/USD' ? 5 : 2;
             const isWin = trade.result === 'WIN';
+            const isBE = trade.result === 'BE';
             
             // Color based on result
-            const cardBorderColor = isWin ? '#26a69a' : '#ef5350';
-            const cardBgColor = isWin ? 'rgba(38, 166, 154, 0.05)' : 'rgba(239, 83, 80, 0.05)';
-            const badgeClass = isWin ? 'badge-tp2' : 'badge-sl';
-            const resultText = isWin ? 'WIN (TP)' : 'LOSS (SL)';
+            let cardBorderColor = isWin ? '#26a69a' : (isBE ? '#2196f3' : '#ef5350');
+            let cardBgColor = isWin ? 'rgba(38, 166, 154, 0.05)' : (isBE ? 'rgba(33, 150, 243, 0.05)' : 'rgba(239, 83, 80, 0.05)');
+            let badgeClass = isWin ? 'badge-tp2' : (isBE ? 'badge-be' : 'badge-sl');
+            let resultText = isWin ? 'WIN (TP)' : (isBE ? 'BREAK EVEN' : 'LOSS (SL)');
             
             // Pips Calculation
             const pipSize = getPipSize(asset);
@@ -1472,8 +1474,8 @@
                     <div class="signal-time">${trade.date}</div>
                     <div class="signal-asset">${asset} <span class="${isBuy ? 'text-green' : 'text-red'}">${isBuy ? 'BUY' : 'SELL'}</span> (${trade.tf})</div>
                     <div class="signal-status-row">
-                        <span>Result: <strong class="${isWin ? 'text-green' : 'text-red'}">${resultText}</strong></span>
-                        <span class="signal-badge ${badgeClass}">${isWin ? '+' : '-'}${pips} PIPS</span>
+                        <span>Result: <strong class="${isWin ? 'text-green' : (isBE ? 'text-blue' : 'text-red')}">${resultText}</strong></span>
+                        <span class="signal-badge ${badgeClass}">${isWin ? '+' : (isBE ? '' : '-')}${pips} PIPS</span>
                     </div>
                     <div class="signal-status-row" style="color: #888; font-size: 11px;">
                         <span>Entry: ${trade.entry.toFixed(dp)}</span>
@@ -1612,10 +1614,21 @@
                         if (trade.dir === 'BUY' && livePrice <= trade.entry) { trade.status = 'ACTIVE'; changed = true; } 
                         if (trade.dir === 'SELL' && livePrice >= trade.entry) { trade.status = 'ACTIVE'; changed = true; } 
                     }
+                    
+                    // If TP1 Hit -> Move SL to Entry (Break Even)
                     if (trade.status === 'ACTIVE' && !trade.tp1Hit) { 
-                        if (trade.dir === 'BUY' && livePrice >= trade.tp1) { trade.tp1Hit = true; changed = true; } 
-                        if (trade.dir === 'SELL' && livePrice <= trade.tp1) { trade.tp1Hit = true; changed = true; } 
+                        if (trade.dir === 'BUY' && livePrice >= trade.tp1) { 
+                            trade.tp1Hit = true; 
+                            trade.sl = trade.entry; // Move SL to entry
+                            changed = true; 
+                        } 
+                        if (trade.dir === 'SELL' && livePrice <= trade.tp1) { 
+                            trade.tp1Hit = true; 
+                            trade.sl = trade.entry; // Move SL to entry
+                            changed = true; 
+                        } 
                     }
+                    
                     if (changed) { 
                         await saveActiveTradeToCloud(trade); 
                         localStorage.setItem('activeTrades', JSON.stringify(activeTrades)); 
@@ -1623,10 +1636,16 @@
                     }
                     
                     if (trade.dir === 'BUY') { 
-                        if (livePrice <= trade.sl) { result = 'LOSS'; exitPrice = trade.sl; } 
+                        if (livePrice <= trade.sl) { 
+                            result = trade.tp1Hit ? 'BE' : 'LOSS'; 
+                            exitPrice = trade.sl; 
+                        } 
                         if (livePrice >= trade.tp2) { result = 'WIN'; exitPrice = trade.tp2; } 
                     } else { 
-                        if (livePrice >= trade.sl) { result = 'LOSS'; exitPrice = trade.sl; } 
+                        if (livePrice >= trade.sl) { 
+                            result = trade.tp1Hit ? 'BE' : 'LOSS'; 
+                            exitPrice = trade.sl; 
+                        } 
                         if (livePrice <= trade.tp2) { result = 'WIN'; exitPrice = trade.tp2; } 
                     }
                     
@@ -1637,8 +1656,9 @@
                         delete activeTrades[key]; await deleteActiveTradeFromCloud(key); localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
                         refreshActiveList = true;
                         if (result === 'WIN') { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); playAlert(); sendPushNotification(`✅ Take Profit Hit!`, `${asset} ${trade.tf.toUpperCase()} closed in profit.`); }
+                        else if (result === 'BE') { sendPushNotification(`⚖️ Break Even`, `${asset} ${trade.tf.toUpperCase()} closed at entry.`); }
                         else { sendPushNotification(`❌ Stop Loss Hit`, `${asset} ${trade.tf.toUpperCase()} closed in loss.`); }
-                        if (trade.asset === currentAsset && trade.tf === currentTF) { alert(`SIGNAL HIT ${result === 'WIN' ? 'TAKE PROFIT 2' : 'STOP LOSS'} on ${asset}!`); location.reload(); }
+                        if (trade.asset === currentAsset && trade.tf === currentTF) { alert(`SIGNAL HIT ${result === 'WIN' ? 'TAKE PROFIT 2' : (result === 'BE' ? 'BREAK EVEN' : 'STOP LOSS')} on ${asset}!`); location.reload(); }
                         else { addAutoLog(`${asset} ${trade.tf.toUpperCase()} closed: ${result}`); }
                         
                         // Switch to Closed Tab if it happened while viewing
