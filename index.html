@@ -223,6 +223,9 @@
     /* New Copy Button Style */
     .btn-copy-active { width: 100%; margin-top: 12px; padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 6px; }
     .btn-copy-active:active { background: #ffd700; color: #000; }
+
+    /* Chart Container */
+    #chart-container { width: 100%; height: 35vh; border-bottom: 1px solid #1a1a1a; position: relative; }
   </style>
 </head>
 <body id="mainBody">
@@ -533,7 +536,7 @@
     let currentLang = localStorage.getItem('lang') || 'en';
     let currentTF = '5min';
     let currentAsset = 'XAU/USD';
-    let currentMode = 'scalp'; // scalp or swing
+    let currentMode = 'scalp'; 
     let liveInterval;
     let autopilotInterval;
     let newsInterval;
@@ -832,7 +835,7 @@
 
     // دالة الانتقال لصفحة الحساب
     function goToAccount() {
-        const accountNav = document.querySelectorAll('.nav-item')[4]; // Account is the 5th item (index 4)
+        const accountNav = document.querySelectorAll('.nav-item')[4]; 
         if (accountNav) {
             switchTab('account', accountNav);
         }
@@ -1285,7 +1288,7 @@
       await saveActiveTradeToCloud(activeTrades[key]);
       localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
       renderTradeCard(activeTrades[key]);
-      renderActiveSignalsList(); // Update new tab
+      renderActiveSignalsList(); 
       btn.disabled = false;
     }
 
@@ -1301,7 +1304,6 @@
     function startAutopilot() {
       if (autopilotInterval) clearInterval(autopilotInterval);
       autopilotInterval = setInterval(async () => {
-        // البحث في كل الفريمات الممكنة بناءً على الوضع الحالي
         let tfsToScan = currentMode === 'scalp' ? ['1min', '3min', '5min'] : ['15min', '30min', '1h', '4h', '1day'];
         
         for (let tf of tfsToScan) {
@@ -1347,7 +1349,6 @@
             localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
             addAutoLog(`Found FVG ${dir} at ${entry.toFixed(5)} on ${currentAsset} ${tf.toUpperCase()}`);
             
-            // Update Active Signals List immediately
             renderActiveSignalsList();
             
             if (document.getElementById('page-live').classList.contains('active') && document.getElementById('assetSelector').value === currentAsset && tf === currentTF) { 
@@ -1390,7 +1391,6 @@
       const pipsRisk = Math.round(Math.abs(trade.entry - trade.sl) / pipSize); const pipsTP1 = Math.round(Math.abs(trade.tp1 - trade.entry) / pipSize); const pipsTP2 = Math.round(Math.abs(trade.tp2 - trade.entry) / pipSize);
       const dollarLoss = (pipsRisk * pipVal).toFixed(2); const dollarTP1 = (pipsTP1 * pipVal).toFixed(2); const dollarTP2 = (pipsTP2 * pipVal).toFixed(2);
       
-      // حساب كيلي
       let totalTrades = tradeHistory.length;
       let wins = tradeHistory.filter(t => t.result === 'WIN').length;
       let winRate = totalTrades > 0 ? (wins / totalTrades) * 100 : 0;
@@ -1420,7 +1420,6 @@
       drawTradeLines(trade);
     }
 
-    // دالة عرض الإشارات النشطة في التبويب الجديد
     function renderActiveSignalsList() {
         const list = document.getElementById('activeSignalsList');
         if (!list) return;
@@ -1432,13 +1431,12 @@
             return;
         }
 
-        // ترتيب الإشارات: أولاً حسب الفريم (الأصغر أولاً)، ثم حسب الوقت (الأحدث أولاً)
         const tfOrder = { '1min': 1, '3min': 2, '5min': 3, '15min': 4, '30min': 5, '1h': 6, '4h': 7, '1day': 8 };
         let sortedTrades = activeKeys.map(k => activeTrades[k]).sort((a, b) => {
             let tfA = tfOrder[a.tf] || 99;
             let tfB = tfOrder[b.tf] || 99;
-            if (tfA !== tfB) return tfA - tfB; // ترتيب حسب الفريم
-            return b.id - a.id; // ترتيب حسب الوقت
+            if (tfA !== tfB) return tfA - tfB;
+            return b.id - a.id; 
         });
 
         let html = '';
@@ -1478,10 +1476,9 @@
         list.innerHTML = html;
     }
 
-    // دالة النسخ المخصصة للإشارات النشطة
     function copyActiveSignal(entry, sl, tp1, tp2, dir, asset, tf) {
         const dp = asset === 'EUR/USD' ? 5 : 2;
-        const assetName = asset.replace('/USD', ''); // تحويل XAU/USD إلى XAU
+        const assetName = asset.replace('/USD', ''); 
         
         let tfName = tf;
         if (tf === '1min') tfName = '1m';
