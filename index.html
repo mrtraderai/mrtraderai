@@ -548,7 +548,7 @@
 
     function calculateKellyLot(winRate) {
         let W = winRate / 100;
-        let R = 1.5;
+        let R = 2.0; // Updated to 2.0 for 1:2 RR
         let kelly = W - ((1 - W) / R);
         if (kelly < 0.01) return 0.01;
         if (kelly > 0.1) return 0.10;
@@ -1226,9 +1226,11 @@
       const slPips = toPips(Math.abs(entry - sl), currentAsset);
       if (slPips > maxSLPips) { signalBox.innerHTML = `<div class="loading text-red">Setup SL too wide.</div>`; btn.disabled = false; return; }
       
-      const risk = Math.abs(entry - sl); const tp1 = dir === 'BUY' ? entry + (risk * 1.5) : entry - (risk * 1.5); const tp2 = dir === 'BUY' ? entry + (risk * 3.5) : entry - (risk * 3.5);
-      activeTrades[key] = { id: Date.now(), asset: currentAsset, dir, entry, sl, tp1, tp2, tf: currentTF, status: 'PENDING', date: new Date().toLocaleString(), tp1Hit: false };
-      addNotification(dir, entry, sl, tp1, tp2, currentTF, currentAsset);
+      const risk = Math.abs(entry - sl); const tp1 = dir === 'BUY' ? entry + (risk * 2.0) : entry - (risk * 2.0); // Changed to 2.0
+      
+      activeTrades[key] = { id: Date.now(), asset: currentAsset, dir, entry, sl, tp1, tp2: tp1, tf: currentTF, status: 'PENDING', date: new Date().toLocaleString(), tp1Hit: false }; // tp2 = tp1 to keep structure but not used
+      
+      addNotification(dir, entry, sl, tp1, tp1, currentTF, currentAsset);
       await saveActiveTradeToCloud(activeTrades[key]);
       localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
       renderTradeCard(activeTrades[key]);
@@ -1285,10 +1287,11 @@
             for (const t of recentHistory) { if ((t.asset || 'XAU/USD') === currentAsset && t.tf === tf && Math.abs(t.entry - entry) < pipSize * 10) { isDuplicate = true; break; } }
             if (isDuplicate) continue;
             
-            const risk = Math.abs(entry - sl); const tp1 = dir === 'BUY' ? entry + (risk * 1.5) : entry - (risk * 1.5); const tp2 = dir === 'BUY' ? entry + (risk * 3.5) : entry - (risk * 3.5);
+            const risk = Math.abs(entry - sl); const tp1 = dir === 'BUY' ? entry + (risk * 2.0) : entry - (risk * 2.0); // Changed to 2.0
             
-            activeTrades[key] = { id: Date.now(), asset: currentAsset, dir, entry, sl, tp1, tp2, tf: tf, status: 'PENDING', date: new Date().toLocaleString(), tp1Hit: false };
-            addNotification(dir, entry, sl, tp1, tp2, tf, currentAsset);
+            activeTrades[key] = { id: Date.now(), asset: currentAsset, dir, entry, sl, tp1, tp2: tp1, tf: tf, status: 'PENDING', date: new Date().toLocaleString(), tp1Hit: false };
+            
+            addNotification(dir, entry, sl, tp1, tp1, tf, currentAsset);
             await saveActiveTradeToCloud(activeTrades[key]);
             localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
             addAutoLog(`Found FVG ${dir} at ${entry.toFixed(5)} on ${currentAsset} ${tf.toUpperCase()}`);
@@ -1323,7 +1326,6 @@
       priceLines.push(candleSeries.createPriceLine({ price: trade.entry, color: '#ffd700', lineWidth: 2, lineStyle: 2, title: 'ENTRY' }));
       priceLines.push(candleSeries.createPriceLine({ price: trade.sl, color: '#ef5350', lineWidth: 1, lineStyle: 2, title: 'SL' }));
       priceLines.push(candleSeries.createPriceLine({ price: trade.tp1, color: '#26a69a', lineWidth: 1, lineStyle: 2, title: 'TP1' }));
-      priceLines.push(candleSeries.createPriceLine({ price: trade.tp2, color: '#26a69a', lineWidth: 1, lineStyle: 2, title: 'TP2' }));
     }
 
     function renderTradeCard(trade) {
@@ -1332,13 +1334,8 @@
       let statusText = trade.dir === 'BUY' ? `${dict[currentLang].waitBuy} ${trade.entry.toFixed(dp)}` : `${dict[currentLang].waitSell} ${trade.entry.toFixed(dp)}`;
       if (trade.tp1Hit) { statusClass = "status-tp1"; statusText = dict[currentLang].tp1hit; }
       else if (trade.status === 'ACTIVE') { statusClass = isBuy ? "status-active-buy" : "status-active-sell"; statusText = isBuy ? dict[currentLang].activeBuy : dict[currentLang].activeSell; }
-      const pipsRisk = Math.round(Math.abs(trade.entry - trade.sl) / pipSize); const pipsTP1 = Math.round(Math.abs(trade.tp1 - trade.entry) / pipSize); const pipsTP2 = Math.round(Math.abs(trade.tp2 - trade.entry) / pipSize);
-      const dollarLoss = (pipsRisk * pipVal).toFixed(2); const dollarTP1 = (pipsTP1 * pipVal).toFixed(2); const dollarTP2 = (pipsTP2 * pipVal).toFixed(2);
-      
-      let totalTrades = tradeHistory.length;
-      let wins = tradeHistory.filter(t => t.result === 'WIN').length;
-      let winRate = totalTrades > 0 ? (wins / totalTrades) * 100 : 0;
-      let kellyLot = calculateKellyLot(winRate);
+      const pipsRisk = Math.round(Math.abs(trade.entry - trade.sl) / pipSize); const pipsTP1 = Math.round(Math.abs(trade.tp1 - trade.entry) / pipSize);
+      const dollarLoss = (pipsRisk * pipVal).toFixed(2); const dollarTP1 = (pipsTP1 * pipVal).toFixed(2);
 
       document.getElementById('signalBox').innerHTML = `
         <div class="signal-card ${isBuy ? '' : 'sell'}">
@@ -1350,16 +1347,10 @@
             <div class="price-box"><div class="price-label">${dict[currentLang].entry}</div><div class="price-val text-yellow">${trade.entry.toFixed(dp)}</div></div>
             <div class="price-box"><div class="price-label">${dict[currentLang].sl}</div><div class="price-val text-red">${trade.sl.toFixed(dp)}</div><div class="pips-sub text-red">-${pipsRisk} pips</div></div>
             <div class="price-box tp1"><div class="price-label">${dict[currentLang].tp1}</div><div class="price-val text-green">${trade.tp1.toFixed(dp)}</div><div class="pips-sub text-green">+${pipsTP1} pips</div></div>
-            <div class="price-box tp2"><div class="price-label">${dict[currentLang].tp2}</div><div class="price-val text-green">${trade.tp2.toFixed(dp)}</div><div class="pips-sub text-green">+${pipsTP2} pips</div></div>
           </div>
           
-          <div class="calc-box">
-            <div class="calc-title">Suggested Lot (Kelly Criterion)</div>
-            <div class="calc-row"><span>Win Rate: ${winRate.toFixed(1)}%</span> <span class="calc-val-green">Lot: ${kellyLot}</span></div>
-          </div>
-
-          <div class="calc-box"><div class="calc-title">Profit / Loss ($) @ 0.02 Lots</div><div class="calc-row"><span>Stop Loss:</span> <span class="calc-val-red">-$${dollarLoss}</span></div><div class="calc-row"><span>Take Profit 1:</span> <span class="calc-val-green">+$${dollarTP1}</span></div><div class="calc-row"><span>Take Profit 2:</span> <span class="calc-val-green">+$${dollarTP2}</span></div></div>
-          <button class="btn-copy-signal" onclick="copySignal(${trade.entry}, ${trade.sl}, ${trade.tp1}, ${trade.tp2}, '${trade.dir}', '${asset}', '${trade.tf}')">📋 Copy Signal</button>
+          <div class="calc-box"><div class="calc-title">Profit / Loss ($) @ 0.02 Lots</div><div class="calc-row"><span>Stop Loss:</span> <span class="calc-val-red">-$${dollarLoss}</span></div><div class="calc-row"><span>Take Profit:</span> <span class="calc-val-green">+$${dollarTP1}</span></div></div>
+          <button class="btn-copy-signal" onclick="copySignal(${trade.entry}, ${trade.sl}, ${trade.tp1}, '${trade.dir}', '${asset}', '${trade.tf}')">📋 Copy Signal</button>
         </div>`;
       drawTradeLines(trade);
     }
@@ -1420,10 +1411,9 @@
                     </div>
                     <div class="signal-status-row" style="color: #888; font-size: 11px;">
                         <span>SL: ${trade.sl.toFixed(dp)}</span>
-                        <span>TP1: ${trade.tp1.toFixed(dp)}</span>
-                        <span>TP2: ${trade.tp2.toFixed(dp)}</span>
+                        <span>TP: ${trade.tp1.toFixed(dp)}</span>
                     </div>
-                    <button class="btn-copy-active" onclick="copyActiveSignal(${trade.entry}, ${trade.sl}, ${trade.tp1}, ${trade.tp2}, '${trade.dir}', '${asset}', '${trade.tf}')">
+                    <button class="btn-copy-active" onclick="copyActiveSignal(${trade.entry}, ${trade.sl}, ${trade.tp1}, '${trade.dir}', '${asset}', '${trade.tf}')">
                         <i class="fa-solid fa-copy"></i> Copy Trade
                     </button>
                 </div>
@@ -1487,7 +1477,7 @@
         list.innerHTML = html;
     }
 
-    function copyActiveSignal(entry, sl, tp1, tp2, dir, asset, tf) {
+    function copyActiveSignal(entry, sl, tp1, dir, asset, tf) {
         const dp = asset === 'EUR/USD' ? 5 : 2;
         const assetName = asset.replace('/USD', ''); 
         
@@ -1498,7 +1488,7 @@
         else if (tf === '4h') tfName = '4h';
         else if (tf === '1day') tfName = '1d';
 
-        const text = `${assetName} ${dir} LIMIT\nEntry: ${entry.toFixed(dp)}\nSL: ${sl.toFixed(dp)}\nTP1: ${tp1.toFixed(dp)}\nTP2: ${tp2.toFixed(dp)}\n\n${tfName} timeframe`;
+        const text = `${assetName} ${dir} LIMIT\nEntry: ${entry.toFixed(dp)}\nSL: ${sl.toFixed(dp)}\nTP1: ${tp1.toFixed(dp)}\n\n${tfName} timeframe`;
         
         navigator.clipboard.writeText(text)
             .then(() => alert("Trade Copied!"))
@@ -1508,9 +1498,9 @@
             });
     }
 
-    function copySignal(entry, sl, tp1, tp2, dir, asset, tf) {
+    function copySignal(entry, sl, tp1, dir, asset, tf) {
         const dp = asset === 'EUR/USD' ? 5 : 2;
-        const text = `🚨 SIGNAL: ${asset} ${dir} LIMIT\n\nEntry: ${entry.toFixed(dp)}\nSL: ${sl.toFixed(dp)}\nTP1: ${tp1.toFixed(dp)}\nTP2: ${tp2.toFixed(dp)}\n\n${tf} timeframe`;
+        const text = `🚨 SIGNAL: ${asset} ${dir} LIMIT\n\nEntry: ${entry.toFixed(dp)}\nSL: ${sl.toFixed(dp)}\nTP1: ${tp1.toFixed(dp)}\n\n${tf} timeframe`;
         navigator.clipboard.writeText(text).then(() => alert("Signal Copied!")).catch(err => alert("Failed to copy."));
     }
 
@@ -1635,18 +1625,23 @@
                         refreshActiveList = true;
                     }
                     
+                    // Check for Close
                     if (trade.dir === 'BUY') { 
                         if (livePrice <= trade.sl) { 
                             result = trade.tp1Hit ? 'BE' : 'LOSS'; 
                             exitPrice = trade.sl; 
                         } 
-                        if (livePrice >= trade.tp2) { result = 'WIN'; exitPrice = trade.tp2; } 
+                        if (livePrice >= trade.tp1) { // Close at TP1
+                            result = 'WIN'; exitPrice = trade.tp1; 
+                        } 
                     } else { 
                         if (livePrice >= trade.sl) { 
                             result = trade.tp1Hit ? 'BE' : 'LOSS'; 
                             exitPrice = trade.sl; 
                         } 
-                        if (livePrice <= trade.tp2) { result = 'WIN'; exitPrice = trade.tp2; } 
+                        if (livePrice <= trade.tp1) { // Close at TP1
+                            result = 'WIN'; exitPrice = trade.tp1; 
+                        } 
                     }
                     
                     if (result) {
@@ -1658,7 +1653,7 @@
                         if (result === 'WIN') { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); playAlert(); sendPushNotification(`✅ Take Profit Hit!`, `${asset} ${trade.tf.toUpperCase()} closed in profit.`); }
                         else if (result === 'BE') { sendPushNotification(`⚖️ Break Even`, `${asset} ${trade.tf.toUpperCase()} closed at entry.`); }
                         else { sendPushNotification(`❌ Stop Loss Hit`, `${asset} ${trade.tf.toUpperCase()} closed in loss.`); }
-                        if (trade.asset === currentAsset && trade.tf === currentTF) { alert(`SIGNAL HIT ${result === 'WIN' ? 'TAKE PROFIT 2' : (result === 'BE' ? 'BREAK EVEN' : 'STOP LOSS')} on ${asset}!`); location.reload(); }
+                        if (trade.asset === currentAsset && trade.tf === currentTF) { alert(`SIGNAL HIT ${result === 'WIN' ? 'TAKE PROFIT 1' : (result === 'BE' ? 'BREAK EVEN' : 'STOP LOSS')} on ${asset}!`); location.reload(); }
                         else { addAutoLog(`${asset} ${trade.tf.toUpperCase()} closed: ${result}`); }
                         
                         // Switch to Closed Tab if it happened while viewing
