@@ -310,8 +310,6 @@
         <div class="top-row">
           <select id="assetSelector" class="asset-select" onchange="changeAsset()">
             <option value="XAU/USD">XAUUSD (Gold)</option>
-            <option value="EUR/USD">EURUSD</option>
-            <option value="BTC/USD">BTCUSD</option>
           </select>
           <div class="autopilot-status">
             <div class="pulse-dot"></div> ACTIVE
@@ -414,8 +412,6 @@
       <div style="display: flex; gap: 4px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px;">
         <button class="filter-btn active" id="btn-asset-all" onclick="setAssetFilter('all', this)">All Assets</button>
         <button class="filter-btn" id="btn-asset-XAU" onclick="setAssetFilter('XAU/USD', this)">Gold</button>
-        <button class="filter-btn" id="btn-asset-EUR" onclick="setAssetFilter('EUR/USD', this)">EUR</button>
-        <button class="filter-btn" id="btn-asset-BTC" onclick="setAssetFilter('BTC/USD', this)">BTC</button>
       </div>
 
       <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
@@ -1016,7 +1012,7 @@
     async function fetchChartDataFromSource(tf) {
         const intervalMap = { '1min': '1min', '3min': '3min', '5min': '5min', '15min': '15min', '30min': '30min', '1h': '1h', '4h': '4h', '1day': '1day' };
         const tdTf = intervalMap[tf] || '5min';
-        const symbolMap = { 'XAU/USD': 'XAU/USD', 'EUR/USD': 'EUR/USD', 'BTC/USD': 'BTC/USD' };
+        const symbolMap = { 'XAU/USD': 'XAU/USD' };
         const symbol = symbolMap[currentAsset];
 
         try {
