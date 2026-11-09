@@ -203,10 +203,8 @@
     
     .chart-error { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ef5350; font-size: 12px; text-align: center; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 8px; z-index: 10; display: none; }
 
-    /* Mode selector styles */
-    .mode-selector { display: flex; gap: 8px; padding: 0 16px 10px 16px; background: #000; }
-    .mode-btn { flex: 1; padding: 8px; background: #111; border: 1px solid #333; color: #888; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 12px; }
-    .mode-btn.active { background: #ffd700; color: #000; border-color: #ffd700; }
+    /* Mode selector styles (Removed) */
+    .mode-selector { display: none; }
 
     /* Active Signal Tab Styles */
     .active-signal-card { background: #111; border: 1px solid #333; border-radius: 12px; padding: 16px; margin-bottom: 12px; position: relative; animation: fadeIn 0.3s; }
@@ -300,11 +298,7 @@
     <!-- Live Page -->
     <div id="page-live" class="page" style="padding: 0;">
       
-      <!-- Mode Selector -->
-      <div class="mode-selector">
-        <div class="mode-btn active" onclick="setMode('scalp', this)">Scalp (M1, M3, M5)</div>
-        <div class="mode-btn" onclick="setMode('swing', this)">Swing (M15, M30, H1, H4, D1)</div>
-      </div>
+      <!-- Removed Mode Selector -->
 
       <div class="top-bar">
         <div class="top-row">
@@ -364,7 +358,11 @@
       </div>
 
       <div class="tf-selector" id="tfSelector">
-        <!-- Will be populated by JS -->
+        <button class="tf-btn active" onclick="selectTF('15min', this)">M15</button>
+        <button class="tf-btn" onclick="selectTF('30min', this)">M30</button>
+        <button class="tf-btn" onclick="selectTF('1h', this)">H1</button>
+        <button class="tf-btn" onclick="selectTF('4h', this)">H4</button>
+        <button class="tf-btn" onclick="selectTF('1day', this)">D1</button>
       </div>
       <button class="btn-analyze" id="btnAnalyze" onclick="startAnalysis()">⚡ ANALYZE MARKET</button>
       <div id="chart-container">
@@ -530,9 +528,8 @@
     let chart, candleSeries;
     let priceLines = [];
     let currentLang = localStorage.getItem('lang') || 'en';
-    let currentTF = '5min';
+    let currentTF = '15min';
     let currentAsset = 'XAU/USD';
-    let currentMode = 'scalp'; 
     let liveInterval;
     let autopilotInterval;
     let newsInterval;
@@ -541,7 +538,7 @@
     let currentAssetFilter = 'all'; 
     let isManualRefresh = false;
 
-    let maxSL = 50; 
+    let maxSL = 150; 
     let brokerTZ = localStorage.getItem('brokerTZ') || '3'; 
     let enabledSessions = JSON.parse(localStorage.getItem('enabledSessions')) || { sydney: true, tokyo: true, london: true, ny: true };
 
@@ -555,8 +552,6 @@
     let swRegistration = null; 
 
     function getPipSize(asset) {
-      if (asset === 'EUR/USD') return 0.0001;
-      if (asset === 'BTC/USD') return 1.0; 
       return 0.10; 
     }
     function toPips(diff, asset) { return diff / getPipSize(asset); }
@@ -712,7 +707,6 @@
            else throw new Error("Invalid format");
         }
         let targetCurrencies = ['USD'];
-        if (currentAsset === 'EUR/USD') targetCurrencies.push('EUR');
         newsCache = all.filter(e => 
           (targetCurrencies.includes(e.country) || targetCurrencies.includes(e.currency)) && 
           (e.impact === 'High' || e.impact === 'Medium' || e.impact === 'high' || e.impact === 'medium')
@@ -824,47 +818,13 @@
       newsInterval = setInterval(renderNewsPanel, 5 * 60 * 1000);
       updateSessionUI();
       sessionInterval = setInterval(updateSessionUI, 60000);
-      
-      // Initialize mode
-      setMode('scalp', document.querySelector('.mode-btn'));
     };
 
-    // دالة الانتقال لصفحة الحساب
     function goToAccount() {
         const accountNav = document.querySelectorAll('.nav-item')[4]; 
         if (accountNav) {
             switchTab('account', accountNav);
         }
-    }
-
-    function setMode(mode, element) {
-        currentMode = mode;
-        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-        if (element) element.classList.add('active');
-        
-        const tfSelector = document.getElementById('tfSelector');
-        tfSelector.innerHTML = '';
-        
-        if (mode === 'scalp') {
-            tfSelector.innerHTML = `
-                <button class="tf-btn active" onclick="selectTF('1min', this)">M1</button>
-                <button class="tf-btn" onclick="selectTF('3min', this)">M3</button>
-                <button class="tf-btn" onclick="selectTF('5min', this)">M5</button>
-            `;
-            currentTF = '1min';
-            maxSL = 70; 
-        } else {
-            tfSelector.innerHTML = `
-                <button class="tf-btn active" onclick="selectTF('15min', this)">M15</button>
-                <button class="tf-btn" onclick="selectTF('30min', this)">M30</button>
-                <button class="tf-btn" onclick="selectTF('1h', this)">H1</button>
-                <button class="tf-btn" onclick="selectTF('4h', this)">H4</button>
-                <button class="tf-btn" onclick="selectTF('1day', this)">D1</button>
-            `;
-            currentTF = '15min';
-            maxSL = 150; 
-        }
-        loadChartData(currentTF);
     }
 
     function showForgotPassword() { document.getElementById('loginBox').style.display = 'none'; document.getElementById('forgotBox').style.display = 'block'; }
@@ -1010,8 +970,8 @@
     }
 
     async function fetchChartDataFromSource(tf) {
-        const intervalMap = { '1min': '1min', '3min': '3min', '5min': '5min', '15min': '15min', '30min': '30min', '1h': '1h', '4h': '4h', '1day': '1day' };
-        const tdTf = intervalMap[tf] || '5min';
+        const intervalMap = { '15min': '15min', '30min': '30min', '1h': '1h', '4h': '4h', '1day': '1day' };
+        const tdTf = intervalMap[tf] || '15min';
         const symbolMap = { 'XAU/USD': 'XAU/USD' };
         const symbol = symbolMap[currentAsset];
 
@@ -1265,7 +1225,7 @@
       const pipSize = getPipSize(currentAsset); const maxSLPips = parseInt(maxSL); const maxSLPrice = maxSLPips * pipSize;
       
       // فرض الحد الأدنى للـ SL
-      const minSLPips = currentMode === 'scalp' ? 20 : 50;
+      const minSLPips = 50; // Fixed for Swing
       const minSLPrice = minSLPips * pipSize;
       let slDistance = Math.abs(entry - sl);
       
@@ -1300,7 +1260,7 @@
     function startAutopilot() {
       if (autopilotInterval) clearInterval(autopilotInterval);
       autopilotInterval = setInterval(async () => {
-        let tfsToScan = currentMode === 'scalp' ? ['1min', '3min', '5min'] : ['15min', '30min', '1h', '4h', '1day'];
+        let tfsToScan = ['15min', '30min', '1h', '4h', '1day'];
         
         for (let tf of tfsToScan) {
             const key = getTradeKey(currentAsset, tf);
@@ -1320,10 +1280,10 @@
             if (!setup) continue;
             
             let { dir, entry, sl } = setup;
-            const pipSize = getPipSize(currentAsset); const maxSLPips = currentMode === 'scalp' ? 70 : 150; const maxSLPrice = maxSLPips * pipSize;
+            const pipSize = getPipSize(currentAsset); const maxSLPips = 150; const maxSLPrice = maxSLPips * pipSize;
             
             // فرض الحد الأدنى للـ SL
-            const minSLPips = currentMode === 'scalp' ? 20 : 50;
+            const minSLPips = 50;
             const minSLPrice = minSLPips * pipSize;
             let slDistance = Math.abs(entry - sl);
             
@@ -1427,7 +1387,7 @@
             return;
         }
 
-        const tfOrder = { '1min': 1, '3min': 2, '5min': 3, '15min': 4, '30min': 5, '1h': 6, '4h': 7, '1day': 8 };
+        const tfOrder = { '15min': 4, '30min': 5, '1h': 6, '4h': 7, '1day': 8 };
         let sortedTrades = activeKeys.map(k => activeTrades[k]).sort((a, b) => {
             let tfA = tfOrder[a.tf] || 99;
             let tfB = tfOrder[b.tf] || 99;
@@ -1477,10 +1437,7 @@
         const assetName = asset.replace('/USD', ''); 
         
         let tfName = tf;
-        if (tf === '1min') tfName = '1m';
-        else if (tf === '3min') tfName = '3m';
-        else if (tf === '5min') tfName = '5m';
-        else if (tf === '15min') tfName = '15m';
+        if (tf === '15min') tfName = '15m';
         else if (tf === '30min') tfName = '30m';
         else if (tf === '1h') tfName = '1h';
         else if (tf === '4h') tfName = '4h';
