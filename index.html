@@ -1562,24 +1562,44 @@
     function renderHistoryList() {
       const list = document.getElementById('historyList');
       let filteredHistory = tradeHistory;
-      if (currentFilter === 'today') { const today = new Date().toLocaleDateString(); filteredHistory = filteredHistory.filter(t => (t.date || '').startsWith(today)); }
-      else if (currentFilter === 'week') { const oneWeekAgo = new Date(); oneWeekAgo.setDate(oneWeekAgo.getDate() - 7); filteredHistory = filteredHistory.filter(t => new Date(t.date) >= oneWeekAgo); }
-      if (currentAssetFilter !== 'all') { filteredHistory = filteredHistory.filter(t => (t.asset || 'XAU/USD') === currentAssetFilter); }
+      
+      if (currentFilter === 'today') { 
+        const today = new Date().toLocaleDateString(); 
+        filteredHistory = filteredHistory.filter(t => (t.date || '').startsWith(today)); 
+      }
+      else if (currentFilter === 'week') { 
+        const oneWeekAgo = new Date(); 
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7); 
+        filteredHistory = filteredHistory.filter(t => new Date(t.date) >= oneWeekAgo); 
+      }
+      
+      if (currentAssetFilter !== 'all') { 
+        filteredHistory = filteredHistory.filter(t => (t.asset || 'XAU/USD') === currentAssetFilter); 
+      }
+      
       let wins = 0; let totalPips = 0; const totalTrades = filteredHistory.length;
       let assetStats = {}; let sessionStats = {};
+      
       filteredHistory.forEach(t => {
-        const asset = t.asset || 'XAU/USD'; const pipSize = getPipSize(asset); const pips = Math.abs(t.exitPrice - t.entry) / pipSize;
+        const asset = t.asset || 'XAU/USD'; 
+        const pipSize = getPipSize(asset); 
+        const pips = Math.abs(t.exitPrice - t.entry) / pipSize;
+        
         if (!assetStats[asset]) assetStats[asset] = 0;
+        
         const hour = new Date(t.date).getUTCHours();
         let sessionName = "Other";
         if (hour >= 7 && hour < 12) sessionName = "London";
         else if (hour >= 12 && hour < 16) sessionName = "London/NY";
         else if (hour >= 16 && hour < 21) sessionName = "New York";
         else if (hour >= 21 || hour < 6) sessionName = "Sydney/Tokyo";
+        
         if (!sessionStats[sessionName]) sessionStats[sessionName] = 0;
+        
         if (t.result === 'WIN') { wins++; totalPips += pips; assetStats[asset] += pips; sessionStats[sessionName] += pips; }
         else { totalPips -= pips; assetStats[asset] -= pips; sessionStats[sessionName] -= pips; }
       });
+      
       const winRate = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : 0;
       document.getElementById('statWinRate').innerText = winRate + '%';
       document.getElementById('statTotalTrades').innerText = totalTrades;
@@ -1590,21 +1610,69 @@
       const pipsElement = document.getElementById('statTotalPips');
       pipsElement.innerText = (totalPips > 0 ? '+' : '') + totalPips.toFixed(0);
       pipsElement.className = totalPips >= 0 ? 'stat-value text-green' : 'stat-value text-red';
+      
       let bestAsset = '-'; let maxAssetPips = -Infinity;
       for (const [a, p] of Object.entries(assetStats)) { if (p > maxAssetPips) { maxAssetPips = p; bestAsset = a; } }
       if (bestAsset !== '-') bestAsset = bestAsset.replace('/USD', '') + ` (+${maxAssetPips.toFixed(0)} pips)`;
+      
       let bestSession = '-'; let maxSessionPips = -Infinity;
       for (const [s, p] of Object.entries(sessionStats)) { if (p > maxSessionPips) { maxSessionPips = p; bestSession = s; } }
       if (bestSession !== '-') bestSession = bestSession + ` (+${maxSessionPips.toFixed(0)} pips)`;
+      
       document.getElementById('statBestAsset').innerText = bestAsset;
       document.getElementById('statBestSession').innerText = bestSession;
-      if (totalTrades === 0) { list.innerHTML = `<div class="loading">${dict[currentLang].noHistory}</div>`; return; }
-      const sorted = [...filteredHistory].reverse(); let html = '';
+      
+      let html = `<button class="btn-refresh" style="margin-bottom: 10px; background: #333;" onclick="addDummyTrade()"><i class="fa-solid fa-flask"></i> Add Demo Trade (Test History)</button>`;
+      
+      if (totalTrades === 0) { 
+        html += `<div class="loading">${dict[currentLang].noHistory}</div>`; 
+        list.innerHTML = html;
+        return; 
+      }
+      
+      const sorted = [...filteredHistory].reverse();
       sorted.forEach(t => {
-        const asset = t.asset || 'XAU/USD'; const isBuy = t.dir === 'BUY'; const isWin = t.result === 'WIN'; const color = isWin ? 'text-green' : 'text-red'; const sign = isWin ? '+' : '-'; const pipSize = getPipSize(asset); const pips = (Math.abs(t.exitPrice - t.entry) / pipSize).toFixed(0);
-        html += `<div class="history-item" onclick="openJournal('${t.id}')"><div><div class="history-title">${asset} <span class="${isBuy ? 'text-green' : 'text-red'}">${isBuy ? dict[currentLang].buy : dict[currentLang].sell}</span></div><div class="history-date">${t.date} | ${t.tf.toUpperCase()}</div></div><div><div class="history-result ${color}">${t.result}</div><div class="history-date ${color}">${sign}${pips} Pips</div></div></div>`;
+        const asset = t.asset || 'XAU/USD'; 
+        const isBuy = t.dir === 'BUY'; 
+        const isWin = t.result === 'WIN'; 
+        const color = isWin ? 'text-green' : 'text-red'; 
+        const sign = isWin ? '+' : '-'; 
+        const pipSize = getPipSize(asset); 
+        const pips = (Math.abs(t.exitPrice - t.entry) / pipSize).toFixed(0);
+        
+        html += `<div class="history-item" onclick="openJournal('${t.id}')">
+                  <div>
+                    <div class="history-title">${asset} <span class="${isBuy ? 'text-green' : 'text-red'}">${isBuy ? dict[currentLang].buy : dict[currentLang].sell}</span></div>
+                    <div class="history-date">${t.date} | ${t.tf.toUpperCase()}</div>
+                  </div>
+                  <div>
+                    <div class="history-result ${color}">${t.result}</div>
+                    <div class="history-date ${color}">${sign}${pips} Pips</div>
+                  </div>
+                </div>`;
       });
       list.innerHTML = html;
+    }
+
+    function addDummyTrade() {
+        const dummy = {
+            id: Date.now(),
+            asset: currentAsset,
+            dir: Math.random() > 0.5 ? 'BUY' : 'SELL',
+            entry: 4100,
+            sl: 4090,
+            tp1: 4120,
+            tp2: 4130,
+            tf: currentTF,
+            result: Math.random() > 0.5 ? 'WIN' : 'LOSS',
+            exitPrice: Math.random() > 0.5 ? 4130 : 4090,
+            date: new Date().toLocaleString(),
+            journal: "Demo trade for testing."
+        };
+        tradeHistory.push(dummy);
+        localStorage.setItem('tradeHistory', JSON.stringify(tradeHistory));
+        renderHistoryList();
+        alert("Demo Trade Added to History!");
     }
 
     function openJournal(id) { journalEntryId = id; const trade = tradeHistory.find(t => String(t.id) === String(id)); if (trade) { document.getElementById('journalInput').value = trade.journal || ""; document.getElementById('journalModal').style.display = 'flex'; } }
