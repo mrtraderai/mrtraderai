@@ -133,7 +133,6 @@
     .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
     .price-box { background: rgba(0,0,0,0.6); border: 1px solid #222; border-radius: 12px; padding: 12px; }
     .price-box.tp1 { border-color: #26a69a44; }
-    .price-box.tp2 { border-color: #26a69a88; }
     .price-label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; }
     .price-val { font-size: 18px; font-weight: 700; margin-top: 4px; }
     .pips-sub { font-size: 11px; font-weight: 600; margin-top: 4px; }
@@ -149,7 +148,6 @@
     .status-active-buy { background: #26a69a22; color: #26a69a; border: 1px solid #26a69a55; animation: pulse 2s infinite; }
     .status-active-sell { background: #ef535022; color: #ef5350; border: 1px solid #ef535055; animation: pulse 2s infinite; }
     .status-tp1 { background: #ffd70033; color: #ffd700; border: 1px solid #ffd70077; }
-    .status-tp2 { background: #26a69a55; color: #fff; border: 1px solid #26a69a; }
 
     .risk-note-live { font-size: 12px; color: #888; background: #111; padding: 12px; border-radius: 8px; border: 1px solid #222; margin-top: 16px; line-height: 1.5; }
     .btn-copy-signal { display: block; width: 100%; margin-top: 12px; padding: 10px; background: #333; color: #fff; text-align: center; border-radius: 8px; font-weight: 700; cursor: pointer; border: 1px solid #555; }
@@ -548,7 +546,7 @@
 
     function calculateKellyLot(winRate) {
         let W = winRate / 100;
-        let R = 2.0; // Updated to 2.0 for 1:2 RR
+        let R = 2.0; 
         let kelly = W - ((1 - W) / R);
         if (kelly < 0.01) return 0.01;
         if (kelly > 0.1) return 0.10;
