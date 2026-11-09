@@ -59,7 +59,7 @@
 
     /* Dashboard (Home) */
     .welcome-card { background: linear-gradient(135deg, #1a1505 0%, #000 100%); border: 1px solid #ffd70055; border-radius: 16px; padding: 20px; margin-bottom: 20px; text-align: center; }
-    .welcome-card img { width: 100%; border-radius: 12px; margin-bottom: 15px; opacity: 0.9; height: 150px; object-fit: cover; }
+    .welcome-card img { width: 100%; border-radius: 12px; margin-bottom: 15px; opacity: 0.9; }
     .welcome-card h2 { margin: 0 0 8px 0; color: #ffd700; font-size: 20px; }
     .welcome-card p { margin: 0; color: #ccc; font-size: 13px; line-height: 1.5; }
     .quick-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
@@ -228,8 +228,6 @@
     .active-stat-box { background: #111; border: 1px solid #222; border-radius: 12px; padding: 12px; text-align: center; }
     .active-stat-title { font-size: 10px; color: #888; text-transform: uppercase; font-weight: 700; }
     .active-stat-val { font-size: 20px; font-weight: 700; margin-top: 4px; }
-
-    .btn-backtest { width: 100%; padding: 12px; background: #2196f3; color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; margin-bottom: 16px; display: flex; justify-content: center; align-items: center; gap: 8px; }
   </style>
 </head>
 <body id="mainBody">
@@ -398,9 +396,6 @@
           <div class="active-stat-val" id="statTotalTradesActive">0</div>
         </div>
       </div>
-
-      <!-- Backtest Button -->
-      <button class="btn-backtest" onclick="runBacktest()"><i class="fa-solid fa-flask"></i> Run Backtest (Last 7 Days)</button>
 
       <!-- Tabs -->
       <div class="active-tabs">
@@ -916,13 +911,6 @@
             });
             localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
         }
-        
-        // Update Home Stats
-        let wins = tradeHistory.filter(t => t.result === 'WIN').length;
-        let total = tradeHistory.length;
-        let wr = total > 0 ? ((wins/total)*100).toFixed(0) : 0;
-        document.getElementById('homeTotalTrades').innerText = total;
-        document.getElementById('homeWinRate').innerText = wr + '%';
     }
 
     async function saveActiveTradeToCloud(trade) {
@@ -1522,4 +1510,167 @@
             osc.type = 'sine'; osc.frequency.setValueAtTime(880, ctx.currentTime);
             gain.gain.setValueAtTime(0.1, ctx.currentTime);
             osc.start(); osc.stop(ctx.currentTime + 0.3);
-            if (navig
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        } catch (e) {}
+    }
+
+    function addNotification(dir, entry, sl, tp1, tp2, tf, asset) {
+      const newNotif = { id: Date.now(), dir, entry, sl, tp1, tp2, tf, asset: asset || currentAsset, date: new Date().toLocaleString() };
+      notifications.unshift(newNotif);
+      localStorage.setItem('notifications', JSON.stringify(notifications));
+      renderNotifBadge(); renderNotifList(); playAlert();
+      const dp = asset === 'EUR/USD' ? 5 : 2;
+      sendPushNotification(`🚨 New ${dir} Signal: ${asset}`, `Entry: ${entry.toFixed(dp)} | SL: ${sl.toFixed(dp)} | ${tf.toUpperCase()}`);
+    }
+
+    function renderNotifBadge() {
+      const badge = document.getElementById('notifBadge');
+      if (notifications.length > 0) { badge.style.display = 'block'; badge.innerText = notifications.length; }
+      else badge.style.display = 'none';
+    }
+
+    function renderNotifList() {
+      const list = document.getElementById('notifList');
+      if (notifications.length === 0) { list.innerHTML = '<div class="loading">No notifications yet.</div>'; return; }
+      let html = '';
+      notifications.forEach(n => {
+        const asset = n.asset || 'XAU/USD'; const dp = asset === 'EUR/USD' ? 5 : 2;
+        html += `<div class="notif-item ${n.dir === 'BUY' ? 'buy' : 'sell'}"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="font-weight:700;">${asset} <span class="${n.dir === 'BUY' ? 'text-green' : 'text-red'}">${n.dir}</span> (${n.tf})</span><span style="font-size:10px; color:#888;">${n.date}</span></div><div style="font-size:12px; color:#ccc;">Entry: ${n.entry.toFixed(dp)} | SL: ${n.sl.toFixed(dp)}</div></div>`;
+      });
+      list.innerHTML = html;
+    }
+
+    function openNotifications() { document.getElementById('notifModal').style.display = 'flex'; renderNotifList(); }
+    function closeNotifications() { document.getElementById('notifModal').style.display = 'none'; }
+    function clearAllNotifications() { notifications = []; localStorage.setItem('notifications', JSON.stringify(notifications)); renderNotifBadge(); renderNotifList(); }
+
+    function setFilter(filter, element) { currentFilter = filter; document.querySelectorAll('.stats-filter .filter-btn').forEach(btn => btn.classList.remove('active')); element.classList.add('active'); renderHistoryList(); }
+    function setAssetFilter(asset, element) { currentAssetFilter = asset; document.querySelectorAll('#page-history > div:nth-child(2) .filter-btn').forEach(btn => btn.classList.remove('active')); element.classList.add('active'); renderHistoryList(); }
+
+    async function clearHistory() {
+      if (confirm("Are you sure you want to clear all trade history? This cannot be undone.")) {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) { await supabaseClient.from('trade_history').delete().eq('user_id', session.user.id); }
+        tradeHistory = []; localStorage.removeItem('tradeHistory'); renderHistoryList();
+      }
+    }
+
+    function renderHistoryList() {
+        // No longer needed (integrated into Closed Signals)
+    }
+
+    function openJournal(id) { journalEntryId = id; const trade = tradeHistory.find(t => String(t.id) === String(id)); if (trade) { document.getElementById('journalInput').value = trade.journal || ""; document.getElementById('journalModal').style.display = 'flex'; } }
+    function closeJournal(event) { if (event && event.target.id !== 'journalModal' && !event.target.classList.contains('journal-box') && event.target.tagName !== 'BUTTON') return; document.getElementById('journalModal').style.display = 'none'; }
+    async function saveJournal() {
+        const text = document.getElementById('journalInput').value;
+        const tradeIndex = tradeHistory.findIndex(t => String(t.id) === String(journalEntryId));
+        if (tradeIndex > -1) {
+            tradeHistory[tradeIndex].journal = text; localStorage.setItem('tradeHistory', JSON.stringify(tradeHistory));
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) { await supabaseClient.from('trade_history').update({ journal: text }).eq('id', journalEntryId); }
+            alert('Journal saved!');
+            renderClosedSignalsList();
+        }
+        document.getElementById('journalModal').style.display = 'none';
+    }
+
+    function startLiveTracking() {
+      if (liveInterval) clearInterval(liveInterval);
+      liveInterval = setInterval(async () => {
+        let activeKeys = Object.keys(activeTrades); if (activeKeys.length === 0) return;
+        const assets = [...new Set(activeKeys.map(k => k.split('__')[0]))];
+        let refreshActiveList = false;
+        
+        for (let asset of assets) {
+            try {
+                let livePrice = null;
+                const targetApi = `https://api.twelvedata.com/price?symbol=${asset}&apikey=${TWELVEDATA_API_KEY}`;
+                const res = await fetch(`https://throbbing-sky-4f73.bacharrachiini97.workers.dev/?url=${encodeURIComponent(targetApi)}`);
+                const data = await res.json();
+                
+                if (data && data.price) {
+                    livePrice = parseFloat(data.price);
+                }
+
+                if (!livePrice || isNaN(livePrice)) continue;
+                const assetKeys = activeKeys.filter(k => k.startsWith(asset + '__'));
+                for (let key of assetKeys) {
+                    let trade = activeTrades[key]; if (!trade) continue;
+                    let changed = false; let result = null; let exitPrice = 0;
+                    
+                    if (trade.status === 'PENDING') { 
+                        if (trade.dir === 'BUY' && livePrice <= trade.entry) { trade.status = 'ACTIVE'; changed = true; } 
+                        if (trade.dir === 'SELL' && livePrice >= trade.entry) { trade.status = 'ACTIVE'; changed = true; } 
+                    }
+                    
+                    // If TP1 Hit -> Move SL to Entry (Break Even)
+                    if (trade.status === 'ACTIVE' && !trade.tp1Hit) { 
+                        if (trade.dir === 'BUY' && livePrice >= trade.tp1) { 
+                            trade.tp1Hit = true; 
+                            trade.sl = trade.entry; // Move SL to entry
+                            changed = true; 
+                        } 
+                        if (trade.dir === 'SELL' && livePrice <= trade.tp1) { 
+                            trade.tp1Hit = true; 
+                            trade.sl = trade.entry; // Move SL to entry
+                            changed = true; 
+                        } 
+                    }
+                    
+                    if (changed) { 
+                        await saveActiveTradeToCloud(trade); 
+                        localStorage.setItem('activeTrades', JSON.stringify(activeTrades)); 
+                        refreshActiveList = true;
+                    }
+                    
+                    // Check for Close
+                    if (trade.dir === 'BUY') { 
+                        if (livePrice <= trade.sl) { 
+                            result = trade.tp1Hit ? 'BE' : 'LOSS'; 
+                            exitPrice = trade.sl; 
+                        } 
+                        if (livePrice >= trade.tp1) { // Close at TP1
+                            result = 'WIN'; exitPrice = trade.tp1; 
+                        } 
+                    } else { 
+                        if (livePrice >= trade.sl) { 
+                            result = trade.tp1Hit ? 'BE' : 'LOSS'; 
+                            exitPrice = trade.sl; 
+                        } 
+                        if (livePrice <= trade.tp1) { // Close at TP1
+                            result = 'WIN'; exitPrice = trade.tp1; 
+                        } 
+                    }
+                    
+                    if (result) {
+                        const finishedTrade = { ...trade, result: result, exitPrice: exitPrice };
+                        tradeHistory.push(finishedTrade); localStorage.setItem('tradeHistory', JSON.stringify(tradeHistory));
+                        await saveHistoryToCloud(finishedTrade);
+                        delete activeTrades[key]; await deleteActiveTradeFromCloud(key); localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
+                        refreshActiveList = true;
+                        if (result === 'WIN') { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); playAlert(); sendPushNotification(`✅ Take Profit Hit!`, `${asset} ${trade.tf.toUpperCase()} closed in profit.`); }
+                        else if (result === 'BE') { sendPushNotification(`⚖️ Break Even`, `${asset} ${trade.tf.toUpperCase()} closed at entry.`); }
+                        else { sendPushNotification(`❌ Stop Loss Hit`, `${asset} ${trade.tf.toUpperCase()} closed in loss.`); }
+                        if (trade.asset === currentAsset && trade.tf === currentTF) { alert(`SIGNAL HIT ${result === 'WIN' ? 'TAKE PROFIT 1' : (result === 'BE' ? 'BREAK EVEN' : 'STOP LOSS')} on ${asset}!`); location.reload(); }
+                        else { addAutoLog(`${asset} ${trade.tf.toUpperCase()} closed: ${result}`); }
+                        
+                        // Switch to Closed Tab if it happened while viewing
+                        if (document.getElementById('page-active').classList.contains('active')) {
+                            switchActiveTab('closed');
+                        }
+                    }
+                }
+                const curKey = getTradeKey(currentAsset, currentTF);
+                if (activeTrades[curKey] && document.getElementById('page-live').classList.contains('active')) { renderTradeCard(activeTrades[curKey]); }
+            } catch (e) { console.error("Live tracking error:", e); }
+        }
+        
+        if (refreshActiveList) renderActiveSignalsList();
+      }, 15000); 
+    }
+
+    function copyWallet() { navigator.clipboard.writeText('TLgREYohGVK6V9zUS6gNowq2WjPavmfEj3').then(() => alert('Wallet address copied!')).catch(() => alert('Failed to copy')); }
+    function confirmVerify() { return confirm('Have you completed the $49 payment via USDT TRC20?\\n\\nPress OK to open Telegram and send your transaction proof.'); }
+  </script>
+</body>
+</html>
