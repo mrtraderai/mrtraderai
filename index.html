@@ -228,6 +228,8 @@
     .active-stat-box { background: #111; border: 1px solid #222; border-radius: 12px; padding: 12px; text-align: center; }
     .active-stat-title { font-size: 10px; color: #888; text-transform: uppercase; font-weight: 700; }
     .active-stat-val { font-size: 20px; font-weight: 700; margin-top: 4px; }
+
+    .btn-backtest { width: 100%; padding: 12px; background: #2196f3; color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; margin-bottom: 16px; display: flex; justify-content: center; align-items: center; gap: 8px; }
   </style>
 </head>
 <body id="mainBody">
@@ -396,6 +398,9 @@
           <div class="active-stat-val" id="statTotalTradesActive">0</div>
         </div>
       </div>
+
+      <!-- Backtest Button -->
+      <button class="btn-backtest" onclick="runBacktest()"><i class="fa-solid fa-flask"></i> Run Backtest (Last 7 Days)</button>
 
       <!-- Tabs -->
       <div class="active-tabs">
