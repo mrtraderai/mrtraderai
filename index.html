@@ -1711,6 +1711,9 @@
                         if (document.getElementById('page-active').classList.contains('active')) {
                             switchActiveTab('closed');
                         }
+                        
+                        // Trigger Auto-Analyze after trade closes
+                        setTimeout(() => { startAutopilot(); }, 2000);
                     }
                 }
                 const curKey = getTradeKey(currentAsset, currentTF);
