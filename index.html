@@ -833,7 +833,7 @@
       if (!email || !password) return alert('Please enter email and password.');
       const { error } = await supabaseClient.auth.signUp({ 
         email, password,
-        options: { data: { tries_left: 9999, is_pro: true } }
+        options: { data: { tries_left: 5, is_pro: false } }
       });
       if (error) alert("Sign Up Error: " + error.message);
       else alert('Account created! You can now click Login.');
@@ -894,32 +894,56 @@
     }
 
     async function loadUserData(userId) {
-        const { data: histData } = await supabaseClient.from('trade_history').select('*').eq('user_id', userId).order('created_at', { ascending: false });
-        if (histData) {
-            tradeHistory = histData.map(t => ({
-                id: t.id, asset: t.asset || 'XAU/USD', dir: t.direction, entry: t.entry, sl: t.sl, tp1: t.tp1, tp2: t.tp2, tf: t.tf, result: t.result, exitPrice: t.exit_price, date: t.date, journal: t.journal
-            }));
-            localStorage.setItem('tradeHistory', JSON.stringify(tradeHistory));
-        }
-        const { data: activeData } = await supabaseClient.from('active_trades').select('*').eq('user_id', userId);
-        if (activeData) {
-            activeTrades = {};
-            activeData.forEach(t => {
-                const asset = t.asset || 'XAU/USD';
-                const key = getTradeKey(asset, t.tf);
-                activeTrades[key] = { id: t.id, asset, dir: t.direction, entry: t.entry, sl: t.sl, tp1: t.tp1, tp2: t.tp2, tf: t.tf, status: t.status, date: t.date, tp1Hit: t.tp1_hit };
-            });
-            localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
-        }
+        // --- History ---
+        const { data: histData, error: hErr } = await supabaseClient
+            .from('trade_history').select('*')
+            .eq('user_id', userId).order('created_at', { ascending: false });
+        
+        if (hErr) console.error('History load error:', hErr);
+        tradeHistory = (histData || []).map(t => ({
+            id: t.id, asset: t.asset || 'XAU/USD', dir: t.direction,
+            entry: t.entry, sl: t.sl, tp1: t.tp1, tp2: t.tp2, tf: t.tf,
+            result: t.result, exitPrice: t.exit_price, date: t.date, journal: t.journal
+        }));
+        localStorage.setItem('tradeHistory', JSON.stringify(tradeHistory));
+
+        // --- Active ---
+        const { data: activeData, error: aErr } = await supabaseClient
+            .from('active_trades').select('*').eq('user_id', userId);
+        
+        if (aErr) console.error('Active load error:', aErr);
+        activeTrades = {};
+        (activeData || []).forEach(t => {
+            const asset = t.asset || 'XAU/USD';
+            activeTrades[getTradeKey(asset, t.tf)] = {
+                id: t.id, asset, dir: t.direction, entry: t.entry, sl: t.sl,
+                tp1: t.tp1, tp2: t.tp2, tf: t.tf, status: t.status,
+                date: t.date, tp1Hit: t.tp1_hit
+            };
+        });
+        localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
     }
 
     async function saveActiveTradeToCloud(trade) {
         if (!supabaseClient) return;
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) return;
-        await supabaseClient.from('active_trades').upsert({
-            id: trade.id, user_id: session.user.id, asset: trade.asset || currentAsset, direction: trade.dir, entry: trade.entry, sl: trade.sl, tp1: trade.tp1, tp2: trade.tp2, tf: trade.tf, status: trade.status, date: trade.date, tp1_hit: trade.tp1Hit
-        });
+        
+        const { error } = await supabaseClient.from('active_trades').upsert({
+            user_id: session.user.id,
+            asset: trade.asset || currentAsset,
+            direction: trade.dir,
+            entry: trade.entry,
+            sl: trade.sl,
+            tp1: trade.tp1,
+            tp2: trade.tp2,
+            tf: trade.tf,
+            status: trade.status,
+            date: trade.date,
+            tp1_hit: trade.tp1Hit || false,
+        }, { onConflict: 'user_id,asset,tf' });
+        
+        if (error) console.error('Save active error:', error);
     }
 
     async function deleteActiveTradeFromCloud(key) {
@@ -934,9 +958,21 @@
         if (!supabaseClient) return;
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) return;
-        await supabaseClient.from('trade_history').insert({
-            user_id: session.user.id, asset: trade.asset || currentAsset, direction: trade.dir, entry: trade.entry, sl: trade.sl, tp1: trade.tp1, tp2: trade.tp2, tf: trade.tf, result: trade.result, exit_price: trade.exitPrice, date: trade.date, journal: trade.journal || ""
+        const { error } = await supabaseClient.from('trade_history').insert({
+            user_id: session.user.id,
+            asset: trade.asset || currentAsset,
+            direction: trade.dir,
+            entry: trade.entry,
+            sl: trade.sl,
+            tp1: trade.tp1,
+            tp2: trade.tp2,
+            tf: trade.tf,
+            result: trade.result,
+            exit_price: trade.exitPrice,
+            date: trade.date,
+            journal: trade.journal || ""
         });
+        if (error) console.error('Save history error:', error);
     }
 
     function toggleFilters() { document.getElementById('filterPanel').classList.toggle('active'); }
@@ -1132,21 +1168,17 @@
       }
     }
 
-    // دالة البحث عن الفجوات السعرية (FVG) مع فلتر الهيكل والسيولة
     function findSMCSetup(bars) {
         let setup = null;
         const currentPrice = bars[bars.length - 1].close; 
         
-        // البحث في آخر 60 شمعة
         for (let i = bars.length - 3; i >= Math.max(0, bars.length - 60); i--) {
             const c1 = bars[i]; const c3 = bars[i + 2];
             if (!c1 || !c3) continue;
 
-            // فجوة شراء (Bullish FVG)
             if (c1.high < c3.low) {
                 const fvgMid = (c1.high + c3.low) / 2;
                 if (Math.abs(currentPrice - fvgMid) < (getPipSize(currentAsset) * 50)) {
-                    // فلتر الهيكل: لازم يكون في كسر هيكل صاعد قبل الفجوة
                     let isBos = false;
                     for (let j = i - 1; j >= Math.max(0, i - 10); j--) {
                         if (bars[j].close > bars[j-1].high) { isBos = true; break; }
@@ -1158,11 +1190,9 @@
                     }
                 }
             }
-            // فجوة بيع (Bearish FVG)
             if (c1.low > c3.high) {
                 const fvgMid = (c1.low + c3.high) / 2;
                 if (Math.abs(currentPrice - fvgMid) < (getPipSize(currentAsset) * 50)) {
-                    // فلتر الهيكل: لازم يكون في كسر هيكل هابط قبل الفجوة
                     let isBos = false;
                     for (let j = i - 1; j >= Math.max(0, i - 10); j--) {
                         if (bars[j].close < bars[j-1].low) { isBos = true; break; }
@@ -1193,7 +1223,6 @@
       if (!bars || bars.length === 0) { signalBox.innerHTML = `<div class="loading text-red">Failed to load chart.</div>`; btn.disabled = false; return; }
       const setup = findSMCSetup(bars);
       
-      // رسائل الانتظار التفاعلية
       if (!setup) { 
           const currentPrice = bars[bars.length - 1].close;
           signalBox.innerHTML = `
@@ -1210,8 +1239,7 @@
       let { dir, entry, sl } = setup;
       const pipSize = getPipSize(currentAsset); const maxSLPips = parseInt(maxSL); const maxSLPrice = maxSLPips * pipSize;
       
-      // فرض الحد الأدنى للـ SL
-      const minSLPips = 50; // Fixed for Swing
+      const minSLPips = 50; 
       const minSLPrice = minSLPips * pipSize;
       let slDistance = Math.abs(entry - sl);
       
@@ -1224,9 +1252,9 @@
       const slPips = toPips(Math.abs(entry - sl), currentAsset);
       if (slPips > maxSLPips) { signalBox.innerHTML = `<div class="loading text-red">Setup SL too wide.</div>`; btn.disabled = false; return; }
       
-      const risk = Math.abs(entry - sl); const tp1 = dir === 'BUY' ? entry + (risk * 2.0) : entry - (risk * 2.0); // Changed to 2.0
+      const risk = Math.abs(entry - sl); const tp1 = dir === 'BUY' ? entry + (risk * 2.0) : entry - (risk * 2.0);
       
-      activeTrades[key] = { id: Date.now(), asset: currentAsset, dir, entry, sl, tp1, tp2: tp1, tf: currentTF, status: 'PENDING', date: new Date().toLocaleString(), tp1Hit: false }; // tp2 = tp1 to keep structure but not used
+      activeTrades[key] = { id: Date.now(), asset: currentAsset, dir, entry, sl, tp1, tp2: tp1, tf: currentTF, status: 'PENDING', date: new Date().toLocaleString(), tp1Hit: false };
       
       addNotification(dir, entry, sl, tp1, tp1, currentTF, currentAsset);
       await saveActiveTradeToCloud(activeTrades[key]);
@@ -1270,7 +1298,6 @@
             let { dir, entry, sl } = setup;
             const pipSize = getPipSize(currentAsset); const maxSLPips = 150; const maxSLPrice = maxSLPips * pipSize;
             
-            // فرض الحد الأدنى للـ SL
             const minSLPips = 50;
             const minSLPrice = minSLPips * pipSize;
             let slDistance = Math.abs(entry - sl);
@@ -1285,7 +1312,7 @@
             for (const t of recentHistory) { if ((t.asset || 'XAU/USD') === currentAsset && t.tf === tf && Math.abs(t.entry - entry) < pipSize * 10) { isDuplicate = true; break; } }
             if (isDuplicate) continue;
             
-            const risk = Math.abs(entry - sl); const tp1 = dir === 'BUY' ? entry + (risk * 2.0) : entry - (risk * 2.0); // Changed to 2.0
+            const risk = Math.abs(entry - sl); const tp1 = dir === 'BUY' ? entry + (risk * 2.0) : entry - (risk * 2.0);
             
             activeTrades[key] = { id: Date.now(), asset: currentAsset, dir, entry, sl, tp1, tp2: tp1, tf: tf, status: 'PENDING', date: new Date().toLocaleString(), tp1Hit: false };
             
@@ -1426,7 +1453,6 @@
         
         let closedTrades = [...tradeHistory].sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        // Stats Calculation
         let totalClosed = closedTrades.length;
         let wins = closedTrades.filter(t => t.result === 'WIN').length;
         let winRate = totalClosed > 0 ? ((wins / totalClosed) * 100).toFixed(1) : 0;
@@ -1447,13 +1473,11 @@
             const isWin = trade.result === 'WIN';
             const isBE = trade.result === 'BE';
             
-            // Color based on result
             let cardBorderColor = isWin ? '#26a69a' : (isBE ? '#2196f3' : '#ef5350');
             let cardBgColor = isWin ? 'rgba(38, 166, 154, 0.05)' : (isBE ? 'rgba(33, 150, 243, 0.05)' : 'rgba(239, 83, 80, 0.05)');
             let badgeClass = isWin ? 'badge-tp2' : (isBE ? 'badge-be' : 'badge-sl');
             let resultText = isWin ? 'WIN (TP)' : (isBE ? 'BREAK EVEN' : 'LOSS (SL)');
             
-            // Pips Calculation
             const pipSize = getPipSize(asset);
             const pips = Math.round(Math.abs(trade.exitPrice - trade.entry) / pipSize);
 
@@ -1603,16 +1627,15 @@
                         if (trade.dir === 'SELL' && livePrice >= trade.entry) { trade.status = 'ACTIVE'; changed = true; } 
                     }
                     
-                    // If TP1 Hit -> Move SL to Entry (Break Even)
                     if (trade.status === 'ACTIVE' && !trade.tp1Hit) { 
                         if (trade.dir === 'BUY' && livePrice >= trade.tp1) { 
                             trade.tp1Hit = true; 
-                            trade.sl = trade.entry; // Move SL to entry
+                            trade.sl = trade.entry; 
                             changed = true; 
                         } 
                         if (trade.dir === 'SELL' && livePrice <= trade.tp1) { 
                             trade.tp1Hit = true; 
-                            trade.sl = trade.entry; // Move SL to entry
+                            trade.sl = trade.entry; 
                             changed = true; 
                         } 
                     }
@@ -1623,13 +1646,12 @@
                         refreshActiveList = true;
                     }
                     
-                    // Check for Close
                     if (trade.dir === 'BUY') { 
                         if (livePrice <= trade.sl) { 
                             result = trade.tp1Hit ? 'BE' : 'LOSS'; 
                             exitPrice = trade.sl; 
                         } 
-                        if (livePrice >= trade.tp1) { // Close at TP1
+                        if (livePrice >= trade.tp1) { 
                             result = 'WIN'; exitPrice = trade.tp1; 
                         } 
                     } else { 
@@ -1637,7 +1659,7 @@
                             result = trade.tp1Hit ? 'BE' : 'LOSS'; 
                             exitPrice = trade.sl; 
                         } 
-                        if (livePrice <= trade.tp1) { // Close at TP1
+                        if (livePrice <= trade.tp1) { 
                             result = 'WIN'; exitPrice = trade.tp1; 
                         } 
                     }
@@ -1651,10 +1673,10 @@
                         if (result === 'WIN') { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); playAlert(); sendPushNotification(`✅ Take Profit Hit!`, `${asset} ${trade.tf.toUpperCase()} closed in profit.`); }
                         else if (result === 'BE') { sendPushNotification(`⚖️ Break Even`, `${asset} ${trade.tf.toUpperCase()} closed at entry.`); }
                         else { sendPushNotification(`❌ Stop Loss Hit`, `${asset} ${trade.tf.toUpperCase()} closed in loss.`); }
+                        
                         if (trade.asset === currentAsset && trade.tf === currentTF) { alert(`SIGNAL HIT ${result === 'WIN' ? 'TAKE PROFIT 1' : (result === 'BE' ? 'BREAK EVEN' : 'STOP LOSS')} on ${asset}!`); location.reload(); }
                         else { addAutoLog(`${asset} ${trade.tf.toUpperCase()} closed: ${result}`); }
                         
-                        // Switch to Closed Tab if it happened while viewing
                         if (document.getElementById('page-active').classList.contains('active')) {
                             switchActiveTab('closed');
                         }
