@@ -322,10 +322,7 @@
 
         <div class="trend-row" id="trendRow">
           <div class="trend-box" id="t-m15">M15</div>
-          <div class="trend-box" id="t-m30">M30</div>
           <div class="trend-box" id="t-h1">1H</div>
-          <div class="trend-box" id="t-h4">4H</div>
-          <div class="trend-box" id="t-d1">1D</div>
         </div>
         <div class="general-trend-bar" id="generalTrendBar">Analyzing General Trend...</div>
       </div>
@@ -361,10 +358,7 @@
 
       <div class="tf-selector" id="tfSelector">
         <button class="tf-btn active" onclick="selectTF('15min', this)">M15</button>
-        <button class="tf-btn" onclick="selectTF('30min', this)">M30</button>
         <button class="tf-btn" onclick="selectTF('1h', this)">H1</button>
-        <button class="tf-btn" onclick="selectTF('4h', this)">H4</button>
-        <button class="tf-btn" onclick="selectTF('1day', this)">D1</button>
       </div>
       <button class="btn-analyze" id="btnAnalyze" onclick="startAnalysis()">⚡ ANALYZE MARKET</button>
       <div id="chart-container">
@@ -973,7 +967,7 @@
     }
 
     async function fetchChartDataFromSource(tf) {
-        const intervalMap = { '15min': '15min', '30min': '30min', '1h': '1h', '4h': '4h', '1day': '1day' };
+        const intervalMap = { '15min': '15min', '1h': '1h' };
         const tdTf = intervalMap[tf] || '15min';
         const symbolMap = { 'XAU/USD': 'XAU/USD' };
         const symbol = symbolMap[currentAsset];
@@ -996,8 +990,8 @@
     }
 
     async function updateGeneralTrend() {
-        const tfs = ['15min', '30min', '1h', '4h', '1day'];
-        const ids = ['t-m15', 't-m30', 't-h1', 't-h4', 't-d1'];
+        const tfs = ['15min', '1h'];
+        const ids = ['t-m15', 't-h1'];
         let bullCount = 0, bearCount = 0;
         for (let i = 0; i < tfs.length; i++) {
             try {
@@ -1015,8 +1009,8 @@
             } catch(e) { console.error(e); }
         }
         const trendBar = document.getElementById('generalTrendBar');
-        if (bullCount >= 3) { generalTrend = "BULLISH"; trendBar.className = "general-trend-bar bull"; trendBar.innerText = `GENERAL TREND: BULLISH (${bullCount}/5)`; }
-        else if (bearCount >= 3) { generalTrend = "BEARISH"; trendBar.className = "general-trend-bar bear"; trendBar.innerText = `GENERAL TREND: BEARISH (${bearCount}/5)`; }
+        if (bullCount >= 2) { generalTrend = "BULLISH"; trendBar.className = "general-trend-bar bull"; trendBar.innerText = `GENERAL TREND: BULLISH (${bullCount}/2)`; }
+        else if (bearCount >= 2) { generalTrend = "BEARISH"; trendBar.className = "general-trend-bar bear"; trendBar.innerText = `GENERAL TREND: BEARISH (${bearCount}/2)`; }
         else { generalTrend = "NEUTRAL"; trendBar.className = "general-trend-bar"; trendBar.innerText = `GENERAL TREND: NEUTRAL / RANGING`; }
     }
 
@@ -1170,17 +1164,15 @@
       
       const barsM15 = await fetchChartDataFromSource('15min');
       const barsH1 = await fetchChartDataFromSource('1h');
-      const barsD1 = await fetchChartDataFromSource('1day');
 
-      if (!barsM15 || !barsH1 || !barsD1) { signalBox.innerHTML = `<div class="loading text-red">Failed to load chart data.</div>`; btn.disabled = false; return; }
+      if (!barsM15 || !barsH1) { signalBox.innerHTML = `<div class="loading text-red">Failed to load chart data.</div>`; btn.disabled = false; return; }
       
       const setupM15 = findSMCSetup(barsM15);
       const setupH1 = findSMCSetup(barsH1);
-      const setupD1 = findSMCSetup(barsD1);
       
-      if (setupM15 && setupH1 && setupD1 && (setupM15.dir === setupH1.dir && setupH1.dir === setupD1.dir)) {
+      if (setupM15 && setupH1 && (setupM15.dir === setupH1.dir)) {
           const dir = setupM15.dir;
-          const entry = (setupM15.entry + setupH1.entry + setupD1.entry) / 3;
+          const entry = (setupM15.entry + setupH1.entry) / 2;
           const pipSize = getPipSize(currentAsset);
 
           let slM15 = setupM15.sl;
@@ -1193,12 +1185,7 @@
           const maxSLH1 = dir === 'BUY' ? entry - (150 * pipSize) : entry + (150 * pipSize);
           if (dir === 'BUY') finalSLH1 = Math.max(minSLH1, Math.min(maxSLH1, finalSLH1)); else finalSLH1 = Math.min(minSLH1, Math.max(maxSLH1, finalSLH1));
 
-          let finalSLD1 = setupD1.sl;
-          const minSLD1 = dir === 'BUY' ? entry - (100 * pipSize) : entry + (100 * pipSize);
-          const maxSLD1 = dir === 'BUY' ? entry - (200 * pipSize) : entry + (200 * pipSize);
-          if (dir === 'BUY') finalSLD1 = Math.max(minSLD1, Math.min(maxSLD1, finalSLD1)); else finalSLD1 = Math.min(minSLD1, Math.max(maxSLD1, finalSLD1));
-
-          let finalSL = (slM15 + finalSLH1 + finalSLD1) / 3;
+          let finalSL = (slM15 + finalSLH1) / 2;
           const risk = Math.abs(entry - finalSL);
           const tp1 = dir === 'BUY' ? entry + (risk * 2.0) : entry - (risk * 2.0);
 
@@ -1215,7 +1202,7 @@
               <div style="text-align:center; padding: 20px 0;">
                 <i class="fa-solid fa-hourglass-half" style="font-size: 30px; color: #ffd700; margin-bottom: 10px;"></i>
                 <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Waiting for Confluence</div>
-                <div style="font-size: 12px; color: #888;">No agreement between M15, H1, D1. Waiting for price <strong style="color: #fff;">${currentPrice.toFixed(2)}</strong></div>
+                <div style="font-size: 12px; color: #888;">No agreement between M15, H1. Waiting for price <strong style="color: #fff;">${currentPrice.toFixed(2)}</strong></div>
               </div>
             </div>`;
       }
@@ -1246,16 +1233,14 @@
         
         const barsM15 = await fetchChartDataFromSource('15min');
         const barsH1 = await fetchChartDataFromSource('1h');
-        const barsD1 = await fetchChartDataFromSource('1day');
-        if (!barsM15 || !barsH1 || !barsD1) return;
+        if (!barsM15 || !barsH1) return;
         
         const setupM15 = findSMCSetup(barsM15);
         const setupH1 = findSMCSetup(barsH1);
-        const setupD1 = findSMCSetup(barsD1);
         
-        if (setupM15 && setupH1 && setupD1 && (setupM15.dir === setupH1.dir && setupH1.dir === setupD1.dir)) {
+        if (setupM15 && setupH1 && (setupM15.dir === setupH1.dir)) {
             const dir = setupM15.dir;
-            const entry = (setupM15.entry + setupH1.entry + setupD1.entry) / 3;
+            const entry = (setupM15.entry + setupH1.entry) / 2;
             const pipSize = getPipSize(currentAsset);
 
             let slM15 = setupM15.sl;
@@ -1268,12 +1253,7 @@
             const maxSLH1 = dir === 'BUY' ? entry - (150 * pipSize) : entry + (150 * pipSize);
             if (dir === 'BUY') finalSLH1 = Math.max(minSLH1, Math.min(maxSLH1, finalSLH1)); else finalSLH1 = Math.min(minSLH1, Math.max(maxSLH1, finalSLH1));
 
-            let finalSLD1 = setupD1.sl;
-            const minSLD1 = dir === 'BUY' ? entry - (100 * pipSize) : entry + (100 * pipSize);
-            const maxSLD1 = dir === 'BUY' ? entry - (200 * pipSize) : entry + (200 * pipSize);
-            if (dir === 'BUY') finalSLD1 = Math.max(minSLD1, Math.min(maxSLD1, finalSLD1)); else finalSLD1 = Math.min(minSLD1, Math.max(maxSLD1, finalSLD1));
-
-            let finalSL = (slM15 + finalSLH1 + finalSLD1) / 3;
+            let finalSL = (slM15 + finalSLH1) / 2;
             const risk = Math.abs(entry - finalSL);
             const tp1 = dir === 'BUY' ? entry + (risk * 2.0) : entry - (risk * 2.0);
             
@@ -1360,7 +1340,7 @@
             list.innerHTML = `<div class="loading" style="text-align:center; padding: 20px; color:#888;">No active signals right now. Waiting for setup...</div>`;
             return;
         }
-        const tfOrder = { '15min': 4, '30min': 5, '1h': 6, '4h': 7, '1day': 8, 'Merged': 9 };
+        const tfOrder = { '15min': 4, '1h': 6, 'Merged': 9 };
         let sortedTrades = activeKeys.map(k => activeTrades[k]).sort((a, b) => {
             let tfA = tfOrder[a.tf] || 99, tfB = tfOrder[b.tf] || 99;
             if (tfA !== tfB) return tfA - tfB;
@@ -1440,10 +1420,7 @@
         const assetName = asset.replace('/USD', ''); 
         let tfName = tf;
         if (tf === '15min') tfName = '15m';
-        else if (tf === '30min') tfName = '30m';
         else if (tf === '1h') tfName = '1h';
-        else if (tf === '4h') tfName = '4h';
-        else if (tf === '1day') tfName = '1d';
         const text = `${assetName} ${dir} LIMIT\nEntry: ${entry.toFixed(dp)}\nSL: ${sl.toFixed(dp)}\nTP1: ${tp1.toFixed(dp)}\n\n${tfName} timeframe`;
         navigator.clipboard.writeText(text).then(() => alert("Trade Copied!")).catch(err => { console.error("Clipboard Error: ", err); alert("Failed to copy."); });
     }
