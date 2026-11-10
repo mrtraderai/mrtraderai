@@ -894,7 +894,7 @@
     }
 
     async function loadUserData(userId) {
-        // --- History ---
+        // --- 1. جلب سجل الصفقات (History) ---
         const { data: histData, error: hErr } = await supabaseClient
             .from('trade_history').select('*')
             .eq('user_id', userId).order('created_at', { ascending: false });
@@ -907,21 +907,28 @@
         }));
         localStorage.setItem('tradeHistory', JSON.stringify(tradeHistory));
 
-        // --- Active ---
+        // --- 2. جلب الصفقات النشطة (Active Trades) ---
         const { data: activeData, error: aErr } = await supabaseClient
             .from('active_trades').select('*').eq('user_id', userId);
         
         if (aErr) console.error('Active load error:', aErr);
+        
+        // تصفير المصفوفة عشان نمنع أي تكرار من الداتا القديمة
         activeTrades = {};
-        (activeData || []).forEach(t => {
-            const asset = t.asset || 'XAU/USD';
-            activeTrades[getTradeKey(asset, t.tf)] = {
-                id: t.id, asset, dir: t.direction, entry: t.entry, sl: t.sl,
-                tp1: t.tp1, tp2: t.tp2, tf: t.tf, status: t.status,
-                date: t.date, tp1Hit: t.tp1_hit
-            };
-        });
+        
+        if (activeData && activeData.length > 0) {
+            activeData.forEach(t => {
+                const asset = t.asset || 'XAU/USD';
+                activeTrades[getTradeKey(asset, t.tf)] = {
+                    id: t.id, asset, dir: t.direction, entry: t.entry, sl: t.sl,
+                    tp1: t.tp1, tp2: t.tp2, tf: t.tf, status: t.status,
+                    date: t.date, tp1Hit: t.tp1_hit
+                };
+            });
+        }
+        
         localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
+        renderActiveSignalsList();
     }
 
     async function saveActiveTradeToCloud(trade) {
