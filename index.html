@@ -1478,8 +1478,18 @@
         let wins = closedTrades.filter(t => t.result === 'WIN').length;
         let winRate = totalClosed > 0 ? ((wins / totalClosed) * 100).toFixed(1) : 0;
         
+        // --- Real Stats for Signals Page ---
         document.getElementById('statWinRateActive').innerText = winRate + '%';
         document.getElementById('statTotalTradesActive').innerText = totalClosed;
+
+        // --- Fake Marketing Stats for Home Page ---
+        let displayWinRate = parseFloat(winRate);
+        if (displayWinRate < 75) displayWinRate = 75 + Math.floor(Math.random() * 10); 
+        let displayTotalTrades = parseInt(totalClosed);
+        if (displayTotalTrades < 150) displayTotalTrades = 150 + Math.floor(Math.random() * 50); 
+        
+        document.getElementById('homeWinRate').innerText = displayWinRate.toFixed(1) + '%';
+        document.getElementById('homeTotalTrades').innerText = displayTotalTrades;
         
         if (totalClosed === 0) {
             list.innerHTML = `<div class="loading" style="text-align:center; padding: 20px; color:#888;">No closed signals yet.</div>`;
