@@ -302,8 +302,6 @@
     <!-- Live Page -->
     <div id="page-live" class="page" style="padding: 0;">
       
-      <!-- Removed Mode Selector -->
-
       <div class="top-bar">
         <div class="top-row">
           <select id="assetSelector" class="asset-select" onchange="changeAsset()">
@@ -638,6 +636,22 @@
         }
     }
 
+    // Telegram Integration
+    async function sendToTelegram(message) {
+        try {
+            await fetch('https://wdexwfoplycblaxmrfws.supabase.co/functions/v1/send-telegram', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer sb_publishable_6U7d-ihEr1ivc362mhkDeQ_2suPM3gy'
+                },
+                body: JSON.stringify({ message })
+            });
+        } catch (e) {
+            console.error('Telegram send error:', e);
+        }
+    }
+
     function getSessionData() {
         const now = new Date();
         const utcHour = now.getUTCHours();
@@ -894,39 +908,22 @@
     }
 
     async function loadUserData(userId) {
-        // --- 1. جلب سجل الصفقات (History) ---
-        const { data: histData, error: hErr } = await supabaseClient
-            .from('trade_history').select('*')
-            .eq('user_id', userId).order('created_at', { ascending: false });
-        
+        const { data: histData, error: hErr } = await supabaseClient.from('trade_history').select('*').eq('user_id', userId).order('created_at', { ascending: false });
         if (hErr) console.error('History load error:', hErr);
         tradeHistory = (histData || []).map(t => ({
-            id: t.id, asset: t.asset || 'XAU/USD', dir: t.direction,
-            entry: t.entry, sl: t.sl, tp1: t.tp1, tp2: t.tp2, tf: t.tf,
-            result: t.result, exitPrice: t.exit_price, date: t.date, journal: t.journal
+            id: t.id, asset: t.asset || 'XAU/USD', dir: t.direction, entry: t.entry, sl: t.sl, tp1: t.tp1, tp2: t.tp2, tf: t.tf, result: t.result, exitPrice: t.exit_price, date: t.date, journal: t.journal
         }));
         localStorage.setItem('tradeHistory', JSON.stringify(tradeHistory));
 
-        // --- 2. جلب الصفقات النشطة (Active Trades) ---
-        const { data: activeData, error: aErr } = await supabaseClient
-            .from('active_trades').select('*').eq('user_id', userId);
-        
+        const { data: activeData, error: aErr } = await supabaseClient.from('active_trades').select('*').eq('user_id', userId);
         if (aErr) console.error('Active load error:', aErr);
-        
-        // تصفير المصفوفة عشان نمنع أي تكرار من الداتا القديمة
         activeTrades = {};
-        
         if (activeData && activeData.length > 0) {
             activeData.forEach(t => {
                 const asset = t.asset || 'XAU/USD';
-                activeTrades[getTradeKey(asset, t.tf)] = {
-                    id: t.id, asset, dir: t.direction, entry: t.entry, sl: t.sl,
-                    tp1: t.tp1, tp2: t.tp2, tf: t.tf, status: t.status,
-                    date: t.date, tp1Hit: t.tp1_hit
-                };
+                activeTrades[getTradeKey(asset, t.tf)] = { id: t.id, asset, dir: t.direction, entry: t.entry, sl: t.sl, tp1: t.tp1, tp2: t.tp2, tf: t.tf, status: t.status, date: t.date, tp1Hit: t.tp1_hit };
             });
         }
-        
         localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
         renderActiveSignalsList();
     }
@@ -935,21 +932,9 @@
         if (!supabaseClient) return;
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) return;
-        
         const { error } = await supabaseClient.from('active_trades').upsert({
-            user_id: session.user.id,
-            asset: trade.asset || currentAsset,
-            direction: trade.dir,
-            entry: trade.entry,
-            sl: trade.sl,
-            tp1: trade.tp1,
-            tp2: trade.tp2,
-            tf: trade.tf,
-            status: trade.status,
-            date: trade.date,
-            tp1_hit: trade.tp1Hit || false,
+            user_id: session.user.id, asset: trade.asset || currentAsset, direction: trade.dir, entry: trade.entry, sl: trade.sl, tp1: trade.tp1, tp2: trade.tp2, tf: trade.tf, status: trade.status, date: trade.date, tp1_hit: trade.tp1Hit || false,
         }, { onConflict: 'user_id,asset,tf' });
-        
         if (error) console.error('Save active error:', error);
     }
 
@@ -966,18 +951,7 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) return;
         const { error } = await supabaseClient.from('trade_history').insert({
-            user_id: session.user.id,
-            asset: trade.asset || currentAsset,
-            direction: trade.dir,
-            entry: trade.entry,
-            sl: trade.sl,
-            tp1: trade.tp1,
-            tp2: trade.tp2,
-            tf: trade.tf,
-            result: trade.result,
-            exit_price: trade.exitPrice,
-            date: trade.date,
-            journal: trade.journal || ""
+            user_id: session.user.id, asset: trade.asset || currentAsset, direction: trade.dir, entry: trade.entry, sl: trade.sl, tp1: trade.tp1, tp2: trade.tp2, tf: trade.tf, result: trade.result, exit_price: trade.exitPrice, date: trade.date, journal: trade.journal || ""
         });
         if (error) console.error('Save history error:', error);
     }
@@ -1007,22 +981,12 @@
         try {
             const targetApi = `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=${tdTf}&outputsize=300&apikey=${TWELVEDATA_API_KEY}`;
             const res = await fetch(`https://throbbing-sky-4f73.bacharrachiini97.workers.dev/?url=${encodeURIComponent(targetApi)}`);
-            
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             const data = await res.json();
-            
-            if (!data || !data.values || data.values.length === 0) {
-                throw new Error("No data returned from TwelveData");
-            }
-
+            if (!data || !data.values || data.values.length === 0) throw new Error("No data returned from TwelveData");
             return data.values.map(item => ({
-                time: new Date(item.datetime).getTime() / 1000, 
-                open: parseFloat(item.open), 
-                high: parseFloat(item.high),
-                low: parseFloat(item.low), 
-                close: parseFloat(item.close)
+                time: new Date(item.datetime).getTime() / 1000, open: parseFloat(item.open), high: parseFloat(item.high), low: parseFloat(item.low), close: parseFloat(item.close)
             })).reverse(); 
-
         } catch (e) {
             console.error("Chart fetch error:", e);
             const errEl = document.getElementById('chartError');
@@ -1035,7 +999,6 @@
         const tfs = ['15min', '30min', '1h', '4h', '1day'];
         const ids = ['t-m15', 't-m30', 't-h1', 't-h4', 't-d1'];
         let bullCount = 0, bearCount = 0;
-
         for (let i = 0; i < tfs.length; i++) {
             try {
                 const bars = await fetchChartDataFromSource(tfs[i]);
@@ -1051,7 +1014,6 @@
                 else el.className = "trend-box";
             } catch(e) { console.error(e); }
         }
-
         const trendBar = document.getElementById('generalTrendBar');
         if (bullCount >= 3) { generalTrend = "BULLISH"; trendBar.className = "general-trend-bar bull"; trendBar.innerText = `GENERAL TREND: BULLISH (${bullCount}/5)`; }
         else if (bearCount >= 3) { generalTrend = "BEARISH"; trendBar.className = "general-trend-bar bear"; trendBar.innerText = `GENERAL TREND: BEARISH (${bearCount}/5)`; }
@@ -1059,36 +1021,20 @@
     }
 
     const dict = {
-      en: { 
-        analyze: "⚡ ANALYZE MARKET", loading: "Press Analyze to scan, or wait for Auto.", scanning: "Scanning FVG & OB...", 
-        buy: "BUY LIMIT", sell: "SELL LIMIT", activeBuy: "ACTIVE BUY", activeSell: "ACTIVE SELL", 
-        tp1hit: "TP1 HIT", tp2hit: "TP2 HIT", pending: "PENDING (WAIT)", entry: "SNIPER ENTRY", 
-        sl: "STOP LOSS", tp1: "TAKE PROFIT 1", tp2: "TAKE PROFIT 2", 
-        home: "Home", live: "Live", active: "Signals", account: "Account", history: "History", auto: "Auto",
-        noHistory: "No previous trades yet.", waitBuy: "WAITING FOR BUY AT", waitSell: "WAITING FOR SELL AT" 
-      },
-      ar: { 
-        analyze: "⚡ تحليل السوق", loading: "اضغط تحليل، أو انتظر الأوتو.", scanning: "جاري تحليل FVG و OB...", 
-        buy: "شراء معلق", sell: "بيع معلق", activeBuy: "شراء نشط", activeSell: "بيع نشط", 
-        tp1hit: "تم تحقيق الهدف 1", tp2hit: "تم تحقيق الهدف 2", pending: "معلق (انتظار)", entry: "الدخول", 
-        sl: "وقف خسارة", tp1: "هدف 1", tp2: "هدف 2", 
-        home: "الرئيسية", live: "مباشر", active: "الإشارات", account: "الحساب", history: "السجل", auto: "أوتو",
-        noHistory: "لا يوجد صفقات سابقة.", waitBuy: "في انتظار شراء عند", waitSell: "في انتظار بيع عند" 
-      }
+      en: { analyze: "⚡ ANALYZE MARKET", loading: "Press Analyze to scan, or wait for Auto.", scanning: "Scanning FVG & OB...", buy: "BUY LIMIT", sell: "SELL LIMIT", activeBuy: "ACTIVE BUY", activeSell: "ACTIVE SELL", tp1hit: "TP1 HIT", tp2hit: "TP2 HIT", pending: "PENDING (WAIT)", entry: "SNIPER ENTRY", sl: "STOP LOSS", tp1: "TAKE PROFIT 1", tp2: "TAKE PROFIT 2", home: "Home", live: "Live", active: "Signals", account: "Account", history: "History", auto: "Auto", noHistory: "No previous trades yet.", waitBuy: "WAITING FOR BUY AT", waitSell: "WAITING FOR SELL AT" },
+      ar: { analyze: "⚡ تحليل السوق", loading: "اضغط تحليل، أو انتظر الأوتو.", scanning: "جاري تحليل FVG و OB...", buy: "شراء معلق", sell: "بيع معلق", activeBuy: "شراء نشط", activeSell: "بيع نشط", tp1hit: "تم تحقيق الهدف 1", tp2hit: "تم تحقيق الهدف 2", pending: "معلق (انتظار)", entry: "الدخول", sl: "وقف خسارة", tp1: "هدف 1", tp2: "هدف 2", home: "الرئيسية", live: "مباشر", active: "الإشارات", account: "الحساب", history: "السجل", auto: "أوتو", noHistory: "لا يوجد صفقات سابقة.", waitBuy: "في انتظار شراء عند", waitSell: "في انتظار بيع عند" }
     };
 
     function applyLanguage() {
       document.getElementById('langBtn2').innerText = currentLang === 'en' ? 'AR' : 'EN';
       if (currentLang === 'ar') document.getElementById('mainBody').classList.add('rtl'); else document.getElementById('mainBody').classList.remove('rtl');
       const el = document.getElementById('loadingText'); if (el) el.innerText = dict[currentLang].loading;
-      
       const navs = document.querySelectorAll('.nav-text');
       if (navs[0]) navs[0].innerText = dict[currentLang].home;
       if (navs[1]) navs[1].innerText = dict[currentLang].live;
       if (navs[2]) navs[2].innerText = dict[currentLang].active;
       if (navs[3]) navs[3].innerText = dict[currentLang].auto;
       if (navs[4]) navs[4].innerText = dict[currentLang].account;
-      
       const key = getTradeKey(currentAsset, currentTF);
       if (activeTrades[key]) renderTradeCard(activeTrades[key]); 
       renderActiveSignalsList();
@@ -1106,9 +1052,7 @@
         rightPriceScale: { borderColor: '#222' },
         autoSize: true,
       });
-      candleSeries = chart.addCandlestickSeries({
-        upColor: '#ffd700', downColor: '#555', borderUpColor: '#ffd700', borderDownColor: '#555', wickUpColor: '#ffd700', wickDownColor: '#555',
-      });
+      candleSeries = chart.addCandlestickSeries({ upColor: '#ffd700', downColor: '#555', borderUpColor: '#ffd700', borderDownColor: '#555', wickUpColor: '#ffd700', wickDownColor: '#555' });
       applyLanguage();
       setTimeout(async () => {
         await loadChartData(currentTF);
@@ -1154,21 +1098,17 @@
       const now = Date.now();
       if (chartCache[cacheKey] && (now - chartCache[cacheKey].time < 60000) && !isManualRefresh) {
         candleSeries.setData(chartCache[cacheKey].bars);
-        // Zoom In: Show only last 30 bars
         chart.timeScale().setVisibleLogicalRange({ from: chartCache[cacheKey].bars.length - 30, to: chartCache[cacheKey].bars.length + 5 });
         return chartCache[cacheKey].bars;
       }
       try {
         const bars = await fetchChartDataFromSource(tf);
-        
         if (!bars || bars.length === 0 || isNaN(bars[0].close) || bars[0].close === 0) {
             if (errEl) { errEl.innerText = "⚠️ Data error. Retrying..."; errEl.style.display = 'block'; }
             return null;
         }
-
         chartCache[cacheKey] = { bars, time: now };
         candleSeries.setData(bars);
-        // Zoom In: Show only last 30 bars
         chart.timeScale().setVisibleLogicalRange({ from: bars.length - 30, to: bars.length + 5 });
         return bars;
       } catch (e) { 
@@ -1180,48 +1120,34 @@
     function findSMCSetup(bars) {
         let setup = null;
         const currentPrice = bars[bars.length - 1].close; 
-        
-        // Improved SMC Logic: Look for a strong Break of Structure (BOS) followed by FVG
         for (let i = bars.length - 3; i >= Math.max(0, bars.length - 80); i--) {
             const c1 = bars[i]; const c3 = bars[i + 2];
             if (!c1 || !c3) continue;
-
-            // Bullish FVG
             if (c1.high < c3.low) {
                 const fvgMid = (c1.high + c3.low) / 2;
-                // Price must be near the FVG
                 if (Math.abs(currentPrice - fvgMid) < (getPipSize(currentAsset) * 40)) {
-                    let isBos = false;
-                    let swingLow = Infinity;
+                    let isBos = false, swingLow = Infinity;
                     for (let j = i - 1; j >= Math.max(0, i - 15); j--) {
                         if (bars[j].low < swingLow) swingLow = bars[j].low;
                         if (bars[j].close > bars[j-1].high) { isBos = true; break; }
                     }
-                    
                     if (isBos && (generalTrend === "BULLISH" || generalTrend === "NEUTRAL")) { 
-                        // Entry at FVG top, SL below the recent swing low
                         let slPrice = Math.min(c1.low, swingLow) - (getPipSize(currentAsset) * 5);
-                        setup = { dir: "BUY", entry: c1.high, sl: slPrice }; 
-                        break; 
+                        setup = { dir: "BUY", entry: c1.high, sl: slPrice }; break; 
                     }
                 }
             }
-            // Bearish FVG
             if (c1.low > c3.high) {
                 const fvgMid = (c1.low + c3.high) / 2;
                 if (Math.abs(currentPrice - fvgMid) < (getPipSize(currentAsset) * 40)) {
-                    let isBos = false;
-                    let swingHigh = -Infinity;
+                    let isBos = false, swingHigh = -Infinity;
                     for (let j = i - 1; j >= Math.max(0, i - 15); j--) {
                         if (bars[j].high > swingHigh) swingHigh = bars[j].high;
                         if (bars[j].close < bars[j-1].low) { isBos = true; break; }
                     }
-                    
                     if (isBos && (generalTrend === "BEARISH" || generalTrend === "NEUTRAL")) { 
-                        // Entry at FVG bottom, SL above the recent swing high
                         let slPrice = Math.max(c1.high, swingHigh) + (getPipSize(currentAsset) * 5);
-                        setup = { dir: "SELL", entry: c1.low, sl: slPrice }; 
-                        break; 
+                        setup = { dir: "SELL", entry: c1.low, sl: slPrice }; break; 
                     }
                 }
             }
@@ -1237,51 +1163,62 @@
       await new Promise(r => setTimeout(r, 800));
       const blockedNews = await getBlockingNews(30, 30);
       if (blockedNews) { signalBox.innerHTML = `<div class="loading text-red">⛔ News soon: ${blockedNews.title}. Wait until it passes.</div>`; btn.disabled = false; return; }
-      const key = getTradeKey(currentAsset, currentTF);
+
+      const key = getTradeKey(currentAsset, 'MERGED');
       if (activeTrades[key]) { delete activeTrades[key]; await deleteActiveTradeFromCloud(key); localStorage.setItem('activeTrades', JSON.stringify(activeTrades)); }
       priceLines.forEach(l => candleSeries.removePriceLine(l)); priceLines = [];
-      const bars = await loadChartData(currentTF);
-      if (!bars || bars.length === 0) { signalBox.innerHTML = `<div class="loading text-red">Failed to load chart.</div>`; btn.disabled = false; return; }
-      const setup = findSMCSetup(bars);
       
-      if (!setup) { 
-          const currentPrice = bars[bars.length - 1].close;
+      const barsM15 = await fetchChartDataFromSource('15min');
+      const barsH1 = await fetchChartDataFromSource('1h');
+      const barsD1 = await fetchChartDataFromSource('1day');
+
+      if (!barsM15 || !barsH1 || !barsD1) { signalBox.innerHTML = `<div class="loading text-red">Failed to load chart data.</div>`; btn.disabled = false; return; }
+      
+      const setupM15 = findSMCSetup(barsM15);
+      const setupH1 = findSMCSetup(barsH1);
+      const setupD1 = findSMCSetup(barsD1);
+      
+      if (setupM15 && setupH1 && setupD1 && (setupM15.dir === setupH1.dir && setupH1.dir === setupD1.dir)) {
+          const dir = setupM15.dir;
+          const entry = (setupM15.entry + setupH1.entry + setupD1.entry) / 3;
+          const pipSize = getPipSize(currentAsset);
+
+          let slM15 = setupM15.sl;
+          const minSLM15 = dir === 'BUY' ? entry - (50 * pipSize) : entry + (50 * pipSize);
+          const maxSLM15 = dir === 'BUY' ? entry - (100 * pipSize) : entry + (100 * pipSize);
+          if (dir === 'BUY') slM15 = Math.max(minSLM15, Math.min(maxSLM15, slM15)); else slM15 = Math.min(minSLM15, Math.max(maxSLM15, slM15));
+
+          let finalSLH1 = setupH1.sl;
+          const minSLH1 = dir === 'BUY' ? entry - (80 * pipSize) : entry + (80 * pipSize);
+          const maxSLH1 = dir === 'BUY' ? entry - (150 * pipSize) : entry + (150 * pipSize);
+          if (dir === 'BUY') finalSLH1 = Math.max(minSLH1, Math.min(maxSLH1, finalSLH1)); else finalSLH1 = Math.min(minSLH1, Math.max(maxSLH1, finalSLH1));
+
+          let finalSLD1 = setupD1.sl;
+          const minSLD1 = dir === 'BUY' ? entry - (100 * pipSize) : entry + (100 * pipSize);
+          const maxSLD1 = dir === 'BUY' ? entry - (200 * pipSize) : entry + (200 * pipSize);
+          if (dir === 'BUY') finalSLD1 = Math.max(minSLD1, Math.min(maxSLD1, finalSLD1)); else finalSLD1 = Math.min(minSLD1, Math.max(maxSLD1, finalSLD1));
+
+          let finalSL = (slM15 + finalSLH1 + finalSLD1) / 3;
+          const risk = Math.abs(entry - finalSL);
+          const tp1 = dir === 'BUY' ? entry + (risk * 2.0) : entry - (risk * 2.0);
+
+          activeTrades[key] = { id: Date.now(), asset: currentAsset, dir, entry, sl: finalSL, tp1, tp2: tp1, tf: 'Merged', status: 'PENDING', date: new Date().toLocaleString(), tp1Hit: false };
+          addNotification(dir, entry, finalSL, tp1, tp1, 'Merged', currentAsset);
+          await saveActiveTradeToCloud(activeTrades[key]);
+          localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
+          renderTradeCard(activeTrades[key]);
+          renderActiveSignalsList(); 
+      } else {
+          const currentPrice = barsM15[barsM15.length - 1].close;
           signalBox.innerHTML = `
             <div class="signal-card sell" style="background: rgba(0,0,0,0.5); border-color: #333;">
               <div style="text-align:center; padding: 20px 0;">
                 <i class="fa-solid fa-hourglass-half" style="font-size: 30px; color: #ffd700; margin-bottom: 10px;"></i>
-                <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Waiting for Setup</div>
-                <div style="font-size: 12px; color: #888;">No valid FVG found. Waiting for liquidity at price <strong style="color: #fff;">${currentPrice.toFixed(2)}</strong></div>
+                <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Waiting for Confluence</div>
+                <div style="font-size: 12px; color: #888;">No agreement between M15, H1, D1. Waiting for price <strong style="color: #fff;">${currentPrice.toFixed(2)}</strong></div>
               </div>
             </div>`;
-          btn.disabled = false; return; 
       }
-      
-      let { dir, entry, sl } = setup;
-      const pipSize = getPipSize(currentAsset); const maxSLPips = parseInt(maxSL); const maxSLPrice = maxSLPips * pipSize;
-      
-      const minSLPips = 50; 
-      const minSLPrice = minSLPips * pipSize;
-      let slDistance = Math.abs(entry - sl);
-      
-      if (slDistance < minSLPrice) {
-          sl = dir === 'BUY' ? entry - minSLPrice : entry + minSLPrice;
-      } else if (slDistance > maxSLPrice) {
-          sl = dir === 'BUY' ? entry - maxSLPrice : entry + maxSLPrice;
-      }
-
-      const slPips = toPips(Math.abs(entry - sl), currentAsset);
-      if (slPips > maxSLPips) { signalBox.innerHTML = `<div class="loading text-red">Setup SL too wide.</div>`; btn.disabled = false; return; }
-      
-      const risk = Math.abs(entry - sl); const tp1 = dir === 'BUY' ? entry + (risk * 2.0) : entry - (risk * 2.0);
-      
-      activeTrades[key] = { id: Date.now(), asset: currentAsset, dir, entry, sl, tp1, tp2: tp1, tf: currentTF, status: 'PENDING', date: new Date().toLocaleString(), tp1Hit: false };
-      
-      addNotification(dir, entry, sl, tp1, tp1, currentTF, currentAsset);
-      await saveActiveTradeToCloud(activeTrades[key]);
-      localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
-      renderTradeCard(activeTrades[key]);
-      renderActiveSignalsList(); 
       btn.disabled = false;
     }
 
@@ -1290,63 +1227,67 @@
       loadChartData(currentTF).then(() => isManualRefresh = false);
       updateGeneralTrend();
       addAutoLog("Manual Refresh Triggered.");
-      const key = getTradeKey(currentAsset, currentTF);
+      const key = getTradeKey(currentAsset, 'Merged');
       if (activeTrades[key]) renderTradeCard(activeTrades[key]);
     }
 
     function startAutopilot() {
       if (autopilotInterval) clearInterval(autopilotInterval);
       autopilotInterval = setInterval(async () => {
-        let tfsToScan = ['15min', '30min', '1h', '4h', '1day'];
+        const key = getTradeKey(currentAsset, 'Merged');
+        if (activeTrades[key]) return;
         
-        for (let tf of tfsToScan) {
-            const key = getTradeKey(currentAsset, tf);
-            if (activeTrades[key]) continue;
-            
-            const activeSess = getActiveSessions();
-            const canTradeSession = (activeSess.sydney && enabledSessions.sydney) || (activeSess.tokyo && enabledSessions.tokyo) || (activeSess.london && enabledSessions.london) || (activeSess.ny && enabledSessions.ny);
-            if (!canTradeSession) continue;
-            
-            const blockedNews = await getBlockingNews(30, 30);
-            if (blockedNews) { addAutoLog(`⛔ Blocked: News (${blockedNews.title})`); continue; }
-            
-            const bars = await fetchChartDataFromSource(tf);
-            if (!bars || bars.length === 0) continue;
-            
-            const setup = findSMCSetup(bars);
-            if (!setup) continue;
-            
-            let { dir, entry, sl } = setup;
-            const pipSize = getPipSize(currentAsset); const maxSLPips = 150; const maxSLPrice = maxSLPips * pipSize;
-            
-            const minSLPips = 50;
-            const minSLPrice = minSLPips * pipSize;
-            let slDistance = Math.abs(entry - sl);
-            
-            if (slDistance < minSLPrice) {
-                sl = dir === 'BUY' ? entry - minSLPrice : entry + minSLPrice;
-            } else if (slDistance > maxSLPrice) {
-                sl = dir === 'BUY' ? entry - maxSLPrice : entry + maxSLPrice;
-            }
+        const activeSess = getActiveSessions();
+        const canTradeSession = (activeSess.sydney && enabledSessions.sydney) || (activeSess.tokyo && enabledSessions.tokyo) || (activeSess.london && enabledSessions.london) || (activeSess.ny && enabledSessions.ny);
+        if (!canTradeSession) return;
+        
+        const blockedNews = await getBlockingNews(30, 30);
+        if (blockedNews) { addAutoLog(`⛔ Blocked: News (${blockedNews.title})`); return; }
+        
+        const barsM15 = await fetchChartDataFromSource('15min');
+        const barsH1 = await fetchChartDataFromSource('1h');
+        const barsD1 = await fetchChartDataFromSource('1day');
+        if (!barsM15 || !barsH1 || !barsD1) return;
+        
+        const setupM15 = findSMCSetup(barsM15);
+        const setupH1 = findSMCSetup(barsH1);
+        const setupD1 = findSMCSetup(barsD1);
+        
+        if (setupM15 && setupH1 && setupD1 && (setupM15.dir === setupH1.dir && setupH1.dir === setupD1.dir)) {
+            const dir = setupM15.dir;
+            const entry = (setupM15.entry + setupH1.entry + setupD1.entry) / 3;
+            const pipSize = getPipSize(currentAsset);
+
+            let slM15 = setupM15.sl;
+            const minSLM15 = dir === 'BUY' ? entry - (50 * pipSize) : entry + (50 * pipSize);
+            const maxSLM15 = dir === 'BUY' ? entry - (100 * pipSize) : entry + (100 * pipSize);
+            if (dir === 'BUY') slM15 = Math.max(minSLM15, Math.min(maxSLM15, slM15)); else slM15 = Math.min(minSLM15, Math.max(maxSLM15, slM15));
+
+            let finalSLH1 = setupH1.sl;
+            const minSLH1 = dir === 'BUY' ? entry - (80 * pipSize) : entry + (80 * pipSize);
+            const maxSLH1 = dir === 'BUY' ? entry - (150 * pipSize) : entry + (150 * pipSize);
+            if (dir === 'BUY') finalSLH1 = Math.max(minSLH1, Math.min(maxSLH1, finalSLH1)); else finalSLH1 = Math.min(minSLH1, Math.max(maxSLH1, finalSLH1));
+
+            let finalSLD1 = setupD1.sl;
+            const minSLD1 = dir === 'BUY' ? entry - (100 * pipSize) : entry + (100 * pipSize);
+            const maxSLD1 = dir === 'BUY' ? entry - (200 * pipSize) : entry + (200 * pipSize);
+            if (dir === 'BUY') finalSLD1 = Math.max(minSLD1, Math.min(maxSLD1, finalSLD1)); else finalSLD1 = Math.min(minSLD1, Math.max(maxSLD1, finalSLD1));
+
+            let finalSL = (slM15 + finalSLH1 + finalSLD1) / 3;
+            const risk = Math.abs(entry - finalSL);
+            const tp1 = dir === 'BUY' ? entry + (risk * 2.0) : entry - (risk * 2.0);
             
             const recentHistory = tradeHistory.slice(-5); let isDuplicate = false;
-            for (const t of recentHistory) { if ((t.asset || 'XAU/USD') === currentAsset && t.tf === tf && Math.abs(t.entry - entry) < pipSize * 10) { isDuplicate = true; break; } }
-            if (isDuplicate) continue;
-            
-            const risk = Math.abs(entry - sl); const tp1 = dir === 'BUY' ? entry + (risk * 2.0) : entry - (risk * 2.0);
-            
-            activeTrades[key] = { id: Date.now(), asset: currentAsset, dir, entry, sl, tp1, tp2: tp1, tf: tf, status: 'PENDING', date: new Date().toLocaleString(), tp1Hit: false };
-            
-            addNotification(dir, entry, sl, tp1, tp1, tf, currentAsset);
+            for (const t of recentHistory) { if ((t.asset || 'XAU/USD') === currentAsset && t.tf === 'Merged' && Math.abs(t.entry - entry) < pipSize * 10) { isDuplicate = true; break; } }
+            if (isDuplicate) return;
+
+            activeTrades[key] = { id: Date.now(), asset: currentAsset, dir, entry, sl: finalSL, tp1, tp2: tp1, tf: 'Merged', status: 'PENDING', date: new Date().toLocaleString(), tp1Hit: false };
+            addNotification(dir, entry, finalSL, tp1, tp1, 'Merged', currentAsset);
             await saveActiveTradeToCloud(activeTrades[key]);
             localStorage.setItem('activeTrades', JSON.stringify(activeTrades));
-            addAutoLog(`Found FVG ${dir} at ${entry.toFixed(5)} on ${currentAsset} ${tf.toUpperCase()}`);
-            
+            addAutoLog(`Found Merged Confluence ${dir} at ${entry.toFixed(5)}`);
             renderActiveSignalsList();
-            
-            if (document.getElementById('page-live').classList.contains('active') && document.getElementById('assetSelector').value === currentAsset && tf === currentTF) { 
-                renderTradeCard(activeTrades[key]); 
-            }
+            if (document.getElementById('page-live').classList.contains('active')) renderTradeCard(activeTrades[key]);
         }
       }, 30000); 
     }
@@ -1405,10 +1346,8 @@
         activeTabState = tab;
         document.getElementById('tab-btn-active').classList.toggle('active', tab === 'active');
         document.getElementById('tab-btn-closed').classList.toggle('active', tab === 'closed');
-        
         document.getElementById('activeSignalsList').style.display = tab === 'active' ? 'block' : 'none';
         document.getElementById('closedSignalsList').style.display = tab === 'closed' ? 'block' : 'none';
-        
         if (tab === 'active') renderActiveSignalsList();
         else renderClosedSignalsList();
     }
@@ -1416,52 +1355,33 @@
     function renderActiveSignalsList() {
         const list = document.getElementById('activeSignalsList');
         if (!list) return;
-        
         let activeKeys = Object.keys(activeTrades);
-        
         if (activeKeys.length === 0) {
             list.innerHTML = `<div class="loading" style="text-align:center; padding: 20px; color:#888;">No active signals right now. Waiting for setup...</div>`;
             return;
         }
-
-        const tfOrder = { '15min': 4, '30min': 5, '1h': 6, '4h': 7, '1day': 8 };
+        const tfOrder = { '15min': 4, '30min': 5, '1h': 6, '4h': 7, '1day': 8, 'Merged': 9 };
         let sortedTrades = activeKeys.map(k => activeTrades[k]).sort((a, b) => {
-            let tfA = tfOrder[a.tf] || 99;
-            let tfB = tfOrder[b.tf] || 99;
+            let tfA = tfOrder[a.tf] || 99, tfB = tfOrder[b.tf] || 99;
             if (tfA !== tfB) return tfA - tfB;
             return b.id - a.id; 
         });
-
         let html = '';
         sortedTrades.forEach(trade => {
             const isBuy = trade.dir === 'BUY';
             const asset = trade.asset || currentAsset;
             const dp = asset === 'EUR/USD' ? 5 : 2;
-            
             let statusBadge = '';
-            if (trade.tp1Hit) {
-                statusBadge = `<span class="signal-badge badge-tp1">TP1 HIT</span>`;
-            } else if (trade.status === 'ACTIVE') {
-                statusBadge = `<span class="signal-badge badge-active">ACTIVE</span>`;
-            } else {
-                statusBadge = `<span class="signal-badge badge-pending">PENDING</span>`;
-            }
-
+            if (trade.tp1Hit) statusBadge = `<span class="signal-badge badge-tp1">TP1 HIT</span>`;
+            else if (trade.status === 'ACTIVE') statusBadge = `<span class="signal-badge badge-active">ACTIVE</span>`;
+            else statusBadge = `<span class="signal-badge badge-pending">PENDING</span>`;
             html += `
                 <div class="active-signal-card">
                     <div class="signal-time">${trade.date}</div>
                     <div class="signal-asset">${asset} <span class="${isBuy ? 'text-green' : 'text-red'}">${isBuy ? 'BUY' : 'SELL'}</span> (${trade.tf})</div>
-                    <div class="signal-status-row">
-                        <span>Entry: <strong>${trade.entry.toFixed(dp)}</strong></span>
-                        ${statusBadge}
-                    </div>
-                    <div class="signal-status-row" style="color: #888; font-size: 11px;">
-                        <span>SL: ${trade.sl.toFixed(dp)}</span>
-                        <span>TP: ${trade.tp1.toFixed(dp)}</span>
-                    </div>
-                    <button class="btn-copy-active" onclick="copyActiveSignal(${trade.entry}, ${trade.sl}, ${trade.tp1}, '${trade.dir}', '${asset}', '${trade.tf}')">
-                        <i class="fa-solid fa-copy"></i> Copy Trade
-                    </button>
+                    <div class="signal-status-row"><span>Entry: <strong>${trade.entry.toFixed(dp)}</strong></span>${statusBadge}</div>
+                    <div class="signal-status-row" style="color: #888; font-size: 11px;"><span>SL: ${trade.sl.toFixed(dp)}</span><span>TP: ${trade.tp1.toFixed(dp)}</span></div>
+                    <button class="btn-copy-active" onclick="copyActiveSignal(${trade.entry}, ${trade.sl}, ${trade.tp1}, '${trade.dir}', '${asset}', '${trade.tf}')"><i class="fa-solid fa-copy"></i> Copy Trade</button>
                 </div>
             `;
         });
@@ -1471,18 +1391,14 @@
     function renderClosedSignalsList() {
         const list = document.getElementById('closedSignalsList');
         if (!list) return;
-        
         let closedTrades = [...tradeHistory].sort((a, b) => new Date(b.date) - new Date(a.date));
-        
         let totalClosed = closedTrades.length;
         let wins = closedTrades.filter(t => t.result === 'WIN').length;
         let winRate = totalClosed > 0 ? ((wins / totalClosed) * 100).toFixed(1) : 0;
         
-        // --- Real Stats for Signals Page ---
         document.getElementById('statWinRateActive').innerText = winRate + '%';
         document.getElementById('statTotalTradesActive').innerText = totalClosed;
-
-        // --- Fake Marketing Stats for Home Page ---
+        
         let displayWinRate = parseFloat(winRate);
         if (displayWinRate < 75) displayWinRate = 75 + Math.floor(Math.random() * 10); 
         let displayTotalTrades = parseInt(totalClosed);
@@ -1495,35 +1411,24 @@
             list.innerHTML = `<div class="loading" style="text-align:center; padding: 20px; color:#888;">No closed signals yet.</div>`;
             return;
         }
-
         let html = '';
         closedTrades.forEach(trade => {
             const isBuy = trade.dir === 'BUY';
             const asset = trade.asset || currentAsset;
             const dp = asset === 'EUR/USD' ? 5 : 2;
-            const isWin = trade.result === 'WIN';
-            const isBE = trade.result === 'BE';
-            
+            const isWin = trade.result === 'WIN', isBE = trade.result === 'BE';
             let cardBorderColor = isWin ? '#26a69a' : (isBE ? '#2196f3' : '#ef5350');
             let cardBgColor = isWin ? 'rgba(38, 166, 154, 0.05)' : (isBE ? 'rgba(33, 150, 243, 0.05)' : 'rgba(239, 83, 80, 0.05)');
             let badgeClass = isWin ? 'badge-tp2' : (isBE ? 'badge-be' : 'badge-sl');
             let resultText = isWin ? 'WIN (TP)' : (isBE ? 'BREAK EVEN' : 'LOSS (SL)');
-            
             const pipSize = getPipSize(asset);
             const pips = Math.round(Math.abs(trade.exitPrice - trade.entry) / pipSize);
-
             html += `
                 <div class="active-signal-card" style="border-color: ${cardBorderColor}; background: ${cardBgColor};">
                     <div class="signal-time">${trade.date}</div>
                     <div class="signal-asset">${asset} <span class="${isBuy ? 'text-green' : 'text-red'}">${isBuy ? 'BUY' : 'SELL'}</span> (${trade.tf})</div>
-                    <div class="signal-status-row">
-                        <span>Result: <strong class="${isWin ? 'text-green' : (isBE ? 'text-blue' : 'text-red')}">${resultText}</strong></span>
-                        <span class="signal-badge ${badgeClass}">${isWin ? '+' : (isBE ? '' : '-')}${pips} PIPS</span>
-                    </div>
-                    <div class="signal-status-row" style="color: #888; font-size: 11px;">
-                        <span>Entry: ${trade.entry.toFixed(dp)}</span>
-                        <span>Exit: ${trade.exitPrice.toFixed(dp)}</span>
-                    </div>
+                    <div class="signal-status-row"><span>Result: <strong class="${isWin ? 'text-green' : (isBE ? 'text-blue' : 'text-red')}">${resultText}</strong></span><span class="signal-badge ${badgeClass}">${isWin ? '+' : (isBE ? '' : '-')}${pips} PIPS</span></div>
+                    <div class="signal-status-row" style="color: #888; font-size: 11px;"><span>Entry: ${trade.entry.toFixed(dp)}</span><span>Exit: ${trade.exitPrice.toFixed(dp)}</span></div>
                 </div>
             `;
         });
@@ -1533,22 +1438,14 @@
     function copyActiveSignal(entry, sl, tp1, dir, asset, tf) {
         const dp = asset === 'EUR/USD' ? 5 : 2;
         const assetName = asset.replace('/USD', ''); 
-        
         let tfName = tf;
         if (tf === '15min') tfName = '15m';
         else if (tf === '30min') tfName = '30m';
         else if (tf === '1h') tfName = '1h';
         else if (tf === '4h') tfName = '4h';
         else if (tf === '1day') tfName = '1d';
-
         const text = `${assetName} ${dir} LIMIT\nEntry: ${entry.toFixed(dp)}\nSL: ${sl.toFixed(dp)}\nTP1: ${tp1.toFixed(dp)}\n\n${tfName} timeframe`;
-        
-        navigator.clipboard.writeText(text)
-            .then(() => alert("Trade Copied!"))
-            .catch(err => {
-                console.error("Clipboard Error: ", err);
-                alert("Failed to copy. Please check browser permissions.");
-            });
+        navigator.clipboard.writeText(text).then(() => alert("Trade Copied!")).catch(err => { console.error("Clipboard Error: ", err); alert("Failed to copy."); });
     }
 
     function copySignal(entry, sl, tp1, dir, asset, tf) {
@@ -1576,6 +1473,15 @@
       renderNotifBadge(); renderNotifList(); playAlert();
       const dp = asset === 'EUR/USD' ? 5 : 2;
       sendPushNotification(`🚨 New ${dir} Signal: ${asset}`, `Entry: ${entry.toFixed(dp)} | SL: ${sl.toFixed(dp)} | ${tf.toUpperCase()}`);
+
+      const tgMessage = `🚨 <b>New Signal: ${asset}</b>\n\n` +
+                        `📊 <b>Type:</b> ${dir} LIMIT\n` +
+                        `⏱ <b>Timeframe:</b> ${tf.toUpperCase()}\n\n` +
+                        `🟢 <b>Entry:</b> <code>${entry.toFixed(dp)}</code>\n` +
+                        `🔴 <b>Stop Loss:</b> <code>${sl.toFixed(dp)}</code>\n` +
+                        `🎯 <b>Take Profit:</b> <code>${tp1.toFixed(dp)}</code>\n\n` +
+                        `#${asset.replace('/','')} #${dir}`;
+      sendToTelegram(tgMessage);
     }
 
     function renderNotifBadge() {
@@ -1599,9 +1505,6 @@
     function closeNotifications() { document.getElementById('notifModal').style.display = 'none'; }
     function clearAllNotifications() { notifications = []; localStorage.setItem('notifications', JSON.stringify(notifications)); renderNotifBadge(); renderNotifList(); }
 
-    function setFilter(filter, element) { currentFilter = filter; document.querySelectorAll('.stats-filter .filter-btn').forEach(btn => btn.classList.remove('active')); element.classList.add('active'); renderHistoryList(); }
-    function setAssetFilter(asset, element) { currentAssetFilter = asset; document.querySelectorAll('#page-history > div:nth-child(2) .filter-btn').forEach(btn => btn.classList.remove('active')); element.classList.add('active'); renderHistoryList(); }
-
     async function clearHistory() {
       if (confirm("Are you sure you want to clear all trade history? This cannot be undone.")) {
         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -1609,11 +1512,7 @@
         tradeHistory = []; localStorage.removeItem('tradeHistory'); renderHistoryList();
       }
     }
-
-    function renderHistoryList() {
-        // No longer needed (integrated into Closed Signals)
-    }
-
+    function renderHistoryList() {}
     function openJournal(id) { journalEntryId = id; const trade = tradeHistory.find(t => String(t.id) === String(id)); if (trade) { document.getElementById('journalInput').value = trade.journal || ""; document.getElementById('journalModal').style.display = 'flex'; } }
     function closeJournal(event) { if (event && event.target.id !== 'journalModal' && !event.target.classList.contains('journal-box') && event.target.tagName !== 'BUTTON') return; document.getElementById('journalModal').style.display = 'none'; }
     async function saveJournal() {
@@ -1623,8 +1522,7 @@
             tradeHistory[tradeIndex].journal = text; localStorage.setItem('tradeHistory', JSON.stringify(tradeHistory));
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) { await supabaseClient.from('trade_history').update({ journal: text }).eq('id', journalEntryId); }
-            alert('Journal saved!');
-            renderClosedSignalsList();
+            alert('Journal saved!'); renderClosedSignalsList();
         }
         document.getElementById('journalModal').style.display = 'none';
     }
@@ -1642,12 +1540,9 @@
                 const targetApi = `https://api.twelvedata.com/price?symbol=${asset}&apikey=${TWELVEDATA_API_KEY}`;
                 const res = await fetch(`https://throbbing-sky-4f73.bacharrachiini97.workers.dev/?url=${encodeURIComponent(targetApi)}`);
                 const data = await res.json();
-                
-                if (data && data.price) {
-                    livePrice = parseFloat(data.price);
-                }
-
+                if (data && data.price) livePrice = parseFloat(data.price);
                 if (!livePrice || isNaN(livePrice)) continue;
+                
                 const assetKeys = activeKeys.filter(k => k.startsWith(asset + '__'));
                 for (let key of assetKeys) {
                     let trade = activeTrades[key]; if (!trade) continue;
@@ -1657,44 +1552,22 @@
                         if (trade.dir === 'BUY' && livePrice <= trade.entry) { trade.status = 'ACTIVE'; changed = true; } 
                         if (trade.dir === 'SELL' && livePrice >= trade.entry) { trade.status = 'ACTIVE'; changed = true; } 
                     }
-                    
                     if (trade.status === 'ACTIVE' && !trade.tp1Hit) { 
-                        if (trade.dir === 'BUY' && livePrice >= trade.tp1) { 
-                            trade.tp1Hit = true; 
-                            trade.sl = trade.entry; 
-                            changed = true; 
-                        } 
-                        if (trade.dir === 'SELL' && livePrice <= trade.tp1) { 
-                            trade.tp1Hit = true; 
-                            trade.sl = trade.entry; 
-                            changed = true; 
-                        } 
+                        if (trade.dir === 'BUY' && livePrice >= trade.tp1) { trade.tp1Hit = true; trade.sl = trade.entry; changed = true; } 
+                        if (trade.dir === 'SELL' && livePrice <= trade.tp1) { trade.tp1Hit = true; trade.sl = trade.entry; changed = true; } 
                     }
-                    
                     if (changed) { 
                         await saveActiveTradeToCloud(trade); 
                         localStorage.setItem('activeTrades', JSON.stringify(activeTrades)); 
                         refreshActiveList = true;
                     }
-                    
                     if (trade.dir === 'BUY') { 
-                        if (livePrice <= trade.sl) { 
-                            result = trade.tp1Hit ? 'BE' : 'LOSS'; 
-                            exitPrice = trade.sl; 
-                        } 
-                        if (livePrice >= trade.tp1) { 
-                            result = 'WIN'; exitPrice = trade.tp1; 
-                        } 
+                        if (livePrice <= trade.sl) { result = trade.tp1Hit ? 'BE' : 'LOSS'; exitPrice = trade.sl; } 
+                        if (livePrice >= trade.tp1) { result = 'WIN'; exitPrice = trade.tp1; } 
                     } else { 
-                        if (livePrice >= trade.sl) { 
-                            result = trade.tp1Hit ? 'BE' : 'LOSS'; 
-                            exitPrice = trade.sl; 
-                        } 
-                        if (livePrice <= trade.tp1) { 
-                            result = 'WIN'; exitPrice = trade.tp1; 
-                        } 
+                        if (livePrice >= trade.sl) { result = trade.tp1Hit ? 'BE' : 'LOSS'; exitPrice = trade.sl; } 
+                        if (livePrice <= trade.tp1) { result = 'WIN'; exitPrice = trade.tp1; } 
                     }
-                    
                     if (result) {
                         const finishedTrade = { ...trade, result: result, exitPrice: exitPrice };
                         tradeHistory.push(finishedTrade); localStorage.setItem('tradeHistory', JSON.stringify(tradeHistory));
@@ -1708,11 +1581,8 @@
                         if (trade.asset === currentAsset && trade.tf === currentTF) { alert(`SIGNAL HIT ${result === 'WIN' ? 'TAKE PROFIT 1' : (result === 'BE' ? 'BREAK EVEN' : 'STOP LOSS')} on ${asset}!`); location.reload(); }
                         else { addAutoLog(`${asset} ${trade.tf.toUpperCase()} closed: ${result}`); }
                         
-                        if (document.getElementById('page-active').classList.contains('active')) {
-                            switchActiveTab('closed');
-                        }
+                        if (document.getElementById('page-active').classList.contains('active')) switchActiveTab('closed');
                         
-                        // Trigger Auto-Analyze after trade closes
                         setTimeout(() => { startAutopilot(); }, 2000);
                     }
                 }
@@ -1720,7 +1590,6 @@
                 if (activeTrades[curKey] && document.getElementById('page-live').classList.contains('active')) { renderTradeCard(activeTrades[curKey]); }
             } catch (e) { console.error("Live tracking error:", e); }
         }
-        
         if (refreshActiveList) renderActiveSignalsList();
       }, 15000); 
     }
