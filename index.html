@@ -1154,7 +1154,8 @@
       const now = Date.now();
       if (chartCache[cacheKey] && (now - chartCache[cacheKey].time < 60000) && !isManualRefresh) {
         candleSeries.setData(chartCache[cacheKey].bars);
-        chart.timeScale().setVisibleLogicalRange({ from: chartCache[cacheKey].bars.length - 60, to: chartCache[cacheKey].bars.length + 10 });
+        // Zoom In: Show only last 30 bars
+        chart.timeScale().setVisibleLogicalRange({ from: chartCache[cacheKey].bars.length - 30, to: chartCache[cacheKey].bars.length + 5 });
         return chartCache[cacheKey].bars;
       }
       try {
@@ -1167,7 +1168,8 @@
 
         chartCache[cacheKey] = { bars, time: now };
         candleSeries.setData(bars);
-        chart.timeScale().setVisibleLogicalRange({ from: bars.length - 60, to: bars.length + 10 });
+        // Zoom In: Show only last 30 bars
+        chart.timeScale().setVisibleLogicalRange({ from: bars.length - 30, to: bars.length + 5 });
         return bars;
       } catch (e) { 
         if (errEl) { errEl.innerText = "⚠️ Network Error."; errEl.style.display = 'block'; }
@@ -1179,34 +1181,46 @@
         let setup = null;
         const currentPrice = bars[bars.length - 1].close; 
         
-        for (let i = bars.length - 3; i >= Math.max(0, bars.length - 60); i--) {
+        // Improved SMC Logic: Look for a strong Break of Structure (BOS) followed by FVG
+        for (let i = bars.length - 3; i >= Math.max(0, bars.length - 80); i--) {
             const c1 = bars[i]; const c3 = bars[i + 2];
             if (!c1 || !c3) continue;
 
+            // Bullish FVG
             if (c1.high < c3.low) {
                 const fvgMid = (c1.high + c3.low) / 2;
-                if (Math.abs(currentPrice - fvgMid) < (getPipSize(currentAsset) * 50)) {
+                // Price must be near the FVG
+                if (Math.abs(currentPrice - fvgMid) < (getPipSize(currentAsset) * 40)) {
                     let isBos = false;
-                    for (let j = i - 1; j >= Math.max(0, i - 10); j--) {
+                    let swingLow = Infinity;
+                    for (let j = i - 1; j >= Math.max(0, i - 15); j--) {
+                        if (bars[j].low < swingLow) swingLow = bars[j].low;
                         if (bars[j].close > bars[j-1].high) { isBos = true; break; }
                     }
                     
                     if (isBos && (generalTrend === "BULLISH" || generalTrend === "NEUTRAL")) { 
-                        setup = { dir: "BUY", entry: c1.high, sl: c1.low - getPipSize(currentAsset) * 5 }; 
+                        // Entry at FVG top, SL below the recent swing low
+                        let slPrice = Math.min(c1.low, swingLow) - (getPipSize(currentAsset) * 5);
+                        setup = { dir: "BUY", entry: c1.high, sl: slPrice }; 
                         break; 
                     }
                 }
             }
+            // Bearish FVG
             if (c1.low > c3.high) {
                 const fvgMid = (c1.low + c3.high) / 2;
-                if (Math.abs(currentPrice - fvgMid) < (getPipSize(currentAsset) * 50)) {
+                if (Math.abs(currentPrice - fvgMid) < (getPipSize(currentAsset) * 40)) {
                     let isBos = false;
-                    for (let j = i - 1; j >= Math.max(0, i - 10); j--) {
+                    let swingHigh = -Infinity;
+                    for (let j = i - 1; j >= Math.max(0, i - 15); j--) {
+                        if (bars[j].high > swingHigh) swingHigh = bars[j].high;
                         if (bars[j].close < bars[j-1].low) { isBos = true; break; }
                     }
                     
                     if (isBos && (generalTrend === "BEARISH" || generalTrend === "NEUTRAL")) { 
-                        setup = { dir: "SELL", entry: c1.low, sl: c1.high + getPipSize(currentAsset) * 5 }; 
+                        // Entry at FVG bottom, SL above the recent swing high
+                        let slPrice = Math.max(c1.high, swingHigh) + (getPipSize(currentAsset) * 5);
+                        setup = { dir: "SELL", entry: c1.low, sl: slPrice }; 
                         break; 
                     }
                 }
