@@ -1076,9 +1076,8 @@
             }
         }
 
-        // --- UPGRADED SMC STRATEGY ---
+        // --- UPGRADED STRATEGY WITH PENDING SETUPS ---
         function findSMCSetup(bars){
-            // Need at least 50 candles to find a safe swing high/low
             if(bars.length < 50) return null;
 
             const lastBar = bars[bars.length-1];
@@ -1086,88 +1085,77 @@
             let maxSLPips = parseInt(localStorage.getItem('maxSL')) || 150;
             let maxSLPrice = maxSLPips * getPipSize(currentAsset);
 
-            // 1. TREND FILTERING
-            // If trend is BEARISH, we ONLY look for SELL. If BULLISH, ONLY BUY.
-            // If NEUTRAL, we allow the algo to find the best of either.
             const allowBuy = generalTrend === "BULLISH" || generalTrend === "NEUTRAL";
             const allowSell = generalTrend === "BEARISH" || generalTrend === "NEUTRAL";
 
-            // 2. STRICT SWING DETECTION
+            // Find local swing points (last 30 bars)
             let recentSwingHigh = -Infinity;
             let recentSwingLow = Infinity;
-            
-            // Look back 30 candles to find the major local swing point
             for(let i = bars.length - 3; i >= bars.length - 30; i--) {
                 const b = bars[i];
                 if(b.high > recentSwingHigh) recentSwingHigh = b.high;
                 if(b.low < recentSwingLow) recentSwingLow = b.low;
             }
 
-            // 3. CONFIRMATION LOGIC
-            // Check the last closed candle (bars[length-2]) to confirm direction
             const prevBar = bars[bars.length - 2];
-            const isBullishRejection = prevBar.close > prevBar.open && (prevBar.close - prevBar.low) > (prevBar.high - prevBar.close); // Long lower wick
-            const isBearishRejection = prevBar.open > prevBar.close && (prevBar.high - prevBar.close) > (prevBar.close - prevBar.low); // Long upper wick
+            
+            // --- AGGRESSIVE SNIPER ENTRY ---
+            const isBearishRejection = prevBar.open > prevBar.close && (prevBar.high - prevBar.close) > (prevBar.close - prevBar.low);
+            const isBullishRejection = prevBar.close > prevBar.open && (prevBar.close - prevBar.low) > (prevBar.high - prevBar.close);
 
-            // --- SELL SETUP ---
+            // Check for immediate SELL
+            if (allowSell && isBearishRejection) {
+                const sl = recentSwingHigh + (getPipSize(currentAsset) * 2);
+                const risk = sl - currentPrice;
+                if (risk > 0 && risk <= maxSLPrice) {
+                    return {dir:"SELL", entry:currentPrice, sl:sl, tp1:currentPrice-(risk*1.5), tp2:currentPrice-(risk*2.5), tf:currentTF, status:"ACTIVE"};
+                }
+            }
+
+            // Check for immediate BUY
+            if (allowBuy && isBullishRejection) {
+                const sl = recentSwingLow - (getPipSize(currentAsset) * 2);
+                const risk = currentPrice - sl;
+                if (risk > 0 && risk <= maxSLPrice) {
+                    return {dir:"BUY", entry:currentPrice, sl:sl, tp1:currentPrice+(risk*1.5), tp2:currentPrice+(risk*2.5), tf:currentTF, status:"ACTIVE"};
+                }
+            }
+
+            // --- PENDING ENTRY (If no immediate sniper entry) ---
+            // If trend is Bearish, set a Pending Sell at the Swing High
             if (allowSell) {
-                // We look for a SELL if price has pushed up and the previous candle showed bearish rejection
-                // Or if the current price is very close to the recent Swing High (Supply Zone)
-                const nearSwingHigh = currentPrice >= recentSwingHigh - (maxSLPrice * 0.2); // Within 20% of swing high
-                const validBody = (prevBar.open - prevBar.close) > (maxSLPrice * 0.1); // Body must be big enough
-                
-                if (isBearishRejection && validBody && (nearSwingHigh || currentPrice > prevBar.open)) {
-                    // Place SL safely ABOVE the recent swing high
-                    const sl = recentSwingHigh + (getPipSize(currentAsset) * 2); // Add small buffer
-                    const risk = sl - currentPrice;
-                    
-                    if (risk > 0 && risk <= maxSLPrice) {
-                        return {
-                            dir: "SELL",
-                            entry: currentPrice,
-                            sl: sl,
-                            tp1: currentPrice - (risk * 1.5), // 1.5 RR
-                            tp2: currentPrice - (risk * 2.5), // 2.5 RR
-                            tf: currentTF
-                        };
-                    }
+                const entry = recentSwingHigh;
+                const sl = entry + (getPipSize(currentAsset) * 10); // 10 pips above swing high
+                const risk = sl - entry;
+                // Only show pending if the entry is above current price
+                if (entry > currentPrice && risk <= maxSLPrice) {
+                    return {dir:"SELL", entry:entry, sl:sl, tp1:entry-(risk*1.5), tp2:entry-(risk*2.5), tf:currentTF, status:"PENDING"};
                 }
             }
 
-            // --- BUY SETUP ---
+            // If trend is Bullish, set a Pending Buy at the Swing Low
             if (allowBuy) {
-                // We look for a BUY if price has pushed down and the previous candle showed bullish rejection
-                // Or if the current price is very close to the recent Swing Low (Demand Zone)
-                const nearSwingLow = currentPrice <= recentSwingLow + (maxSLPrice * 0.2); // Within 20% of swing low
-                const validBody = (prevBar.close - prevBar.open) > (maxSLPrice * 0.1);
-
-                if (isBullishRejection && validBody && (nearSwingLow || currentPrice < prevBar.open)) {
-                    // Place SL safely BELOW the recent swing low
-                    const sl = recentSwingLow - (getPipSize(currentAsset) * 2); // Add small buffer
-                    const risk = currentPrice - sl;
-                    
-                    if (risk > 0 && risk <= maxSLPrice) {
-                        return {
-                            dir: "BUY",
-                            entry: currentPrice,
-                            sl: sl,
-                            tp1: currentPrice + (risk * 1.5),
-                            tp2: currentPrice + (risk * 2.5),
-                            tf: currentTF
-                        };
-                    }
+                const entry = recentSwingLow;
+                const sl = entry - (getPipSize(currentAsset) * 10); // 10 pips below swing low
+                const risk = entry - sl;
+                // Only show pending if the entry is below current price
+                if (entry < currentPrice && risk <= maxSLPrice) {
+                    return {dir:"BUY", entry:entry, sl:sl, tp1:entry+(risk*1.5), tp2:entry+(risk*2.5), tf:currentTF, status:"PENDING"};
                 }
             }
 
-            return null; // No valid setup found
+            return null;
         }
 
         function renderTradeCard(trade){
             const box=document.getElementById('signalBox');
             if(!box)return;
             const isBuy=trade.dir==='BUY';
-            const statusClass=isBuy?'status-active-buy':'status-active-sell';
-            const statusText=isBuy?dict[currentLang].activeBuy:dict[currentLang].activeSell;
+            const isPending=trade.status==='PENDING';
+            
+            const statusClass=isPending ? 'status-pending' : (isBuy?'status-active-buy':'status-active-sell');
+            const statusText=isPending ? dict[currentLang].pending : (isBuy?dict[currentLang].activeBuy:dict[currentLang].activeSell);
+            
             const entryPips=toPips(Math.abs(trade.entry-trade.tp1),currentAsset);
             const slPips=toPips(Math.abs(trade.entry-trade.sl),currentAsset);
             
@@ -1221,7 +1209,6 @@
             const setup = findSMCSetup(bars);
             
             if(!setup){
-                // If no setup found due to strict trend filters
                 box.innerHTML=`<div class="loading text-yellow">${dict[currentLang].noTrade}</div>`;
                 return
             }
@@ -1233,7 +1220,7 @@
                 tp1:setup.tp1,
                 tp2:setup.tp2,
                 tf:setup.tf,
-                status:'ACTIVE',
+                status:setup.status, // PENDING or ACTIVE
                 date:new Date().toISOString(),
                 tp1Hit:false
             };
@@ -1244,15 +1231,21 @@
             renderTradeCard(trade);
             drawTradeLines(trade);
             renderActiveSignalsList();
-            sendPushNotification('New Signal',`${currentAsset} ${trade.dir} at ${trade.entry.toFixed(2)}`);
-            sendToTelegram(`New Signal: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)}`)
+            
+            if (trade.status === 'ACTIVE') {
+                sendPushNotification('New Signal',`${currentAsset} ${trade.dir} at ${trade.entry.toFixed(2)}`);
+                sendToTelegram(`New Signal: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)}`);
+            } else {
+                sendPushNotification('Pending Setup',`${currentAsset} ${trade.dir} limit at ${trade.entry.toFixed(2)}`);
+                sendToTelegram(`Pending Setup: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)}`);
+            }
         }
 
         function copySignalText(){
             const key=getTradeKey(currentAsset,currentTF);
             const trade=activeTrades[key];
             if(!trade)return;
-            const text=`${trade.asset} ${trade.dir}\nEntry: ${trade.entry.toFixed(2)}\nSL: ${trade.sl.toFixed(2)}\nTP1: ${trade.tp1.toFixed(2)}\nTP2: ${trade.tp2.toFixed(2)}\nTF: ${trade.tf}`;
+            const text=`${trade.asset} ${trade.dir} (${trade.status})\nEntry: ${trade.entry.toFixed(2)}\nSL: ${trade.sl.toFixed(2)}\nTP1: ${trade.tp1.toFixed(2)}\nTP2: ${trade.tp2.toFixed(2)}\nTF: ${trade.tf}`;
             navigator.clipboard.writeText(text).then(()=>alert('Signal copied!'))
         }
         
@@ -1272,8 +1265,18 @@
             for(const k of keys){
                 const t=activeTrades[k];
                 const isBuy=t.dir==='BUY';
-                const statusText = t.tp1Hit ? dict[currentLang].tp1hit : (isBuy?dict[currentLang].activeBuy:dict[currentLang].activeSell);
-                const badgeClass = t.tp1Hit ? 'badge-tp1' : 'badge-active';
+                const isPending = t.status === 'PENDING';
+                
+                let statusText = isBuy?dict[currentLang].activeBuy:dict[currentLang].activeSell;
+                let badgeClass = 'badge-active';
+                
+                if (isPending) {
+                    statusText = dict[currentLang].pending;
+                    badgeClass = 'badge-pending';
+                } else if (t.tp1Hit) {
+                    statusText = dict[currentLang].tp1hit;
+                    badgeClass = 'badge-tp1';
+                }
                 
                 html+=`
                 <div class="active-signal-card">
@@ -1326,7 +1329,7 @@
         function copyTradeById(key){
             const t=activeTrades[key];
             if(!t)return;
-            const text=`${t.asset} ${t.dir}\nEntry: ${t.entry.toFixed(2)}\nSL: ${t.sl.toFixed(2)}\nTP1: ${t.tp1.toFixed(2)}\nTP2: ${t.tp2.toFixed(2)}\nTF: ${t.tf}`;
+            const text=`${t.asset} ${t.dir} (${t.status})\nEntry: ${t.entry.toFixed(2)}\nSL: ${t.sl.toFixed(2)}\nTP1: ${t.tp1.toFixed(2)}\nTP2: ${t.tp2.toFixed(2)}\nTF: ${t.tf}`;
             navigator.clipboard.writeText(text).then(()=>alert('Copied!'))
         }
 
@@ -1392,7 +1395,7 @@
                         tp1:setup.tp1,
                         tp2:setup.tp2,
                         tf:setup.tf,
-                        status:'ACTIVE',
+                        status:setup.status, // Handles PENDING or ACTIVE
                         date:new Date().toISOString(),
                         tp1Hit:false
                     };
@@ -1400,15 +1403,20 @@
                     localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
                     await saveActiveTradeToCloud(trade);
                     renderActiveSignalsList();
-                    sendPushNotification('Auto Signal',`${currentAsset} ${trade.dir} at ${trade.entry.toFixed(2)}`);
-                    sendToTelegram(`Auto Signal: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)}`)
+                    
+                    if (trade.status === 'ACTIVE') {
+                        sendPushNotification('Auto Signal',`${currentAsset} ${trade.dir} at ${trade.entry.toFixed(2)}`);
+                        sendToTelegram(`Auto Signal: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)}`);
+                    } else {
+                        sendPushNotification('Auto Pending',`${currentAsset} ${trade.dir} limit at ${trade.entry.toFixed(2)}`);
+                        sendToTelegram(`Auto Pending: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)}`);
+                    }
                 }
             },5*60*1000)
         }
         
         function startLiveTracking(){
             if(liveInterval)clearInterval(liveInterval);
-            // Reduced from 60s to 5s to catch TP1/TP2 hits instantly
             liveInterval=setInterval(async()=>{
                 const key=getTradeKey(currentAsset,currentTF);
                 const trade=activeTrades[key];
@@ -1418,6 +1426,24 @@
                 if(!bars||bars.length===0)return;
                 const currentPrice=bars[bars.length-1].close;
                 
+                // --- HANDLE PENDING ACTIVATION ---
+                if (trade.status === 'PENDING') {
+                    let activated = false;
+                    if (trade.dir === 'BUY' && currentPrice <= trade.entry) activated = true;
+                    if (trade.dir === 'SELL' && currentPrice >= trade.entry) activated = true;
+                    
+                    if (activated) {
+                        trade.status = 'ACTIVE';
+                        localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+                        await saveActiveTradeToCloud(trade);
+                        renderActiveSignalsList();
+                        sendPushNotification('Pending Triggered',`${currentAsset} ${trade.dir} is now active!`);
+                        sendToTelegram(`Pending Triggered: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)}`);
+                    }
+                    return; // Wait for next tick to track ACTIVE
+                }
+
+                // --- TRACK ACTIVE TRADE ---
                 if(trade.dir==='BUY'){
                     if(currentPrice<=trade.sl){
                         await closeTrade(key,'LOSS',currentPrice);
@@ -1451,7 +1477,7 @@
                         return
                     }
                 }
-            },5*1000) // <-- Changed to 5 seconds
+            },5*1000) // Checks every 5 seconds
         }
         
         async function closeTrade(key,result,exitPrice){
