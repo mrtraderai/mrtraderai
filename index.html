@@ -1078,7 +1078,7 @@
             }
         }
 
-        // --- FINAL UPGRADED SMC STRATEGY ---
+        // --- FINAL FIXED STRATEGY: Always shows Pending if no active ---
         function findSMCSetup(bars){
             if(bars.length < 50) return null;
 
@@ -1090,9 +1090,9 @@
             const allowBuy = generalTrend === "BULLISH" || generalTrend === "NEUTRAL";
             const allowSell = generalTrend === "BEARISH" || generalTrend === "NEUTRAL";
 
-            // Look back 10 candles for a more relevant, recent swing
             let recentSwingHigh = -Infinity;
             let recentSwingLow = Infinity;
+            // Look back 10 candles for a relevant swing
             for(let i = bars.length - 3; i >= bars.length - 10; i--) {
                 const b = bars[i];
                 if(b.high > recentSwingHigh) recentSwingHigh = b.high;
@@ -1100,11 +1100,10 @@
             }
 
             const prevBar = bars[bars.length - 2];
-            
             const isBearishRejection = prevBar.open > prevBar.close && (prevBar.high - prevBar.close) > (prevBar.close - prevBar.low);
             const isBullishRejection = prevBar.close > prevBar.open && (prevBar.close - prevBar.low) > (prevBar.high - prevBar.close);
 
-            // Check for immediate SELL
+            // 1. CHECK FOR IMMEDIATE ACTIVE TRADE FIRST
             if (allowSell && isBearishRejection) {
                 const sl = recentSwingHigh + (getPipSize(currentAsset) * 3);
                 const risk = sl - currentPrice;
@@ -1113,7 +1112,6 @@
                 }
             }
 
-            // Check for immediate BUY
             if (allowBuy && isBullishRejection) {
                 const sl = recentSwingLow - (getPipSize(currentAsset) * 3);
                 const risk = currentPrice - sl;
@@ -1122,14 +1120,12 @@
                 }
             }
 
-            // --- PENDING ENTRY ---
-            // If no immediate setup, set pending orders based on recent swings
+            // 2. IF NO IMMEDIATE TRADE, ALWAYS SHOW A PENDING SETUP
             if (allowSell) {
                 const entry = recentSwingHigh;
-                const sl = entry + (getPipSize(currentAsset) * 5); // 5 pips above swing high
+                const sl = entry + (getPipSize(currentAsset) * 5); 
                 const risk = sl - entry;
                 
-                // If current price is below this swing high (approaching it)
                 if (entry > currentPrice && risk <= maxSLPrice) {
                     return {dir:"SELL", entry:entry, sl:sl, tp1:entry-(risk*1.5), tp2:entry-(risk*2.5), tf:currentTF, status:"PENDING"};
                 }
@@ -1137,10 +1133,9 @@
 
             if (allowBuy) {
                 const entry = recentSwingLow;
-                const sl = entry - (getPipSize(currentAsset) * 5); // 5 pips below swing low
+                const sl = entry - (getPipSize(currentAsset) * 5); 
                 const risk = entry - sl;
                 
-                // If current price is above this swing low (approaching it)
                 if (entry < currentPrice && risk <= maxSLPrice) {
                     return {dir:"BUY", entry:entry, sl:sl, tp1:entry+(risk*1.5), tp2:entry+(risk*2.5), tf:currentTF, status:"PENDING"};
                 }
