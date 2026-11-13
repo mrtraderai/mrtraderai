@@ -572,8 +572,8 @@
                     if(all&&Array.isArray(all.data))all=all.data;
                     else throw new Error("Invalid format")
                 }
-                let targetCurrencies=['USD'];
-                newsCache=all.filter(e=>(targetCurrencies.includes(e.country)||targetCurrencies.includes(e.currency))&&(e.impact==='High'||e.impact==='Medium'||e.impact==='high'||e.impact==='medium'));
+                // FIX: Show ALL high/medium impact news, not just USD
+                newsCache=all.filter(e=>(e.impact==='High'||e.impact==='Medium'||e.impact==='high'||e.impact==='medium'));
                 newsCacheTime=now;
                 return newsCache
             }catch(e){
