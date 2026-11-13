@@ -468,7 +468,8 @@
                 tradeHistory=tradeHistory.map(t=>({...t,asset:t.asset||'XAU/USD'}));
                 localStorage.setItem('tradeHistory',JSON.stringify(tradeHistory));
                 notifications=JSON.parse(localStorage.getItem('notifications'))||[];
-                autoLogs=JSON.parse(localStorage.getItem('autoLogs'))||[]
+                // FIX: Clean up any invalid logs from old versions
+                autoLogs=(JSON.parse(localStorage.getItem('autoLogs'))||[]).filter(log => log && log.time && log.msg);
             }catch(e){}
         }
         migrateLocalStorage();
@@ -1424,7 +1425,10 @@
             }
             let html='';
             for(const log of autoLogs.slice(-20).reverse()){
-                html+=`<div class="log-item"><div class="log-time">${new Date(log.time).toLocaleTimeString()}</div><div>${log.msg}</div></div>`
+                // FIX: Added safety fallback for missing data
+                const logTime = log.time ? new Date(log.time).toLocaleTimeString() : "System";
+                const logMsg = log.msg ? log.msg : "No message";
+                html+=`<div class="log-item"><div class="log-time">${logTime}</div><div>${logMsg}</div></div>`
             }
             box.innerHTML=html
         }
