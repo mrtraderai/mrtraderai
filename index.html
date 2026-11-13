@@ -1084,9 +1084,11 @@
 
             const lastBar = bars[bars.length-1];
             const currentPrice = lastBar.close;
-            let maxSLPips = parseInt(localStorage.getItem('maxSL')) || 150;
-            let maxSLPrice = maxSLPips * getPipSize(currentAsset);
-
+            
+            // RULE 1: Absolute Minimum 40 Pips SL
+            const MINIMUM_SL_PIPS = 40;
+            const minSLPrice = MINIMUM_SL_PIPS * getPipSize(currentAsset);
+            
             const allowBuy = generalTrend === "BULLISH" || generalTrend === "NEUTRAL";
             const allowSell = generalTrend === "BEARISH" || generalTrend === "NEUTRAL";
 
@@ -1105,39 +1107,61 @@
 
             // 1. CHECK FOR IMMEDIATE ACTIVE TRADE FIRST
             if (allowSell && isBearishRejection) {
-                const sl = recentSwingHigh + (getPipSize(currentAsset) * 3);
-                const risk = sl - currentPrice;
-                if (risk > 0 && risk <= maxSLPrice) {
-                    return {dir:"SELL", entry:currentPrice, sl:sl, tp1:currentPrice-(risk*1.5), tp2:currentPrice-(risk*2.5), tf:currentTF, status:"ACTIVE"};
+                let sl = recentSwingHigh + (getPipSize(currentAsset) * 3);
+                let risk = sl - currentPrice;
+                
+                // RULE: If risk is less than 40 pips, force it to 40 pips
+                if (risk < minSLPrice) {
+                    risk = minSLPrice;
+                    sl = currentPrice + risk;
                 }
+                
+                return {dir:"SELL", entry:currentPrice, sl:sl, tp1:currentPrice-(risk*2), tp2:currentPrice-(risk*3), tf:currentTF, status:"ACTIVE"};
             }
 
             if (allowBuy && isBullishRejection) {
-                const sl = recentSwingLow - (getPipSize(currentAsset) * 3);
-                const risk = currentPrice - sl;
-                if (risk > 0 && risk <= maxSLPrice) {
-                    return {dir:"BUY", entry:currentPrice, sl:sl, tp1:currentPrice+(risk*1.5), tp2:currentPrice+(risk*2.5), tf:currentTF, status:"ACTIVE"};
+                let sl = recentSwingLow - (getPipSize(currentAsset) * 3);
+                let risk = currentPrice - sl;
+                
+                // RULE: If risk is less than 40 pips, force it to 40 pips
+                if (risk < minSLPrice) {
+                    risk = minSLPrice;
+                    sl = currentPrice - risk;
                 }
+
+                return {dir:"BUY", entry:currentPrice, sl:sl, tp1:currentPrice+(risk*2), tp2:currentPrice+(risk*3), tf:currentTF, status:"ACTIVE"};
             }
 
             // 2. IF NO IMMEDIATE TRADE, ALWAYS SHOW A PENDING SETUP
             if (allowSell) {
                 const entry = recentSwingHigh;
-                const sl = entry + (getPipSize(currentAsset) * 5); 
-                const risk = sl - entry;
+                let sl = entry + (getPipSize(currentAsset) * 5); 
+                let risk = sl - entry;
                 
-                if (entry > currentPrice && risk <= maxSLPrice) {
-                    return {dir:"SELL", entry:entry, sl:sl, tp1:entry-(risk*1.5), tp2:entry-(risk*2.5), tf:currentTF, status:"PENDING"};
+                // RULE: If risk is less than 40 pips, force it to 40 pips
+                if (risk < minSLPrice) {
+                    risk = minSLPrice;
+                    sl = entry + risk;
+                }
+                
+                if (entry > currentPrice) {
+                    return {dir:"SELL", entry:entry, sl:sl, tp1:entry-(risk*2), tp2:entry-(risk*3), tf:currentTF, status:"PENDING"};
                 }
             }
 
             if (allowBuy) {
                 const entry = recentSwingLow;
-                const sl = entry - (getPipSize(currentAsset) * 5); 
-                const risk = entry - sl;
+                let sl = entry - (getPipSize(currentAsset) * 5); 
+                let risk = entry - sl;
                 
-                if (entry < currentPrice && risk <= maxSLPrice) {
-                    return {dir:"BUY", entry:entry, sl:sl, tp1:entry+(risk*1.5), tp2:entry+(risk*2.5), tf:currentTF, status:"PENDING"};
+                // RULE: If risk is less than 40 pips, force it to 40 pips
+                if (risk < minSLPrice) {
+                    risk = minSLPrice;
+                    sl = entry - risk;
+                }
+                
+                if (entry < currentPrice) {
+                    return {dir:"BUY", entry:entry, sl:sl, tp1:entry+(risk*2), tp2:entry+(risk*3), tf:currentTF, status:"PENDING"};
                 }
             }
 
