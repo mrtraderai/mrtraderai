@@ -1076,7 +1076,7 @@
             }
         }
 
-        // --- UPGRADED STRATEGY WITH PENDING SETUPS ---
+        // --- FINAL UPGRADED SMC STRATEGY ---
         function findSMCSetup(bars){
             if(bars.length < 50) return null;
 
@@ -1088,10 +1088,10 @@
             const allowBuy = generalTrend === "BULLISH" || generalTrend === "NEUTRAL";
             const allowSell = generalTrend === "BEARISH" || generalTrend === "NEUTRAL";
 
-            // Find local swing points (last 30 bars)
+            // Look back 10 candles for a more relevant, recent swing
             let recentSwingHigh = -Infinity;
             let recentSwingLow = Infinity;
-            for(let i = bars.length - 3; i >= bars.length - 30; i--) {
+            for(let i = bars.length - 3; i >= bars.length - 10; i--) {
                 const b = bars[i];
                 if(b.high > recentSwingHigh) recentSwingHigh = b.high;
                 if(b.low < recentSwingLow) recentSwingLow = b.low;
@@ -1099,13 +1099,12 @@
 
             const prevBar = bars[bars.length - 2];
             
-            // --- AGGRESSIVE SNIPER ENTRY ---
             const isBearishRejection = prevBar.open > prevBar.close && (prevBar.high - prevBar.close) > (prevBar.close - prevBar.low);
             const isBullishRejection = prevBar.close > prevBar.open && (prevBar.close - prevBar.low) > (prevBar.high - prevBar.close);
 
             // Check for immediate SELL
             if (allowSell && isBearishRejection) {
-                const sl = recentSwingHigh + (getPipSize(currentAsset) * 2);
+                const sl = recentSwingHigh + (getPipSize(currentAsset) * 3);
                 const risk = sl - currentPrice;
                 if (risk > 0 && risk <= maxSLPrice) {
                     return {dir:"SELL", entry:currentPrice, sl:sl, tp1:currentPrice-(risk*1.5), tp2:currentPrice-(risk*2.5), tf:currentTF, status:"ACTIVE"};
@@ -1114,31 +1113,32 @@
 
             // Check for immediate BUY
             if (allowBuy && isBullishRejection) {
-                const sl = recentSwingLow - (getPipSize(currentAsset) * 2);
+                const sl = recentSwingLow - (getPipSize(currentAsset) * 3);
                 const risk = currentPrice - sl;
                 if (risk > 0 && risk <= maxSLPrice) {
                     return {dir:"BUY", entry:currentPrice, sl:sl, tp1:currentPrice+(risk*1.5), tp2:currentPrice+(risk*2.5), tf:currentTF, status:"ACTIVE"};
                 }
             }
 
-            // --- PENDING ENTRY (If no immediate sniper entry) ---
-            // If trend is Bearish, set a Pending Sell at the Swing High
+            // --- PENDING ENTRY ---
+            // If no immediate setup, set pending orders based on recent swings
             if (allowSell) {
                 const entry = recentSwingHigh;
-                const sl = entry + (getPipSize(currentAsset) * 10); // 10 pips above swing high
+                const sl = entry + (getPipSize(currentAsset) * 5); // 5 pips above swing high
                 const risk = sl - entry;
-                // Only show pending if the entry is above current price
+                
+                // If current price is below this swing high (approaching it)
                 if (entry > currentPrice && risk <= maxSLPrice) {
                     return {dir:"SELL", entry:entry, sl:sl, tp1:entry-(risk*1.5), tp2:entry-(risk*2.5), tf:currentTF, status:"PENDING"};
                 }
             }
 
-            // If trend is Bullish, set a Pending Buy at the Swing Low
             if (allowBuy) {
                 const entry = recentSwingLow;
-                const sl = entry - (getPipSize(currentAsset) * 10); // 10 pips below swing low
+                const sl = entry - (getPipSize(currentAsset) * 5); // 5 pips below swing low
                 const risk = entry - sl;
-                // Only show pending if the entry is below current price
+                
+                // If current price is above this swing low (approaching it)
                 if (entry < currentPrice && risk <= maxSLPrice) {
                     return {dir:"BUY", entry:entry, sl:sl, tp1:entry+(risk*1.5), tp2:entry+(risk*2.5), tf:currentTF, status:"PENDING"};
                 }
