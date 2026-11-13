@@ -295,6 +295,7 @@
 
             <div class="tf-selector" id="tfSelector">
                 <button class="tf-btn active" onclick="selectTF('5min',this)">M5</button>
+                <button class="tf-btn" onclick="selectTF('15min',this)">M15</button>
                 <button class="tf-btn" onclick="selectTF('1h',this)">H1</button>
             </div>
 
@@ -1093,8 +1094,8 @@
 
             let recentSwingHigh = -Infinity;
             let recentSwingLow = Infinity;
-            // Look back 10 candles for a relevant swing
-            for(let i = bars.length - 3; i >= bars.length - 10; i--) {
+            // Look back 50 candles for a relevant swing
+            for(let i = bars.length - 3; i >= bars.length - 50; i--) {
                 const b = bars[i];
                 if(b.high > recentSwingHigh) recentSwingHigh = b.high;
                 if(b.low < recentSwingLow) recentSwingLow = b.low;
@@ -1132,6 +1133,10 @@
             }
 
             // 2. IF NO IMMEDIATE TRADE, ALWAYS SHOW A PENDING SETUP
+            // But ONLY if the price is relatively close to the structure (within 100 pips)
+            const maxDistancePips = 100;
+            const maxDistancePrice = maxDistancePips * getPipSize(currentAsset);
+
             if (allowSell) {
                 const entry = recentSwingHigh;
                 let sl = entry + (getPipSize(currentAsset) * 5); 
@@ -1143,7 +1148,10 @@
                     sl = entry + risk;
                 }
                 
-                if (entry > currentPrice) {
+                const distance = entry - currentPrice;
+                
+                // Only show pending if price is BELOW entry and within 100 pips
+                if (entry > currentPrice && distance <= maxDistancePrice) {
                     return {dir:"SELL", entry:entry, sl:sl, tp1:entry-(risk*2), tp2:entry-(risk*3), tf:currentTF, status:"PENDING"};
                 }
             }
@@ -1159,7 +1167,10 @@
                     sl = entry - risk;
                 }
                 
-                if (entry < currentPrice) {
+                const distance = currentPrice - entry;
+                
+                // Only show pending if price is ABOVE entry and within 100 pips
+                if (entry < currentPrice && distance <= maxDistancePrice) {
                     return {dir:"BUY", entry:entry, sl:sl, tp1:entry+(risk*2), tp2:entry+(risk*3), tf:currentTF, status:"PENDING"};
                 }
             }
