@@ -1094,7 +1094,7 @@
 
             let recentSwingHigh = -Infinity;
             let recentSwingLow = Infinity;
-            // Look back 50 candles for a relevant swing
+            // Look back 10 candles for a relevant swing
             for(let i = bars.length - 3; i >= bars.length - 50; i--) {
                 const b = bars[i];
                 if(b.high > recentSwingHigh) recentSwingHigh = b.high;
