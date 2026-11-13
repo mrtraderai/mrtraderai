@@ -694,6 +694,9 @@
                     document.getElementById('appContent').style.display = 'block';
                     document.getElementById('userEmail').innerText = session.user.email;
                     
+                    // Hide splash immediately so user can see the app while chart loads
+                    forceHideSplash(); 
+
                     await loadUserData(session.user.id);
                     renderNotifBadge();
                     renderAutoLogs();
@@ -709,7 +712,6 @@
                     await updateGeneralTrend();
                     startAutopilot();
                     startLiveTracking();
-                    forceHideSplash();
                 } else {
                     document.getElementById('loginScreen').style.display = 'flex';
                     document.getElementById('appContent').style.display = 'none';
@@ -1209,6 +1211,9 @@
             const setup = findSMCSetup(bars);
             
             if(!setup){
+                // FIX: Clear ghost lines if no setup found
+                priceLines.forEach(l=>candleSeries.removePriceLine(l));
+                priceLines=[];
                 box.innerHTML=`<div class="loading text-yellow">${dict[currentLang].noTrade}</div>`;
                 return
             }
