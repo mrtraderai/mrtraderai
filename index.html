@@ -423,7 +423,7 @@
         let activeTabState='active';
         let tradeCounter=parseInt(localStorage.getItem('tradeCounter'))||1;
 
-        // --- FIX: Splash Screen Safety Net ---
+        // --- Splash Screen Safety Net ---
         function forceHideSplash() {
             const splash = document.getElementById('splashScreen');
             if (splash && splash.style.display !== 'none') {
@@ -431,14 +431,11 @@
                 setTimeout(() => { splash.style.display = 'none'; }, 500);
             }
         }
-        
-        // Force hide splash after 8 seconds regardless of loading state
         setTimeout(forceHideSplash, 8000);
 
-        // --- FIX: Global Error Handler ---
+        // --- Global Error Handler ---
         window.addEventListener('error', function(e) {
             console.error("Global Error Caught:", e.message);
-            // If a script crashes during load, force the splash to hide so the user isn't stuck
             if (document.getElementById('splashScreen').style.display !== 'none') {
                 forceHideSplash();
             }
@@ -649,7 +646,6 @@
 
         // --- FIXED INITIALIZATION LOGIC ---
         window.onload = function() {
-            // 1. Setup Supabase with error handling
             try {
                 if (typeof supabase !== 'undefined') {
                     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -660,10 +656,8 @@
                 console.error("Supabase Init Error:", e);
             }
 
-            // 2. Register SW
             registerServiceWorker().catch(e => console.error(e));
 
-            // 3. Handle Auth Routes
             const hash = window.location.hash;
             if (hash && hash.includes('type=recovery')) {
                 isRecoveryMode = true;
@@ -677,7 +671,6 @@
                 checkUser();
             }
 
-            // 4. Background Tasks
             try {
                 renderNewsPanel();
                 newsInterval = setInterval(renderNewsPanel, 5 * 60 * 1000);
@@ -809,7 +802,14 @@
                 })
             }
             localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
-            renderActiveSignalsList()
+            renderActiveSignalsList();
+            
+            // Update Home Stats
+            const total=tradeHistory.length;
+            const wins=tradeHistory.filter(t=>t.result==='WIN').length;
+            const winRate=total>0?Math.round((wins/total)*100):0;
+            document.getElementById('homeTotalTrades').innerText=total;
+            document.getElementById('homeWinRate').innerText=winRate+'%';
         }
         
         async function saveActiveTradeToCloud(trade){
@@ -1207,13 +1207,16 @@
             for(const k of keys){
                 const t=activeTrades[k];
                 const isBuy=t.dir==='BUY';
+                const statusText = t.tp1Hit ? dict[currentLang].tp1hit : (isBuy?dict[currentLang].activeBuy:dict[currentLang].activeSell);
+                const badgeClass = t.tp1Hit ? 'badge-tp1' : 'badge-active';
+                
                 html+=`
                 <div class="active-signal-card">
                     <div class="signal-time">${new Date(t.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
                     <div class="signal-asset">${t.asset} ${t.tf.toUpperCase()}</div>
                     <div class="signal-status-row">
                         <span>${isBuy?dict[currentLang].activeBuy:dict[currentLang].activeSell}</span>
-                        <span class="signal-badge badge-active">ACTIVE</span>
+                        <span class="signal-badge ${badgeClass}">${statusText}</span>
                     </div>
                     <div class="signal-status-row"><span>Entry</span><span class="text-yellow">${t.entry.toFixed(2)}</span></div>
                     <div class="signal-status-row"><span>SL</span><span class="text-red">${t.sl.toFixed(2)}</span></div>
@@ -1251,6 +1254,8 @@
             const winRate=total>0?Math.round((wins/total)*100):0;
             document.getElementById('statWinRateActive').innerText=winRate+'%';
             document.getElementById('statTotalTradesActive').innerText=total;
+            document.getElementById('homeTotalTrades').innerText=total;
+            document.getElementById('homeWinRate').innerText=winRate+'%';
         }
         
         function copyTradeById(key){
@@ -1338,13 +1343,16 @@
         
         function startLiveTracking(){
             if(liveInterval)clearInterval(liveInterval);
+            // FIX: Reduced from 60s to 5s to catch TP1/TP2 hits instantly
             liveInterval=setInterval(async()=>{
                 const key=getTradeKey(currentAsset,currentTF);
                 const trade=activeTrades[key];
                 if(!trade)return;
+                
                 const bars=await fetchChartDataFromSource(currentTF);
                 if(!bars||bars.length===0)return;
                 const currentPrice=bars[bars.length-1].close;
+                
                 if(trade.dir==='BUY'){
                     if(currentPrice<=trade.sl){
                         await closeTrade(key,'LOSS',currentPrice);
@@ -1353,6 +1361,7 @@
                     if(currentPrice>=trade.tp1&&!trade.tp1Hit){
                         trade.tp1Hit=true;
                         localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+                        await saveActiveTradeToCloud(trade);
                         sendPushNotification('TP1 Hit!',`${trade.asset} reached TP1 at ${trade.tp1.toFixed(2)}`);
                         renderActiveSignalsList()
                     }
@@ -1368,6 +1377,7 @@
                     if(currentPrice<=trade.tp1&&!trade.tp1Hit){
                         trade.tp1Hit=true;
                         localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+                        await saveActiveTradeToCloud(trade);
                         sendPushNotification('TP1 Hit!',`${trade.asset} reached TP1 at ${trade.tp1.toFixed(2)}`);
                         renderActiveSignalsList()
                     }
@@ -1376,7 +1386,7 @@
                         return
                     }
                 }
-            },60*1000)
+            },5*1000) // <-- Changed to 5 seconds
         }
         
         async function closeTrade(key,result,exitPrice){
@@ -1392,6 +1402,12 @@
             localStorage.setItem('tradeHistory',JSON.stringify(tradeHistory));
             delete activeTrades[key];
             localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+            
+            // Clear Chart Lines
+            priceLines.forEach(l=>candleSeries.removePriceLine(l));
+            priceLines=[];
+            document.getElementById('signalBox').innerHTML=`<div class="loading">${dict[currentLang].loading}</div>`;
+            
             await deleteActiveTradeFromCloud(key);
             await saveHistoryToCloud(record);
             renderActiveSignalsList();
