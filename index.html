@@ -468,7 +468,7 @@
                 tradeHistory=tradeHistory.map(t=>({...t,asset:t.asset||'XAU/USD'}));
                 localStorage.setItem('tradeHistory',JSON.stringify(tradeHistory));
                 notifications=JSON.parse(localStorage.getItem('notifications'))||[];
-                // FIX: Clean up any invalid logs from old versions
+                // Clean up any invalid logs from old versions
                 autoLogs=(JSON.parse(localStorage.getItem('autoLogs'))||[]).filter(log => log && log.time && log.msg);
             }catch(e){}
         }
@@ -951,8 +951,8 @@
         }
 
         const dict={
-            en:{analyze:"⚡ ANALYZE MARKET",loading:"Press Analyze to scan, or wait for Auto.",scanning:"Scanning FVG & OB...",buy:"BUY LIMIT",sell:"SELL LIMIT",activeBuy:"ACTIVE BUY",activeSell:"ACTIVE SELL",tp1hit:"TP1 HIT",tp2hit:"TP2 HIT",pending:"PENDING (WAIT)",entry:"SNIPER ENTRY",sl:"STOP LOSS",tp1:"TAKE PROFIT 1",tp2:"TAKE PROFIT 2",home:"Home",live:"Live",active:"Signals",account:"Account",history:"History",auto:"Auto",noHistory:"No previous trades yet.",waitBuy:"WAITING FOR BUY AT",waitSell:"WAITING FOR SELL AT"},
-            ar:{analyze:"⚡ تحليل السوق",loading:"اضغط تحليل، أو انتظر الأوتو.",scanning:"جاري تحليل FVG و OB...",buy:"شراء معلق",sell:"بيع معلق",activeBuy:"شراء نشط",activeSell:"بيع نشط",tp1hit:"تم تحقيق الهدف 1",tp2hit:"تم تحقيق الهدف 2",pending:"معلق (انتظار)",entry:"الدخول",sl:"وقف خسارة",tp1:"هدف 1",tp2:"هدف 2",home:"الرئيسية",live:"مباشر",active:"الإشارات",account:"الحساب",history:"السجل",auto:"أوتو",noHistory:"لا يوجد صفقات سابقة.",waitBuy:"في انتظار شراء عند",waitSell:"في انتظار بيع عند"}
+            en:{analyze:"⚡ ANALYZE MARKET",loading:"Press Analyze to scan, or wait for Auto.",scanning:"Scanning FVG & OB...",buy:"BUY LIMIT",sell:"SELL LIMIT",activeBuy:"ACTIVE BUY",activeSell:"ACTIVE SELL",tp1hit:"TP1 HIT",tp2hit:"TP2 HIT",pending:"PENDING (WAIT)",entry:"SNIPER ENTRY",sl:"STOP LOSS",tp1:"TAKE PROFIT 1",tp2:"TAKE PROFIT 2",home:"Home",live:"Live",active:"Signals",account:"Account",history:"History",auto:"Auto",noHistory:"No previous trades yet.",waitBuy:"WAITING FOR BUY AT",waitSell:"WAITING FOR SELL AT",noTrade:"No valid SMC setup found right now."},
+            ar:{analyze:"⚡ تحليل السوق",loading:"اضغط تحليل، أو انتظر الأوتو.",scanning:"جاري تحليل FVG و OB...",buy:"شراء معلق",sell:"بيع معلق",activeBuy:"شراء نشط",activeSell:"بيع نشط",tp1hit:"تم تحقيق الهدف 1",tp2hit:"تم تحقيق الهدف 2",pending:"معلق (انتظار)",entry:"الدخول",sl:"وقف خسارة",tp1:"هدف 1",tp2:"هدف 2",home:"الرئيسية",live:"مباشر",active:"الإشارات",account:"الحساب",history:"السجل",auto:"أوتو",noHistory:"لا يوجد صفقات سابقة.",waitBuy:"في انتظار شراء عند",waitSell:"في انتظار بيع عند",noTrade:"لا توجد إشارة صالحة حالياً."}
         };
 
         function applyLanguage(){
@@ -1076,29 +1076,90 @@
             }
         }
 
+        // --- UPGRADED SMC STRATEGY ---
         function findSMCSetup(bars){
-            let setup=null;
-            const currentPrice=bars[bars.length-1].close;
-            let maxSLPips=parseInt(localStorage.getItem('maxSL'))||150;
-            let maxSLPrice=maxSLPips*getPipSize(currentAsset);
+            // Need at least 50 candles to find a safe swing high/low
+            if(bars.length < 50) return null;
+
+            const lastBar = bars[bars.length-1];
+            const currentPrice = lastBar.close;
+            let maxSLPips = parseInt(localStorage.getItem('maxSL')) || 150;
+            let maxSLPrice = maxSLPips * getPipSize(currentAsset);
+
+            // 1. TREND FILTERING
+            // If trend is BEARISH, we ONLY look for SELL. If BULLISH, ONLY BUY.
+            // If NEUTRAL, we allow the algo to find the best of either.
+            const allowBuy = generalTrend === "BULLISH" || generalTrend === "NEUTRAL";
+            const allowSell = generalTrend === "BEARISH" || generalTrend === "NEUTRAL";
+
+            // 2. STRICT SWING DETECTION
+            let recentSwingHigh = -Infinity;
+            let recentSwingLow = Infinity;
             
-            for(let i=bars.length-3;i>=Math.max(0,bars.length-100);i--){
-                const b=bars[i];
-                if(b.close>b.open){
-                    const body=b.close-b.open;
-                    if(body>maxSLPrice*0.1){
-                        setup={dir:"BUY",entry:b.close,sl:b.low,tp1:b.close+body*1.5,tp2:b.close+body*2.5,tf:currentTF};
-                        break
-                    }
-                }else if(b.open>b.close){
-                    const body=b.open-b.close;
-                    if(body>maxSLPrice*0.1){
-                        setup={dir:"SELL",entry:b.close,sl:b.high,tp1:b.close-body*1.5,tp2:b.close-body*2.5,tf:currentTF};
-                        break
+            // Look back 30 candles to find the major local swing point
+            for(let i = bars.length - 3; i >= bars.length - 30; i--) {
+                const b = bars[i];
+                if(b.high > recentSwingHigh) recentSwingHigh = b.high;
+                if(b.low < recentSwingLow) recentSwingLow = b.low;
+            }
+
+            // 3. CONFIRMATION LOGIC
+            // Check the last closed candle (bars[length-2]) to confirm direction
+            const prevBar = bars[bars.length - 2];
+            const isBullishRejection = prevBar.close > prevBar.open && (prevBar.close - prevBar.low) > (prevBar.high - prevBar.close); // Long lower wick
+            const isBearishRejection = prevBar.open > prevBar.close && (prevBar.high - prevBar.close) > (prevBar.close - prevBar.low); // Long upper wick
+
+            // --- SELL SETUP ---
+            if (allowSell) {
+                // We look for a SELL if price has pushed up and the previous candle showed bearish rejection
+                // Or if the current price is very close to the recent Swing High (Supply Zone)
+                const nearSwingHigh = currentPrice >= recentSwingHigh - (maxSLPrice * 0.2); // Within 20% of swing high
+                const validBody = (prevBar.open - prevBar.close) > (maxSLPrice * 0.1); // Body must be big enough
+                
+                if (isBearishRejection && validBody && (nearSwingHigh || currentPrice > prevBar.open)) {
+                    // Place SL safely ABOVE the recent swing high
+                    const sl = recentSwingHigh + (getPipSize(currentAsset) * 2); // Add small buffer
+                    const risk = sl - currentPrice;
+                    
+                    if (risk > 0 && risk <= maxSLPrice) {
+                        return {
+                            dir: "SELL",
+                            entry: currentPrice,
+                            sl: sl,
+                            tp1: currentPrice - (risk * 1.5), // 1.5 RR
+                            tp2: currentPrice - (risk * 2.5), // 2.5 RR
+                            tf: currentTF
+                        };
                     }
                 }
             }
-            return setup
+
+            // --- BUY SETUP ---
+            if (allowBuy) {
+                // We look for a BUY if price has pushed down and the previous candle showed bullish rejection
+                // Or if the current price is very close to the recent Swing Low (Demand Zone)
+                const nearSwingLow = currentPrice <= recentSwingLow + (maxSLPrice * 0.2); // Within 20% of swing low
+                const validBody = (prevBar.close - prevBar.open) > (maxSLPrice * 0.1);
+
+                if (isBullishRejection && validBody && (nearSwingLow || currentPrice < prevBar.open)) {
+                    // Place SL safely BELOW the recent swing low
+                    const sl = recentSwingLow - (getPipSize(currentAsset) * 2); // Add small buffer
+                    const risk = currentPrice - sl;
+                    
+                    if (risk > 0 && risk <= maxSLPrice) {
+                        return {
+                            dir: "BUY",
+                            entry: currentPrice,
+                            sl: sl,
+                            tp1: currentPrice + (risk * 1.5),
+                            tp2: currentPrice + (risk * 2.5),
+                            tf: currentTF
+                        };
+                    }
+                }
+            }
+
+            return null; // No valid setup found
         }
 
         function renderTradeCard(trade){
@@ -1156,9 +1217,12 @@
                 box.innerHTML=`<div class="loading text-red">⚠️ Failed to load market data.</div>`;
                 return
             }
-            const setup=findSMCSetup(bars);
+            
+            const setup = findSMCSetup(bars);
+            
             if(!setup){
-                box.innerHTML=`<div class="loading">No valid setup found. Try another TF or wait for Auto.</div>`;
+                // If no setup found due to strict trend filters
+                box.innerHTML=`<div class="loading text-yellow">${dict[currentLang].noTrade}</div>`;
                 return
             }
             const trade={
@@ -1344,7 +1408,7 @@
         
         function startLiveTracking(){
             if(liveInterval)clearInterval(liveInterval);
-            // FIX: Reduced from 60s to 5s to catch TP1/TP2 hits instantly
+            // Reduced from 60s to 5s to catch TP1/TP2 hits instantly
             liveInterval=setInterval(async()=>{
                 const key=getTradeKey(currentAsset,currentTF);
                 const trade=activeTrades[key];
@@ -1425,7 +1489,7 @@
             }
             let html='';
             for(const log of autoLogs.slice(-20).reverse()){
-                // FIX: Added safety fallback for missing data
+                // Added safety fallback for missing data
                 const logTime = log.time ? new Date(log.time).toLocaleTimeString() : "System";
                 const logMsg = log.msg ? log.msg : "No message";
                 html+=`<div class="log-item"><div class="log-time">${logTime}</div><div>${logMsg}</div></div>`
