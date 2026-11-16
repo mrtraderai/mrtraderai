@@ -23,7 +23,7 @@
         body { background: var(--bg-primary); color: var(--text-primary); padding: 14px; }
         .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 
-        /* Auth Overlay (Login / Sign Up) */
+        /* Auth Overlay (Login / Sign Up / Forgot Password) */
         .auth-overlay {
             position: fixed; inset: 0; background: var(--bg-primary); z-index: 9999;
             display: flex; justify-content: center; align-items: center; padding: 16px;
@@ -49,6 +49,14 @@
             width: 100%; padding: 11px; background: var(--accent-gold); color: #000; border: none;
             border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.88rem;
         }
+        .auth-link-row {
+            display: flex; justify-content: flex-end; margin-top: -6px; margin-bottom: 14px;
+        }
+        .auth-link {
+            background: none; border: none; color: var(--text-secondary); font-size: 0.75rem;
+            cursor: pointer; text-decoration: underline;
+        }
+        .auth-link:hover { color: var(--accent-gold); }
         .auth-msg { font-size: 0.78rem; margin-top: 10px; text-align: center; color: var(--accent-green); }
 
         /* Admin Window Modal */
@@ -148,19 +156,36 @@
 </head>
 <body>
 
-<!-- ==================== 1. CLIENT LOGIN & SIGN UP SCREEN ==================== -->
+<!-- ==================== 1. CLIENT LOGIN / SIGN UP / RESET SCREEN ==================== -->
 <div id="authOverlay" class="auth-overlay">
+    <!-- Standard Login / Sign Up / Forgot Password Box -->
     <div class="auth-box" id="authFormBox">
         <h2>XAU/USD TEST D TERMINAL</h2>
-        <p>Free Demo Testing Beta — Create a Free Account for Instant Access</p>
-        <div class="auth-tabs">
+        <p id="authSubtitle">Free Demo Testing Beta — Create a Free Account for Instant Access</p>
+        <div class="auth-tabs" id="authTabsRow">
             <button id="tabLogin" class="auth-tab active" onclick="switchAuthMode('login')">Client Login</button>
             <button id="tabSignup" class="auth-tab" onclick="switchAuthMode('signup')">Sign Up Free</button>
         </div>
         <input type="email" id="authEmail" class="auth-input" placeholder="Email Address">
         <input type="password" id="authPassword" class="auth-input" placeholder="Password (min 6 chars)">
+        <div class="auth-link-row" id="forgotLinkRow">
+            <button type="button" class="auth-link" onclick="switchAuthMode('forgot')">Forgot Password?</button>
+        </div>
         <button id="authSubmitBtn" class="auth-btn" onclick="handleAuthSubmit()">Login to Terminal</button>
+        <div style="text-align:center; margin-top:10px; display:none;" id="backToLoginRow">
+            <button type="button" class="auth-link" onclick="switchAuthMode('login')">← Back to Client Login</button>
+        </div>
         <div id="authMessage" class="auth-msg"></div>
+    </div>
+
+    <!-- New Password Form (Shown automatically when user clicks the reset link in their email) -->
+    <div class="auth-box" id="updatePasswordBox" style="display:none;">
+        <h2>🔐 SET NEW PASSWORD</h2>
+        <p>Enter your new password below to regain access to your terminal.</p>
+        <input type="password" id="newPasswordInput" class="auth-input" placeholder="New Password (min 6 chars)">
+        <input type="password" id="confirmPasswordInput" class="auth-input" placeholder="Confirm New Password">
+        <button class="auth-btn" onclick="handleUpdatePassword()">Update Password & Login</button>
+        <div id="updatePwdMessage" class="auth-msg"></div>
     </div>
 
     <!-- Pending Approval Box (Used later when switching from Free Beta to Paid Access) -->
@@ -301,7 +326,7 @@
 
 <script>
 // ============================================================================
-// 1. SUPABASE AUTH & FREE DEMO BETA GATEKEEPER
+// 1. SUPABASE AUTH, SIGN UP & FORGOT PASSWORD RECOVERY
 // ============================================================================
 const SUPABASE_URL = 'https://wdexwfoplycblaxmrfws.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_6U7d-ihEr1ivc362mhkDeQ_2suPM3gy';
@@ -316,21 +341,65 @@ let masterConfig = { td_api_key: '', tg_bot_token: '', tg_chat_id: '' };
 
 function switchAuthMode(mode) {
     authMode = mode;
-    document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
-    document.getElementById('tabSignup').classList.toggle('active', mode === 'signup');
-    document.getElementById('authSubmitBtn').innerText = mode === 'login' ? 'Login to Terminal' : 'Create Free Beta Account';
+    const pwdInput = document.getElementById('authPassword');
+    const forgotRow = document.getElementById('forgotLinkRow');
+    const backRow = document.getElementById('backToLoginRow');
+    const tabsRow = document.getElementById('authTabsRow');
+    const subtitle = document.getElementById('authSubtitle');
+    const submitBtn = document.getElementById('authSubmitBtn');
     document.getElementById('authMessage').innerText = '';
+
+    if (mode === 'forgot') {
+        tabsRow.style.display = 'none';
+        pwdInput.style.display = 'none';
+        forgotRow.style.display = 'none';
+        backRow.style.display = 'block';
+        subtitle.innerText = 'Enter your registered email to receive a password reset link';
+        submitBtn.innerText = 'Send Reset Link';
+    } else {
+        tabsRow.style.display = 'flex';
+        pwdInput.style.display = 'block';
+        forgotRow.style.display = mode === 'login' ? 'flex' : 'none';
+        backRow.style.display = 'none';
+        subtitle.innerText = 'Free Demo Testing Beta — Create a Free Account for Instant Access';
+        document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
+        document.getElementById('tabSignup').classList.toggle('active', mode === 'signup');
+        submitBtn.innerText = mode === 'login' ? 'Login to Terminal' : 'Create Free Beta Account';
+    }
 }
 
 async function handleAuthSubmit() {
     const email = document.getElementById('authEmail').value.trim();
     const password = document.getElementById('authPassword').value.trim();
     const msgEl = document.getElementById('authMessage');
-    if (!email || password.length < 6) {
+
+    if (!email) {
         msgEl.style.color = 'var(--accent-red)';
-        msgEl.innerText = 'Enter a valid email and password (min 6 characters).';
+        msgEl.innerText = 'Please enter your email address.';
         return;
     }
+
+    if (authMode === 'forgot') {
+        msgEl.style.color = 'var(--accent-gold)';
+        msgEl.innerText = 'Sending password reset email...';
+        const redirectUrl = window.location.origin + window.location.pathname;
+        const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
+        if (error) {
+            msgEl.style.color = 'var(--accent-red)';
+            msgEl.innerText = error.message;
+        } else {
+            msgEl.style.color = 'var(--accent-green)';
+            msgEl.innerText = '✅ Reset link sent! Check your email inbox (and spam folder).';
+        }
+        return;
+    }
+
+    if (password.length < 6) {
+        msgEl.style.color = 'var(--accent-red)';
+        msgEl.innerText = 'Password must be at least 6 characters.';
+        return;
+    }
+
     msgEl.style.color = 'var(--accent-gold)';
     msgEl.innerText = 'Authenticating...';
 
@@ -355,12 +424,63 @@ async function handleAuthSubmit() {
     }
 }
 
+async function handleUpdatePassword() {
+    const p1 = document.getElementById('newPasswordInput').value.trim();
+    const p2 = document.getElementById('confirmPasswordInput').value.trim();
+    const msgEl = document.getElementById('updatePwdMessage');
+
+    if (p1.length < 6) {
+        msgEl.style.color = 'var(--accent-red)';
+        msgEl.innerText = 'Password must be at least 6 characters.';
+        return;
+    }
+    if (p1 !== p2) {
+        msgEl.style.color = 'var(--accent-red)';
+        msgEl.innerText = 'Passwords do not match.';
+        return;
+    }
+
+    msgEl.style.color = 'var(--accent-gold)';
+    msgEl.innerText = 'Updating password...';
+
+    const { error } = await sb.auth.updateUser({ password: p1 });
+    if (error) {
+        msgEl.style.color = 'var(--accent-red)';
+        msgEl.innerText = error.message;
+    } else {
+        msgEl.style.color = 'var(--accent-green)';
+        msgEl.innerText = '✅ Password updated! Entering terminal...';
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setTimeout(() => {
+            document.getElementById('updatePasswordBox').style.display = 'none';
+            checkUserSession();
+        }, 1000);
+    }
+}
+
+// Listen for Supabase PASSWORD_RECOVERY link redirect
+sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+        document.getElementById('authOverlay').style.display = 'flex';
+        document.getElementById('authFormBox').style.display = 'none';
+        document.getElementById('pendingApprovalBox').style.display = 'none';
+        document.getElementById('updatePasswordBox').style.display = 'block';
+    }
+});
+
 async function logoutClient() {
     await sb.auth.signOut();
     location.reload();
 }
 
 async function checkUserSession() {
+    if (window.location.hash && window.location.hash.includes('type=recovery')) {
+        document.getElementById('authOverlay').style.display = 'flex';
+        document.getElementById('authFormBox').style.display = 'none';
+        document.getElementById('updatePasswordBox').style.display = 'block';
+        return;
+    }
+
     const { data: { session } } = await sb.auth.getSession();
     if (!session) {
         document.getElementById('authOverlay').style.display = 'flex';
@@ -682,7 +802,12 @@ function manageActiveTrade(livePrice) {
         if ((trade.dir === "BUY" && livePrice <= trade.entry) || (trade.dir === "SELL" && livePrice >= trade.entry)) {
             trade.type = "ACTIVE";
             if (currentUserProfile?.role === 'admin') {
-                sendTelegramAlert("⚡ XAUUSD " + trade.dir + " FILLED @ " + trade.entry.toFixed(2) + "\n\n🔴 SL: " + trade.sl.toFixed(2) + "\n🎯 TP1: " + trade.tp.toFixed(2) + "\n\n#Trade-" + (trade.tradeId || 1));
+                sendTelegramAlert("⚡ XAUUSD " + trade.dir + " FILLED @ " + trade.entry.toFixed(2) + "
+
+🔴 SL: " + trade.sl.toFixed(2) + "
+🎯 TP1: " + trade.tp.toFixed(2) + "
+
+#Trade-" + (trade.tradeId || 1));
             }
             saveState();
         }
@@ -705,13 +830,15 @@ function closeTrade(outcome, netDollarPnL) {
     if (outcome === "WIN") {
         state.consecutiveLosses = 0;
         const logStr = "✅ #Trade-" + (trade.tradeId || 1) + " TP1 HIT (+$" + netDollarPnL.toFixed(2) + ") | Equity: $" + state.balance.toFixed(2);
-        const tgStr = "✅ #Trade-" + (trade.tradeId || 1) + " TP1 HIT (+$" + netDollarPnL.toFixed(2) + ")\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + trade.lot.toFixed(2);
+        const tgStr = "✅ #Trade-" + (trade.tradeId || 1) + " TP1 HIT (+$" + netDollarPnL.toFixed(2) + ")
+Equity: $" + state.balance.toFixed(2) + " | Lot: " + trade.lot.toFixed(2);
         logEvent(logStr);
         if (currentUserProfile?.role === 'admin') sendTelegramAlert(tgStr);
     } else {
         state.consecutiveLosses += 1;
         const logStr = "❌ #Trade-" + (trade.tradeId || 1) + " SL HIT (-$" + Math.abs(netDollarPnL).toFixed(2) + ") | Streak: " + state.consecutiveLosses + "/3";
-        const tgStr = "❌ #Trade-" + (trade.tradeId || 1) + " SL HIT (-$" + Math.abs(netDollarPnL).toFixed(2) + ")\nStreak: " + state.consecutiveLosses + "/3 | Equity: $" + state.balance.toFixed(2);
+        const tgStr = "❌ #Trade-" + (trade.tradeId || 1) + " SL HIT (-$" + Math.abs(netDollarPnL).toFixed(2) + ")
+Streak: " + state.consecutiveLosses + "/3 | Equity: $" + state.balance.toFixed(2);
         logEvent(logStr);
         if (currentUserProfile?.role === 'admin') sendTelegramAlert(tgStr);
         if (state.consecutiveLosses >= TEST_D_CONFIG.maxConsecutiveLosses) {
@@ -745,7 +872,12 @@ async function runAutopilotCycle(forceFresh = false) {
         saveState();
 
         const orderAction = setup.type === "PENDING" ? (setup.dir + " LIMIT") : (setup.dir + " NOW");
-        const tgText = "🚨 XAUUSD " + orderAction + " " + setup.entry.toFixed(2) + "\n\n🔴 SL: " + setup.sl.toFixed(2) + "\n🎯 TP1: " + setup.tp.toFixed(2) + "\n\n#Trade-" + tradeId;
+        const tgText = "🚨 XAUUSD " + orderAction + " " + setup.entry.toFixed(2) + "
+
+🔴 SL: " + setup.sl.toFixed(2) + "
+🎯 TP1: " + setup.tp.toFixed(2) + "
+
+#Trade-" + tradeId;
         logEvent(`🚀 Signal #Trade-${tradeId}: <b>${setup.dir} @ ${setup.entry.toFixed(2)}</b>`);
         if (currentUserProfile?.role === 'admin') sendTelegramAlert(tgText);
     }
@@ -771,12 +903,14 @@ async function hardSyncRefresh() {
 }
 
 async function testTelegramConnection() {
-    const ok = await sendTelegramAlert("✅ TEST D ENGINE — CONNECTION VERIFIED\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
+    const ok = await sendTelegramAlert("✅ TEST D ENGINE — CONNECTION VERIFIED
+Equity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
     if (ok) logEvent("✅ Telegram test message delivered!");
 }
 
 async function testTpHitTelegram() {
-    const ok = await sendTelegramAlert("✅ #Trade-TEST TP1 HIT (+$36.80)\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
+    const ok = await sendTelegramAlert("✅ #Trade-TEST TP1 HIT (+$36.80)
+Equity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
     if (ok) logEvent("🎯 Test TP1 HIT alert sent to Telegram!");
 }
 
@@ -819,7 +953,8 @@ async function sendTelegramAlert(text) {
     try {
         const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: chatId, text: text.replace(/\\n/g, '\n'), parse_mode: 'HTML' })
+            body: JSON.stringify({ chat_id: chatId, text: text.replace(/\n/g, '
+'), parse_mode: 'HTML' })
         });
         return (await res.json()).ok;
     } catch (e) { return false; }
