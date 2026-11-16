@@ -293,7 +293,6 @@
                 <div id="newsList"><div style="font-size:11px;color:#666">Fetching economic calendar...</div></div>
             </div>
 
-            <!-- NEW M1 BUTTON ADDED HERE -->
             <div class="tf-selector" id="tfSelector">
                 <button class="tf-btn" onclick="selectTF('1min',this)">M1</button>
                 <button class="tf-btn active" onclick="selectTF('5min',this)">M5</button>
@@ -908,7 +907,6 @@
         }
 
         async function fetchChartDataFromSource(tf){
-            // ADDED 1MIN TO THE MAP
             const intervalMap={'1min':'1min','5min':'5min','15min':'15min','30min':'30min','1h':'1h','4h':'4h','1day':'1day'};
             const tdTf=intervalMap[tf]||'5min';
             const symbolMap={'XAU/USD':'XAU/USD'};
@@ -1098,13 +1096,31 @@
             }
         }
 
-        // --- FINAL FIXED STRATEGY: Always shows Pending if no active ---
+        // --- STRATEGY & FAST TEST MODE ---
         function findSMCSetup(bars){
             if(bars.length < 50) return null;
 
             const lastBar = bars[bars.length-1];
             const currentPrice = lastBar.close;
-            
+            const pipSize = getPipSize(currentAsset);
+
+            // 🧪 ================= TEST MODE START =================
+            // Set isTestMode to false when you finish testing
+            const isTestMode = true; 
+            if (isTestMode) {
+                // Force a SELL trade with 10 pips TP1 and 500 pips SL
+                return {
+                    dir: "SELL",
+                    entry: currentPrice,
+                    sl: currentPrice + (500 * pipSize), // Huge SL (500 pips) so it never loses
+                    tp1: currentPrice - (10 * pipSize), // Exactly 10 pips away
+                    tp2: currentPrice - (20 * pipSize), // 20 pips away
+                    tf: currentTF,
+                    status: "ACTIVE"
+                };
+            }
+            // 🧪 ================= TEST MODE END ===================
+
             // RULE 1: Absolute Minimum 40 Pips SL, Max 150 Pips
             const MIN_SL_PRICE = 40 * getPipSize(currentAsset);
             const MAX_SL_PRICE = 150 * getPipSize(currentAsset);
