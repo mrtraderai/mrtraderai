@@ -1111,8 +1111,11 @@
 
             let recentSwingHigh = -Infinity;
             let recentSwingLow = Infinity;
-            // Look back 10 candles for a relevant swing
-            for(let i = bars.length - 3; i >= bars.length - 10; i--) {
+            
+            // DYNAMIC LOOKBACK (EDITED)
+            const lookback = currentTF === '1h' ? 40 : 15; 
+
+            for(let i = bars.length - 3; i >= Math.max(0, bars.length - lookback); i--) {
                 const b = bars[i];
                 if(b.high > recentSwingHigh) recentSwingHigh = b.high;
                 if(b.low < recentSwingLow) recentSwingLow = b.low;
@@ -1607,7 +1610,7 @@
                 
                 const bars=await fetchChartDataFromSource(currentTF);
                 if(!bars||bars.length===0)return;
-                const currentPrice=bars[bars.length-1].currentPrice;
+                const currentPrice=bars[bars.length-1].close;
                 
                 // --- HANDLE PENDING ACTIVATION ---
                 if (trade.status === 'PENDING') {
