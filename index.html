@@ -423,11 +423,17 @@ const SUPABASE_URL = 'https://wdexwfoplycblaxmrfws.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_6U7d-ihEr1ivc362mhkDeQ_2suPM3gy';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const ADMIN_EMAIL = 'bacharrachiini97@gmail.com';
 const FREE_DEMO_BETA_MODE = true;
 let authMode = 'login';
 let isPasswordRecoveryMode = false;
 let currentUserProfile = null;
 let masterConfig = { td_api_key: '', tg_bot_token: '', tg_chat_id: '' };
+
+function isCurrentUserAdmin() {
+    if (!currentUserProfile) return false;
+    return currentUserProfile.role === 'admin' || (currentUserProfile.email || '').toLowerCase() === ADMIN_EMAIL;
+}
 
 function switchTerminalTab(tabName) {
     ['home', 'active', 'closed', 'winrate'].forEach(t => {
@@ -521,7 +527,7 @@ async function handleAuthSubmit() {
             msgEl.innerText = error.message;
         } else {
             msgEl.style.color = 'var(--accent-green)';
-            msgEl.innerText = 'Free Beta Account created! Entering terminal...';
+            msgEl.innerText = 'Account created! Entering terminal...';
             setTimeout(checkUserSession, 900);
         }
     } else {
@@ -598,10 +604,21 @@ async function checkUserSession() {
         return;
     }
 
+    const userEmail = (session.user.email || '').toLowerCase();
     const { data: profile } = await sb.from('client_profiles').select('*').eq('id', session.user.id).single();
-    currentUserProfile = profile || { email: session.user.email, role: 'client', is_approved: false };
 
-    if (!FREE_DEMO_BETA_MODE && !currentUserProfile.is_approved && currentUserProfile.role !== 'admin') {
+    if (profile) {
+        currentUserProfile = profile;
+    } else {
+        const autoRole = userEmail === ADMIN_EMAIL ? 'admin' : 'client';
+        const autoApproved = userEmail === ADMIN_EMAIL;
+        currentUserProfile = { id: session.user.id, email: session.user.email, role: autoRole, is_approved: autoApproved };
+        await sb.from('client_profiles').upsert(currentUserProfile);
+    }
+
+    const isAdmin = isCurrentUserAdmin();
+
+    if (!FREE_DEMO_BETA_MODE && !currentUserProfile.is_approved && !isAdmin) {
         document.getElementById('authFormBox').style.display = 'none';
         document.getElementById('pendingApprovalBox').style.display = 'block';
         document.getElementById('pendingEmailText').innerText = currentUserProfile.email;
@@ -611,7 +628,6 @@ async function checkUserSession() {
     document.getElementById('authOverlay').style.display = 'none';
     document.getElementById('terminalApp').style.display = 'flex';
 
-    const isAdmin = currentUserProfile.role === 'admin';
     if (isAdmin) {
         document.getElementById('openAdminBtn').style.display = 'inline-block';
         document.getElementById('headerRoleSub').innerText = 'ADMIN MASTER ENGINE — Live Scanning & Signal Broadcasting';
@@ -640,24 +656,26 @@ async function loadMasterConfig(isAdmin) {
 }
 
 async function saveMasterConfig() {
-    if (currentUserProfile?.role !== 'admin') return;
+    if (!isCurrentUserAdmin()) return;
     const td = document.getElementById('adminTdKey').value.trim();
     const tg = document.getElementById('adminTgToken').value.trim();
     const chat = document.getElementById('adminTgChat').value.trim();
 
-    const { error } = await sb.from('engine_config').update({
-        td_api_key: td, tg_bot_token: tg, tg_chat_id: chat
-    }).eq('id', 1);
+    const { error } = await sb.from('engine_config').upsert({
+        id: 1, td_api_key: td, tg_bot_token: tg, tg_chat_id: chat
+    });
 
     if (!error) {
         masterConfig = { td_api_key: td, tg_bot_token: tg, tg_chat_id: chat };
         logEvent('🔑 Master TwelveData & Telegram credentials saved.');
         hardSyncRefresh();
+    } else {
+        logEvent('⚠️ Error saving config: ' + error.message);
     }
 }
 
 function openAdminWindow() {
-    if (currentUserProfile?.role !== 'admin') return;
+    if (!isCurrentUserAdmin()) return;
     document.getElementById('adminModal').style.display = 'flex';
     loadClientList();
 }
@@ -677,7 +695,7 @@ async function loadClientList() {
     tbody.innerHTML = data.map(u => `
         <tr>
             <td>${u.email}</td>
-            <td><strong>${u.role.toUpperCase()}</strong></td>
+            <td><strong>${(u.role || 'client').toUpperCase()}</strong></td>
             <td>${u.is_approved ? '<span class="badge-approved">VIP PAID</span>' : '<span class="badge-pending">FREE BETA</span>'}</td>
             <td>
                 ${u.role === 'admin' ? '—' : `
@@ -731,7 +749,7 @@ async function loadSharedTerminalState() {
 
 async function saveState() {
     updateDashboardUI();
-    if (currentUserProfile?.role === 'admin') {
+    if (isCurrentUserAdmin()) {
         state.htfBias = htfBias;
         await sb.from('terminal_state').upsert({ id: 1, state_json: state, updated_at: new Date().toISOString() });
     }
@@ -740,7 +758,7 @@ async function saveState() {
 function subscribeToRealtimeState() {
     sb.channel('terminal-live-sync')
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'terminal_state', filter: 'id=eq.1' }, (payload) => {
-            if (currentUserProfile?.role !== 'admin' && payload.new && payload.new.state_json) {
+            if (!isCurrentUserAdmin() && payload.new && payload.new.state_json) {
                 const prevTradeId = state.activeTrade?.tradeId;
                 const prevHistoryLen = (state.history || []).length;
                 state = { ...state, ...payload.new.state_json };
@@ -774,7 +792,7 @@ function logEvent(msg) {
     logBox.prepend(div);
     if (logBox.children.length > 50) logBox.removeChild(logBox.lastChild);
 
-    if (currentUserProfile?.role === 'admin') {
+    if (isCurrentUserAdmin()) {
         state.recentLogs = [entryHtml, ...(state.recentLogs || [])].slice(0, 25);
     }
 }
@@ -811,7 +829,7 @@ function triggerCircuitBreaker() {
     const alertMsg = '🚨 3-SL CIRCUIT BREAKER TRIGGERED — Autopilot paused for 24h.';
     logEvent(alertMsg);
     saveState();
-    if (currentUserProfile?.role === 'admin') sendTelegramAlert(alertMsg);
+    if (isCurrentUserAdmin()) sendTelegramAlert(alertMsg);
 }
 
 function isInstitutionalKillZone(dateObj = new Date()) {
@@ -907,4 +925,359 @@ function evaluateTestDSetup(m5Bars) {
     }
 
     const minFvg = atr * 0.45, bullFvg = c1.low - c3.high, bearFvg = c3.low - c1.high;
-    if (allowBuy && Math.min(c3.low, c4.low) <= targetLowPool * 1.0005 && bullFvg >= minFvg && c2.close > c2.open && c2Ratio >= 0
+    if (allowBuy && Math.min(c3.low, c4.low) <= targetLowPool * 1.0005 && bullFvg >= minFvg && c2.close > c2.open && c2Ratio >= 0.65 && rsi < 66) {
+        const entry = c3.high + (bullFvg * 0.50);
+        let sl = Math.min(c3.low, c4.low) - slBuffer, risk = entry - sl;
+        if (risk < minSL) { risk = minSL; sl = entry - risk; }
+        if (entry < nextOpen && risk <= maxSL) return { dir: "BUY", type: "PENDING", setupName: "Sweep + 50% FVG", entry, sl, tp: entry + (risk * 2.0), riskDistance: risk, lot: state.currentLot, createdAt: Date.now() };
+    }
+    if (allowSell && Math.max(c3.high, c4.high) >= targetHighPool * 0.9995 && bearFvg >= minFvg && c2.close < c2.open && c2Ratio >= 0.65 && rsi > 34) {
+        const entry = c3.low - (bearFvg * 0.50);
+        let sl = Math.max(c3.high, c4.high) + slBuffer, risk = sl - entry;
+        if (risk < minSL) { risk = minSL; sl = entry + risk; }
+        if (entry > nextOpen && risk <= maxSL) return { dir: "SELL", type: "PENDING", setupName: "Sweep + 50% FVG", entry, sl, tp: entry - (risk * 2.0), riskDistance: risk, lot: state.currentLot, createdAt: Date.now() };
+    }
+    return null;
+}
+
+async function fetchTwelveData(interval, outputsize = 120, forceFresh = false) {
+    const apiKey = masterConfig.td_api_key;
+    if (!apiKey) return null;
+    const cacheKey = `XAU_${interval}`;
+    if (!forceFresh && chartCache[cacheKey] && (Date.now() - chartCache[cacheKey].ts < 45000)) return chartCache[cacheKey].bars;
+    try {
+        const res = await fetch(`https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=${interval}&outputsize=${outputsize}&apikey=${apiKey}`);
+        const data = await res.json();
+        if (!data.values) return null;
+        const bars = data.values.reverse().map(v => ({
+            time: Math.floor(new Date(v.datetime.replace(' ', 'T') + 'Z').getTime() / 1000),
+            open: parseFloat(v.open), high: parseFloat(v.high), low: parseFloat(v.low), close: parseFloat(v.close)
+        }));
+        chartCache[cacheKey] = { bars, ts: Date.now() };
+        return bars;
+    } catch (e) { return null; }
+}
+
+async function syncHTFTrend(forceFresh = false) {
+    const h1Bars = await fetchTwelveData('1h', 210, forceFresh);
+    if (!h1Bars || h1Bars.length < 200) return;
+    const closedH1 = h1Bars.slice(0, -1);
+    const ema50 = calcEMA(closedH1, 50), ema200 = calcEMA(closedH1, 200);
+    const lastClose = closedH1[closedH1.length - 1].close;
+    htfBias = (lastClose > ema50 && ema50 > ema200) ? "BULLISH" : (lastClose < ema50 && ema50 < ema200) ? "BEARISH" : "NEUTRAL";
+}
+
+function manageActiveTrade(livePrice) {
+    const trade = state.activeTrade;
+    if (!trade) return;
+    if (trade.type === "PENDING") {
+        if (Date.now() - trade.createdAt > 45 * 60 * 1000) { state.activeTrade = null; clearChartLines(); saveState(); return; }
+        if ((trade.dir === "BUY" && livePrice <= trade.entry) || (trade.dir === "SELL" && livePrice >= trade.entry)) {
+            trade.type = "ACTIVE";
+            logEvent(`⚡ #Trade-${trade.tradeId || 1} LIMIT FILLED @ ${trade.entry.toFixed(2)}`);
+            if (isCurrentUserAdmin()) {
+                sendTelegramAlert("⚡ XAUUSD " + trade.dir + " FILLED @ " + trade.entry.toFixed(2) + "\n\n🔴 SL: " + trade.sl.toFixed(2) + "\n🎯 TP1: " + trade.tp.toFixed(2) + "\n\n#Trade-" + (trade.tradeId || 1));
+            }
+            saveState();
+        }
+        return;
+    }
+    const dollarRisk1R = (trade.lot / 0.04) * 20.0, spreadCost = (trade.lot / 0.04) * 3.20;
+    if (trade.dir === "BUY") {
+        if (livePrice >= trade.tp) closeTrade("WIN", (dollarRisk1R * 2.0) - spreadCost);
+        else if (livePrice <= trade.sl) closeTrade("LOSS", -dollarRisk1R - (spreadCost * 0.5));
+    } else {
+        if (livePrice <= trade.tp) closeTrade("WIN", (dollarRisk1R * 2.0) - spreadCost);
+        else if (livePrice >= trade.sl) closeTrade("LOSS", -dollarRisk1R - (spreadCost * 0.5));
+    }
+}
+
+function closeTrade(outcome, netDollarPnL) {
+    const trade = state.activeTrade;
+    const roundedPnL = Math.round(netDollarPnL * 100) / 100;
+    state.balance = Math.round((state.balance + roundedPnL) * 100) / 100;
+    if (state.balance > state.highWaterMark) state.highWaterMark = state.balance;
+
+    const closedRecord = {
+        tradeId: trade.tradeId || 1,
+        dir: trade.dir,
+        setupName: trade.setupName,
+        entry: trade.entry,
+        sl: trade.sl,
+        tp: trade.tp,
+        lot: trade.lot,
+        outcome: outcome,
+        netPnL: roundedPnL,
+        closedAt: new Date().toUTCString().slice(5, 22) + " UTC"
+    };
+    state.history = [closedRecord, ...(state.history || [])];
+
+    if (outcome === "WIN") {
+        state.consecutiveLosses = 0;
+        const logStr = "✅ #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ") | Equity: $" + state.balance.toFixed(2);
+        const tgStr = "✅ #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + trade.lot.toFixed(2);
+        logEvent(logStr);
+        if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
+    } else {
+        state.consecutiveLosses += 1;
+        const logStr = "❌ #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ") | Streak: " + state.consecutiveLosses + "/3";
+        const tgStr = "❌ #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")\nStreak: " + state.consecutiveLosses + "/3 | Equity: $" + state.balance.toFixed(2);
+        logEvent(logStr);
+        if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
+        if (state.consecutiveLosses >= TEST_D_CONFIG.maxConsecutiveLosses) {
+            state.activeTrade = null; clearChartLines(); triggerCircuitBreaker(); return;
+        }
+    }
+    state.activeTrade = null; clearChartLines(); saveState();
+}
+
+async function runAutopilotCycle(forceFresh = false) {
+    const isAdmin = isCurrentUserAdmin();
+    if (isAdmin) evaluateMonthlyLotScaling();
+    updateDashboardUI();
+
+    if (!isAdmin) return;
+    if (!isCircuitBreakerClear()) return;
+
+    await syncHTFTrend(forceFresh);
+    const m5Bars = await fetchTwelveData('5min', 120, forceFresh);
+    if (!m5Bars) return;
+
+    candleSeries.setData(m5Bars);
+    state.latestBars = m5Bars.slice(-80);
+    const livePrice = m5Bars[m5Bars.length - 1].close;
+    state.lastPrice = livePrice;
+    document.getElementById('lastSyncTime').innerText = `Last Sync: ${new Date().toUTCString().slice(17, 25)} UTC`;
+
+    if (state.activeTrade) {
+        manageActiveTrade(livePrice);
+        drawTradeLines(state.activeTrade);
+        await saveState();
+        return;
+    }
+
+    const setup = evaluateTestDSetup(m5Bars);
+    if (setup) {
+        const tradeId = state.tradeCounter++;
+        setup.tradeId = tradeId;
+        state.activeTrade = setup;
+        drawTradeLines(setup);
+
+        const orderAction = setup.type === "PENDING" ? (setup.dir + " LIMIT") : (setup.dir + " NOW");
+        const tgText = "🚨 XAUUSD " + orderAction + " " + setup.entry.toFixed(2) + "\n\n🔴 SL: " + setup.sl.toFixed(2) + "\n🎯 TP1: " + setup.tp.toFixed(2) + "\n\n#Trade-" + tradeId;
+        logEvent(`🚀 Signal #Trade-${tradeId}: <b>${setup.dir} @ ${setup.entry.toFixed(2)}</b>`);
+        sendTelegramAlert(tgText);
+    }
+    await saveState();
+}
+
+async function pollLivePriceOnly() {
+    if (!isCurrentUserAdmin()) return;
+    const apiKey = masterConfig.td_api_key;
+    if (!apiKey || !state.activeTrade) return;
+    try {
+        const res = await fetch(`https://api.twelvedata.com/price?symbol=XAU/USD&apikey=${apiKey}`);
+        const data = await res.json();
+        if (data.price) {
+            const p = parseFloat(data.price);
+            state.lastPrice = p;
+            manageActiveTrade(p);
+            await saveState();
+        }
+    } catch (e) {}
+}
+
+async function hardSyncRefresh() {
+    if (isCurrentUserAdmin()) {
+        chartCache = {}; clearChartLines();
+        await runAutopilotCycle(true);
+    } else {
+        await loadSharedTerminalState();
+        logEvent('🔄 Synced latest signals & stats from server.');
+    }
+}
+
+async function testTelegramConnection() {
+    const ok = await sendTelegramAlert("✅ TEST D ENGINE — CONNECTION VERIFIED\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
+    if (ok) logEvent("✅ Telegram test message delivered!");
+}
+
+async function testTpHitTelegram() {
+    const ok = await sendTelegramAlert("✅ #Trade-TEST TP1 HIT (+$36.80)\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
+    if (ok) logEvent("🎯 Test TP1 HIT alert sent to Telegram!");
+}
+
+async function resetLiveAccountState() {
+    if (!confirm("Reset equity to $400.00, lot to 0.04, history, and #Trade-1?")) return;
+    state = {
+        balance: 400.00, highWaterMark: 400.00, monthStartBalance: 400.00,
+        currentLot: 0.04, monthTier: 1, lastScaledMonth: new Date().toISOString().slice(0, 7),
+        consecutiveLosses: 0, lockoutUntil: 0, tradeCounter: 1, activeTrade: null, history: [],
+        lastPrice: state.lastPrice, htfBias: htfBias, recentLogs: [], latestBars: state.latestBars || []
+    };
+    clearChartLines();
+    logEvent("♻️ Account reset to $400.00 | #Trade-1.");
+    await saveState();
+}
+
+function initChart() {
+    const container = document.getElementById('chart');
+    chart = LightweightCharts.createChart(container, {
+        layout: { background: { color: '#131722' }, textColor: '#94a3b8' },
+        grid: { vertLines: { color: '#1e2536' }, horzLines: { color: '#1e2536' } },
+        timeScale: { timeVisible: true, secondsVisible: false },
+        rightPriceScale: { borderColor: '#2a3142' }
+    });
+    candleSeries = chart.addCandlestickSeries({ upColor: '#10b981', downColor: '#ef4444', borderVisible: false, wickUpColor: '#10b981', wickDownColor: '#ef4444' });
+    window.addEventListener('resize', () => chart.applyOptions({ width: container.clientWidth }));
+}
+
+function clearChartLines() {
+    if (!candleSeries) return;
+    priceLines.forEach(l => candleSeries.removePriceLine(l));
+    priceLines = [];
+}
+
+function drawTradeLines(trade) {
+    clearChartLines();
+    if (!trade || !candleSeries) return;
+    priceLines.push(candleSeries.createPriceLine({ price: trade.entry, color: '#3b82f6', lineWidth: 2, lineStyle: 0, title: 'ENTRY' }));
+    priceLines.push(candleSeries.createPriceLine({ price: trade.sl, color: '#ef4444', lineWidth: 2, lineStyle: 2, title: 'SL' }));
+    priceLines.push(candleSeries.createPriceLine({ price: trade.tp, color: '#10b981', lineWidth: 2, lineStyle: 0, title: 'TP1 (1:2)' }));
+}
+
+async function sendTelegramAlert(text) {
+    const token = masterConfig.tg_bot_token, chatId = masterConfig.tg_chat_id;
+    if (!token || !chatId) return false;
+    try {
+        const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' })
+        });
+        return (await res.json()).ok;
+    } catch (e) { return false; }
+}
+
+// ============================================================================
+// 5. UNIFIED UI RENDERING (HOME, ACTIVE TRADE, CLOSED TRADES, WIN RATE)
+// ============================================================================
+function updateDashboardUI() {
+    if (state.lastPrice) document.getElementById('uiLivePrice').innerText = Number(state.lastPrice).toFixed(2);
+    document.getElementById('uiTrendBias').innerText = htfBias;
+    document.getElementById('uiTrendBias').style.color = htfBias === "BULLISH" ? "var(--accent-green)" : htfBias === "BEARISH" ? "var(--accent-red)" : "var(--accent-gold)";
+    document.getElementById('uiKillZone').innerText = isInstitutionalKillZone() ? "🟢 Inside Active Kill Zone" : "🟡 Outside Kill Zone";
+
+    document.getElementById('uiBalance').innerText = `$${Number(state.balance).toFixed(2)}`;
+    document.getElementById('uiLotSub').innerText = `${Number(state.currentLot).toFixed(2)} lots (Tier #${state.monthTier})`;
+
+    const hist = state.history || [];
+    const wins = hist.filter(h => h.outcome === 'WIN');
+    const losses = hist.filter(h => h.outcome === 'LOSS');
+    const total = hist.length;
+    const winRatePct = total > 0 ? ((wins.length / total) * 100).toFixed(1) : '0.0';
+    const grossProfit = wins.reduce((s, w) => s + Number(w.netPnL), 0);
+    const grossLoss = Math.abs(losses.reduce((s, l) => s + Number(l.netPnL), 0));
+    const netProfit = grossProfit - grossLoss;
+    const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : (grossProfit > 0 ? '∞' : '0.00');
+
+    document.getElementById('uiHomeWinRate').innerText = `${winRatePct}%`;
+    document.getElementById('uiHomeRecord').innerText = `${wins.length}W - ${losses.length}L (${total} Trades)`;
+
+    document.getElementById('statWinRate').innerText = `${winRatePct}%`;
+    document.getElementById('statWinsLosses').innerText = `${wins.length}W / ${losses.length}L`;
+    document.getElementById('statTotalTrades').innerText = `${total} Total Closed`;
+    const netEl = document.getElementById('statNetProfit');
+    netEl.innerText = `${netProfit >= 0 ? '+' : '-'}$${Math.abs(netProfit).toFixed(2)}`;
+    netEl.style.color = netProfit >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+    document.getElementById('statEquityHigh').innerText = `Peak Equity: $${Number(state.highWaterMark).toFixed(2)}`;
+    document.getElementById('statProfitFactor').innerText = profitFactor;
+
+    const homeSigBox = document.getElementById('homeSignalContainer');
+    const activeTabBox = document.getElementById('dedicatedActiveContainer');
+    const statusTag = document.getElementById('activeTradeStatusTag');
+
+    if (state.activeTrade) {
+        const t = state.activeTrade, cls = t.dir.toLowerCase();
+        statusTag.innerText = `🟢 ${t.type} — #Trade-${t.tradeId || 1}`;
+        const cardHtml = `
+            <div class="signal-card ${cls}">
+                <div class="sig-row">
+                    <strong>#Trade-${t.tradeId || 1} — ${t.setupName}</strong>
+                    <span class="sig-badge ${cls}">${t.dir} (${t.type})</span>
+                </div>
+                <div class="sig-row"><span>Entry Price:</span><strong>${Number(t.entry).toFixed(2)}</strong></div>
+                <div class="sig-row"><span>Stop Loss (SL):</span><strong style="color:var(--accent-red);">${Number(t.sl).toFixed(2)}</strong></div>
+                <div class="sig-row"><span>Take Profit (TP1 1:2):</span><strong style="color:var(--accent-green);">${Number(t.tp).toFixed(2)}</strong></div>
+                <div class="sig-row"><span>Position Size:</span><strong>${Number(t.lot).toFixed(2)} lots</strong></div>
+            </div>`;
+        homeSigBox.innerHTML = cardHtml;
+        activeTabBox.innerHTML = cardHtml;
+    } else {
+        statusTag.innerText = '🟡 STANDBY — Scanning Kill Zones';
+        const standbyHtml = `
+            <div class="signal-card">
+                <div class="sig-row"><strong>🤖 Autopilot Scanning</strong><span class="sig-badge">STANDBY</span></div>
+                <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 6px;">
+                    Monitoring Asian Range &amp; 24-bar liquidity pools during London (07:00–10:30 UTC) and NY (12:30–16:30 UTC) Kill Zones.
+                </p>
+            </div>`;
+        homeSigBox.innerHTML = standbyHtml;
+        activeTabBox.innerHTML = standbyHtml;
+    }
+
+    document.getElementById('closedCountTag').innerText = `${total} Completed Trades`;
+    const closedTbody = document.getElementById('closedTradesTableBody');
+    if (total === 0) {
+        closedTbody.innerHTML = '<tr><td colspan="10" style="color:var(--text-secondary); text-align:center; padding:18px;">No closed trades recorded yet.</td></tr>';
+    } else {
+        closedTbody.innerHTML = hist.map(h => {
+            const isWin = h.outcome === 'WIN';
+            const pnlColor = isWin ? 'var(--accent-green)' : 'var(--accent-red)';
+            const dirColor = h.dir === 'BUY' ? 'var(--accent-green)' : 'var(--accent-red)';
+            return `
+                <tr>
+                    <td><strong>#Trade-${h.tradeId}</strong></td>
+                    <td style="color:${dirColor}; font-weight:700;">${h.dir}</td>
+                    <td>${h.setupName}</td>
+                    <td>${Number(h.entry).toFixed(2)}</td>
+                    <td>${Number(h.sl).toFixed(2)}</td>
+                    <td>${Number(h.tp).toFixed(2)}</td>
+                    <td>${Number(h.lot).toFixed(2)}</td>
+                    <td style="color:${pnlColor}; font-weight:700;">${h.outcome}</td>
+                    <td style="color:${pnlColor}; font-weight:700;">${h.netPnL >= 0 ? '+' : '-'}$${Math.abs(h.netPnL).toFixed(2)}</td>
+                    <td style="color:var(--text-secondary);">${h.closedAt}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+}
+
+function startTerminalEngine(isAdmin) {
+    if (engineStarted) return;
+    engineStarted = true;
+    initChart();
+
+    if (state.recentLogs && state.recentLogs.length > 0) {
+        document.getElementById('systemLogs').innerHTML = state.recentLogs.map(l => `<div class="log-entry">${l}</div>`).join('');
+    }
+    if (state.latestBars && state.latestBars.length > 0) {
+        candleSeries.setData(state.latestBars);
+        if (state.activeTrade) drawTradeLines(state.activeTrade);
+    }
+
+    updateDashboardUI();
+    logEvent(`🚀 Connected as ${currentUserProfile.email} (${isAdmin ? 'ADMIN MASTER' : 'CLIENT VIEW'}).`);
+
+    if (isAdmin) {
+        runAutopilotCycle(true);
+        setInterval(() => runAutopilotCycle(false), TEST_D_CONFIG.scanIntervalMs);
+        setInterval(pollLivePriceOnly, TEST_D_CONFIG.priceTickMs);
+    } else {
+        setInterval(loadSharedTerminalState, 30000);
+    }
+}
+
+window.addEventListener('DOMContentLoaded', checkUserSession);
+</script>
+</body>
+</html>
