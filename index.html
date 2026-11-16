@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XAU/USD Test D — Autonomous SMC Terminal</title>
+    <title>Mr.Trader AI — Autonomous XAU/USD SMC Terminal</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -19,22 +19,33 @@
             --accent-blue: #3b82f6;
             --border-color: #2a3142;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, monospace; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Roboto, sans-serif; }
         body { background: var(--bg-primary); color: var(--text-primary); padding: 14px; }
         .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+
+        /* Language Switch Button (Top Left) */
+        .lang-switch-btn {
+            background: var(--bg-card); color: var(--accent-gold); border: 1px solid var(--accent-gold);
+            padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s;
+        }
+        .lang-switch-btn:hover { background: var(--accent-gold); color: #000; }
+        .auth-top-left {
+            position: fixed; top: 16px; left: 16px; z-index: 10001;
+        }
 
         /* Auth Overlay */
         .auth-overlay {
             position: fixed; inset: 0; background: var(--bg-primary); z-index: 9999;
-            display: flex; justify-content: center; align-items: center; padding: 16px;
+            display: flex; justify-content: center; align-items: center; padding: 16px; overflow-y: auto;
         }
         .auth-box {
-            width: 100%; max-width: 410px; background: var(--bg-secondary);
+            width: 100%; max-width: 440px; background: var(--bg-secondary);
             border: 1px solid var(--border-color); border-radius: 12px; padding: 26px;
             box-shadow: 0 12px 35px rgba(0,0,0,0.6);
         }
-        .auth-box h2 { color: var(--accent-gold); font-size: 1.25rem; margin-bottom: 6px; text-align: center; }
-        .auth-box p { color: var(--text-secondary); font-size: 0.78rem; margin-bottom: 18px; text-align: center; }
+        .auth-box h2 { color: var(--accent-gold); font-size: 1.35rem; margin-bottom: 6px; text-align: center; }
+        .auth-box p { color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 18px; text-align: center; line-height: 1.5; }
         .auth-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
         .auth-tab {
             flex: 1; padding: 8px; background: var(--bg-primary); border: 1px solid var(--border-color);
@@ -48,6 +59,7 @@
         .auth-btn {
             width: 100%; padding: 11px; background: var(--accent-gold); color: #000; border: none;
             border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.88rem;
+            display: inline-block; text-align: center; text-decoration: none;
         }
         .auth-link-row { display: flex; justify-content: flex-end; margin-top: -6px; margin-bottom: 14px; }
         .auth-link {
@@ -56,6 +68,27 @@
         }
         .auth-link:hover { color: var(--accent-gold); }
         .auth-msg { font-size: 0.78rem; margin-top: 10px; text-align: center; color: var(--accent-green); }
+
+        /* VIP Pricing Cards */
+        .plans-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 12px;
+        }
+        .plan-card {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px;
+            padding: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+            text-align: center; transition: border-color 0.15s;
+        }
+        .plan-card:hover { border-color: var(--accent-gold); }
+        .plan-card.popular { border: 1.5px solid var(--accent-gold); }
+        .plan-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+        .plan-price { font-size: 1.55rem; font-weight: 800; color: var(--accent-gold); }
+        .plan-desc { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.45; }
+        .btn-tg {
+            background: #229ED9; color: #fff; border: none; padding: 9px 14px; border-radius: 7px;
+            font-weight: 700; font-size: 0.8rem; cursor: pointer; text-decoration: none;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-tg:hover { background: #1d8ec4; }
 
         /* PIN & AW Modal */
         .modal-backdrop {
@@ -73,7 +106,7 @@
             font-size: 1.35rem; font-weight: 700; text-align: center; letter-spacing: 8px;
         }
         .admin-window {
-            width: 100%; max-width: 960px; max-height: 92vh; overflow-y: auto;
+            width: 100%; max-width: 980px; max-height: 92vh; overflow-y: auto;
             background: var(--bg-secondary); border: 1px solid var(--accent-gold);
             border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px;
         }
@@ -88,7 +121,7 @@
         .admin-section h4 { color: var(--accent-gold); font-size: 0.85rem; margin-bottom: 10px; }
         .data-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
         .data-table th, .data-table td {
-            padding: 8px 6px; border-bottom: 1px solid var(--border-color); text-align: left; vertical-align: middle;
+            padding: 8px 6px; border-bottom: 1px solid var(--border-color); text-align: start; vertical-align: middle;
         }
         .data-table th { color: var(--text-secondary); font-size: 0.7rem; text-transform: uppercase; }
         .badge-approved { color: var(--accent-green); font-weight: 700; }
@@ -105,7 +138,8 @@
             background: var(--bg-secondary); padding: 14px 18px; border-radius: 10px;
             border: 1px solid var(--border-color); gap: 10px;
         }
-        .title-group h1 { font-size: 1.15rem; color: var(--accent-gold); letter-spacing: 0.5px; }
+        .header-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .title-group h1 { font-size: 1.2rem; color: var(--accent-gold); letter-spacing: 0.5px; }
         .title-group p { font-size: 0.78rem; color: var(--text-secondary); margin-top: 2px; }
         .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .status-pill {
@@ -129,9 +163,9 @@
             padding: 8px; border-radius: 10px; border: 1px solid var(--border-color);
         }
         .nav-tab {
-            flex: 1; min-width: 130px; padding: 10px 14px; background: var(--bg-primary);
+            flex: 1; min-width: 115px; padding: 10px 12px; background: var(--bg-primary);
             border: 1px solid var(--border-color); color: var(--text-secondary);
-            border-radius: 7px; cursor: pointer; font-weight: 700; font-size: 0.82rem;
+            border-radius: 7px; cursor: pointer; font-weight: 700; font-size: 0.8rem;
             text-align: center; transition: all 0.15s;
         }
         .nav-tab:hover { border-color: var(--accent-gold); color: var(--text-primary); }
@@ -165,10 +199,10 @@
         /* Active Signal Card */
         .signal-card {
             background: var(--bg-card); border-radius: 8px; padding: 14px;
-            border-left: 4px solid var(--accent-gold); margin-bottom: 12px;
+            border-inline-start: 4px solid var(--accent-gold); margin-bottom: 12px;
         }
-        .signal-card.buy { border-left-color: var(--accent-green); }
-        .signal-card.sell { border-left-color: var(--accent-red); }
+        .signal-card.buy { border-inline-start-color: var(--accent-green); }
+        .signal-card.sell { border-inline-start-color: var(--accent-red); }
         .sig-row { display: flex; justify-content: space-between; font-size: 0.84rem; margin: 5px 0; }
         .sig-badge { padding: 3px 9px; border-radius: 4px; font-weight: 700; font-size: 0.75rem; }
         .sig-badge.buy { background: rgba(16,185,129,0.2); color: var(--accent-green); }
@@ -180,49 +214,81 @@
             border: 1px solid var(--border-color); line-height: 1.5;
         }
         .log-entry { margin-bottom: 4px; border-bottom: 1px dashed #1e2536; padding-bottom: 3px; }
-        .log-time { color: var(--accent-gold); margin-right: 6px; }
+        .log-time { color: var(--accent-gold); margin-inline-end: 6px; }
     </style>
 </head>
 <body>
 
-<!-- ==================== 1. LOGIN / SIGN UP / RESET SCREEN ==================== -->
+<!-- ==================== 1. LOGIN / SIGN UP / VIP LOCK SCREEN ==================== -->
 <div id="authOverlay" class="auth-overlay">
+    <!-- Top Left Language Switcher on Auth Screen -->
+    <div class="auth-top-left">
+        <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
+    </div>
+
     <div class="auth-box" id="authFormBox">
-        <h2>XAU/USD TEST D TERMINAL</h2>
-        <p id="authSubtitle">Sign in or create an account to access the live terminal</p>
+        <h2>Mr.Trader AI</h2>
+        <p id="authSubtitle" data-i18n="authSub">Sign in or create an account to access the live XAU/USD AI terminal</p>
         <div class="auth-tabs" id="authTabsRow">
-            <button type="button" id="tabLogin" class="auth-tab active" onclick="switchAuthMode('login')">Client Login</button>
-            <button type="button" id="tabSignup" class="auth-tab" onclick="switchAuthMode('signup')">Sign Up</button>
+            <button type="button" id="tabLogin" class="auth-tab active" onclick="switchAuthMode('login')" data-i18n="clientLogin">Client Login</button>
+            <button type="button" id="tabSignup" class="auth-tab" onclick="switchAuthMode('signup')" data-i18n="signUp">Sign Up</button>
         </div>
-        <input type="email" id="authEmail" class="auth-input" placeholder="Email Address">
-        <input type="password" id="authPassword" class="auth-input" placeholder="Password (min 6 chars)">
+        <input type="email" id="authEmail" class="auth-input" data-i18n-ph="emailPh" placeholder="Email Address">
+        <input type="password" id="authPassword" class="auth-input" data-i18n-ph="passPh" placeholder="Password (min 6 chars)">
         <div class="auth-link-row" id="forgotLinkRow">
-            <button type="button" class="auth-link" onclick="switchAuthMode('forgot')">Forgot Password?</button>
+            <button type="button" class="auth-link" onclick="switchAuthMode('forgot')" data-i18n="forgotPass">Forgot Password?</button>
         </div>
-        <button type="button" id="authSubmitBtn" class="auth-btn" onclick="handleAuthSubmit()">Login to Terminal</button>
+        <button type="button" id="authSubmitBtn" class="auth-btn" onclick="handleAuthSubmit()" data-i18n="loginBtn">Login to Terminal</button>
         <div style="text-align:center; margin-top:10px; display:none;" id="backToLoginRow">
-            <button type="button" class="auth-link" onclick="switchAuthMode('login')">← Back to Client Login</button>
+            <button type="button" class="auth-link" onclick="switchAuthMode('login')" data-i18n="backLogin">← Back to Client Login</button>
         </div>
         <div id="authMessage" class="auth-msg"></div>
+        <div style="text-align:center; margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
+            <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg" style="width:100%;">
+                ✈️ <span data-i18n="tgSupportBtn">Telegram Official Support & VIP (@mrtraderai_official)</span>
+            </a>
+        </div>
     </div>
 
     <!-- Set New Password Form -->
     <div class="auth-box" id="updatePasswordBox" style="display:none;">
-        <h2>🔐 SET NEW PASSWORD</h2>
-        <p>Enter your new password below to regain access to your terminal.</p>
+        <h2 data-i18n="setNewPassTitle">🔐 SET NEW PASSWORD</h2>
+        <p data-i18n="setNewPassDesc">Enter your new password below to regain access to Mr.Trader AI.</p>
         <input type="password" id="newPasswordInput" class="auth-input" placeholder="New Password (min 6 chars)">
         <input type="password" id="confirmPasswordInput" class="auth-input" placeholder="Confirm New Password">
-        <button type="button" class="auth-btn" onclick="handleUpdatePassword()">Update Password & Login</button>
+        <button type="button" class="auth-btn" onclick="handleUpdatePassword()" data-i18n="updatePassBtn">Update Password & Login</button>
         <div id="updatePwdMessage" class="auth-msg"></div>
     </div>
 
     <!-- Pending / Expired VIP Subscription Screen -->
-    <div class="auth-box" id="pendingApprovalBox" style="display:none; text-align:center;">
+    <div class="auth-box" id="pendingApprovalBox" style="display:none; max-width:680px; text-align:center;">
         <h2 id="vipLockTitle">⏳ VIP Subscription Required</h2>
         <p id="vipLockDesc" style="margin-top:8px;">
-            Your account (<strong id="pendingEmailText"></strong>) requires an active <strong>1-Month</strong> or <strong>3-Month VIP Bundle</strong>. Please contact the Admin to activate or renew your plan.
+            Account: <strong id="pendingEmailText"></strong> — Choose a VIP plan below and message <strong>@mrtraderai_official</strong> on Telegram to activate instantly.
         </p>
-        <button type="button" class="auth-btn" style="background:var(--bg-card); color:#fff; border:1px solid var(--border-color);" onclick="logoutClient()">Sign Out</button>
+
+        <div class="plans-grid" style="margin-bottom:16px;">
+            <div class="plan-card">
+                <div class="plan-title" data-i18n="plan3dTitle">3-Day Trial</div>
+                <div class="plan-price">$15</div>
+                <div class="plan-desc" data-i18n="plan3dDesc">Full live XAU/USD SMC signals & Telegram alerts for 3 days</div>
+                <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
+            </div>
+            <div class="plan-card popular">
+                <div class="plan-title" data-i18n="plan1mTitle">1 Month VIP</div>
+                <div class="plan-price">$99</div>
+                <div class="plan-desc" data-i18n="plan1mDesc">30 days full terminal access, real-time entries, SL & TP1 alerts</div>
+                <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
+            </div>
+            <div class="plan-card">
+                <div class="plan-title" data-i18n="plan3mTitle">3 Months VIP</div>
+                <div class="plan-price">$250</div>
+                <div class="plan-desc" data-i18n="plan3mDesc">90 days priority VIP access (Save $47 vs monthly)</div>
+                <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
+            </div>
+        </div>
+
+        <button type="button" class="auth-btn" style="background:var(--bg-card); color:#fff; border:1px solid var(--border-color);" onclick="logoutClient()" data-i18n="signOut">Sign Out</button>
     </div>
 </div>
 
@@ -285,7 +351,7 @@
                             <th>VIP Start</th>
                             <th>VIP Expires</th>
                             <th>Status</th>
-                            <th>Assign Bundle / Password Reset</th>
+                            <th>Assign Bundle (3d / 1M / 3M) / Reset</th>
                         </tr>
                     </thead>
                     <tbody id="clientTableBody">
@@ -300,52 +366,58 @@
 <!-- ==================== 4. MAIN TRADING TERMINAL ==================== -->
 <div id="terminalApp" class="container" style="display:none;">
     <div class="header">
-        <div class="title-group">
-            <h1>XAU/USD TEST D — AUTONOMOUS SMC TERMINAL</h1>
-            <p id="headerRoleSub">Live Institutional Kill-Zone Signals | Single 1:2.0 R:R Target</p>
+        <!-- Top Left: Language Switch + Brand Name -->
+        <div class="header-left">
+            <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
+            <div class="title-group">
+                <h1>Mr.Trader AI</h1>
+                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Kill-Zone Signals | Single 1:2.0 R:R Target</p>
+            </div>
         </div>
+
         <div class="controls">
             <div id="vipBadgePill" class="status-pill" style="display:none; border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(245,158,11,0.12);">
                 <span id="vipBadgeText">VIP ACTIVE</span>
             </div>
             <div id="autopilotStatusPill" class="status-pill">
                 <span class="pulse-dot"></span>
-                <span id="autopilotStatusText">LIVE STREAM ACTIVE</span>
+                <span id="autopilotStatusText" data-i18n="liveStream">LIVE STREAM ACTIVE</span>
             </div>
             <button type="button" id="openAdminBtn" class="btn-ui btn-admin" onclick="promptAwPin()">AW</button>
-            <button type="button" id="forceRefreshBtn" class="btn-ui" onclick="hardSyncRefresh()">🔄 Sync</button>
-            <button type="button" class="btn-ui" onclick="logoutClient()">Logout</button>
+            <button type="button" id="forceRefreshBtn" class="btn-ui" onclick="hardSyncRefresh()">🔄 <span data-i18n="syncBtn">Sync</span></button>
+            <button type="button" class="btn-ui" onclick="logoutClient()" data-i18n="logoutBtn">Logout</button>
         </div>
     </div>
 
-    <!-- Navigation Tabs -->
+    <!-- Navigation Tabs (Home / Active Trade / Closed Trades / Win Rate / Account) -->
     <div class="nav-tabs">
-        <button type="button" id="navHome" class="nav-tab active" onclick="switchTerminalTab('home')">🏠 Home</button>
-        <button type="button" id="navActive" class="nav-tab" onclick="switchTerminalTab('active')">⚡ Active Trade</button>
-        <button type="button" id="navClosed" class="nav-tab" onclick="switchTerminalTab('closed')">📜 Closed Trades</button>
-        <button type="button" id="navWinrate" class="nav-tab" onclick="switchTerminalTab('winrate')">📊 Win Rate & Stats</button>
+        <button type="button" id="navHome" class="nav-tab active" onclick="switchTerminalTab('home')">🏠 <span data-i18n="tabHome">Home</span></button>
+        <button type="button" id="navActive" class="nav-tab" onclick="switchTerminalTab('active')">⚡ <span data-i18n="tabActive">Active Trade</span></button>
+        <button type="button" id="navClosed" class="nav-tab" onclick="switchTerminalTab('closed')">📜 <span data-i18n="tabClosed">Closed Trades</span></button>
+        <button type="button" id="navWinrate" class="nav-tab" onclick="switchTerminalTab('winrate')">📊 <span data-i18n="tabWinrate">Win Rate & Stats</span></button>
+        <button type="button" id="navAccount" class="nav-tab" onclick="switchTerminalTab('account')">👤 <span data-i18n="tabAccount">Account</span></button>
     </div>
 
     <!-- ==================== TAB 1: HOME ==================== -->
     <div id="viewHome" class="tab-view active">
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-label">Live XAU/USD Price</div>
+                <div class="metric-label" data-i18n="lblLivePrice">Live XAU/USD Price</div>
                 <div class="metric-value" id="uiLivePrice" style="color: var(--accent-gold);">---.--</div>
-                <div class="metric-sub">Exness 80-pt Spread Model</div>
+                <div class="metric-sub" data-i18n="subSpread">Exness 80-pt Spread Model</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">H1 / H4 Trend Bias</div>
+                <div class="metric-label" data-i18n="lblTrendBias">H1 / H4 Trend Bias</div>
                 <div class="metric-value" id="uiTrendBias">NEUTRAL</div>
                 <div class="metric-sub" id="uiKillZone">Checking Kill Zone...</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Model Equity</div>
+                <div class="metric-label" data-i18n="lblEquity">Model Equity</div>
                 <div class="metric-value" id="uiBalance">$400.00</div>
                 <div class="metric-sub" id="uiLotSub">0.04 lots (1.5x/Mo)</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Win Rate</div>
+                <div class="metric-label" data-i18n="lblWinRate">Win Rate</div>
                 <div class="metric-value" id="uiHomeWinRate" style="color: var(--accent-green);">0.0%</div>
                 <div class="metric-sub" id="uiHomeRecord">0W - 0L (0 Trades)</div>
             </div>
@@ -354,7 +426,7 @@
         <div class="main-grid">
             <div class="chart-box">
                 <div class="box-header">
-                    <span>XAU/USD M5 Live Chart (Closed-Candle SMC Execution)</span>
+                    <span data-i18n="chartTitle">XAU/USD M5 Live Chart (Closed-Candle SMC Execution)</span>
                     <span id="lastSyncTime" style="color: var(--text-secondary); font-size: 0.75rem;">Syncing...</span>
                 </div>
                 <div id="chart"></div>
@@ -362,13 +434,13 @@
 
             <div class="panel-box">
                 <div class="box-header">
-                    <span>Latest Signal Detected</span>
+                    <span data-i18n="latestSigTitle">Latest Signal Detected</span>
                     <span style="color: var(--accent-green); font-size: 0.75rem;">1:2.0 Single TP</span>
                 </div>
                 <div id="homeSignalContainer"></div>
 
                 <div class="box-header" style="margin-top: 6px;">
-                    <span>Live Alerts & Feed</span>
+                    <span data-i18n="liveAlertsTitle">Live Alerts & Feed</span>
                 </div>
                 <div id="systemLogs" class="log-box"></div>
             </div>
@@ -379,7 +451,7 @@
     <div id="viewActive" class="tab-view">
         <div class="panel-box">
             <div class="box-header">
-                <span>⚡ Live Active / Pending Signal Details</span>
+                <span data-i18n="activeBoxTitle">⚡ Live Active / Pending Signal Details</span>
                 <span id="activeTradeStatusTag" style="color: var(--accent-gold); font-size: 0.78rem;">Scanning...</span>
             </div>
             <div id="dedicatedActiveContainer"></div>
@@ -390,7 +462,7 @@
     <div id="viewClosed" class="tab-view">
         <div class="panel-box">
             <div class="box-header">
-                <span>📜 Closed Trades History (Spread-Adjusted Net P&L)</span>
+                <span data-i18n="closedBoxTitle">📜 Closed Trades History (Spread-Adjusted Net P&L)</span>
                 <span id="closedCountTag" style="color: var(--text-secondary); font-size: 0.78rem;">0 Completed Trades</span>
             </div>
             <div style="overflow-x: auto;">
@@ -398,15 +470,15 @@
                     <thead>
                         <tr>
                             <th>Trade #</th>
-                            <th>Dir</th>
-                            <th>Setup</th>
-                            <th>Entry</th>
+                            <th data-i18n="thDir">Dir</th>
+                            <th data-i18n="thSetup">Setup</th>
+                            <th data-i18n="thEntry">Entry</th>
                             <th>SL</th>
                             <th>TP1 (1:2)</th>
-                            <th>Lot</th>
-                            <th>Outcome</th>
-                            <th>Net P&L</th>
-                            <th>Closed (UTC)</th>
+                            <th data-i18n="thLot">Lot</th>
+                            <th data-i18n="thOutcome">Outcome</th>
+                            <th data-i18n="thPnl">Net P&L</th>
+                            <th data-i18n="thClosed">Closed (UTC)</th>
                         </tr>
                     </thead>
                     <tbody id="closedTradesTableBody">
@@ -421,22 +493,22 @@
     <div id="viewWinrate" class="tab-view">
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-label">Overall Win Rate</div>
+                <div class="metric-label" data-i18n="statWinRateLbl">Overall Win Rate</div>
                 <div class="metric-value" id="statWinRate" style="color: var(--accent-green);">0.0%</div>
                 <div class="metric-sub">Target R:R = 1:2.0</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Total Wins / Losses</div>
+                <div class="metric-label" data-i18n="statWLLbl">Total Wins / Losses</div>
                 <div class="metric-value" id="statWinsLosses">0W / 0L</div>
                 <div class="metric-sub" id="statTotalTrades">0 Total Closed</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Net Cumulative Profit</div>
+                <div class="metric-label" data-i18n="statNetLbl">Net Cumulative Profit</div>
                 <div class="metric-value" id="statNetProfit">$0.00</div>
                 <div class="metric-sub" id="statEquityHigh">Peak Equity: $400.00</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Profit Factor</div>
+                <div class="metric-label" data-i18n="statPfLbl">Profit Factor</div>
                 <div class="metric-value" id="statProfitFactor">0.00</div>
                 <div class="metric-sub">3-SL Circuit Breaker Guarded</div>
             </div>
@@ -444,21 +516,256 @@
 
         <div class="panel-box">
             <div class="box-header">
-                <span>📊 Strategy Performance Breakdown</span>
+                <span data-i18n="stratTitle">📊 Mr.Trader AI Strategy Breakdown</span>
                 <span style="color: var(--text-secondary); font-size: 0.75rem;">Exness 80-pt Spread Included</span>
             </div>
-            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
+            <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.7;" data-i18n="stratDesc">
                 • <strong>Execution Window:</strong> London Kill Zone (07:00–10:30 UTC) &amp; New York Kill Zone (12:30–16:30 UTC).<br>
                 • <strong>Entry Models:</strong> Asian Range &amp; 24-Bar Liquidity Sweeps with ≥68% Displacement or 50% FVG Retracement.<br>
                 • <strong>Risk Management:</strong> Fixed 1:2.0 Single TP, 1.5x monthly compounding on new equity highs, and automatic 24-hour lockout after 3 consecutive losses.
             </p>
         </div>
     </div>
+
+    <!-- ==================== TAB 5: ACCOUNT, VIP BUNDLES & SUPPORT ==================== -->
+    <div id="viewAccount" class="tab-view">
+        <div class="panel-box">
+            <div class="box-header">
+                <span data-i18n="accProfileTitle">👤 Account Details & Subscription Status</span>
+                <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="logoutClient()" data-i18n="logoutBtn">Logout</button>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label" data-i18n="accEmailLbl">Registered Email</div>
+                    <div class="metric-value" id="accEmailVal" style="font-size:0.95rem;">---</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label" data-i18n="accPlanLbl">Current VIP Bundle</div>
+                    <div class="metric-value" id="accPlanVal" style="color:var(--accent-gold);">FREE BETA</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label" data-i18n="accExpLbl">Subscription Expires</div>
+                    <div class="metric-value" id="accExpVal" style="font-size:0.95rem;">—</div>
+                </div>
+            </div>
+
+            <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+                <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">
+                    ✈️ <span data-i18n="tgSupportBtn">Telegram Official Support & VIP (@mrtraderai_official)</span>
+                </a>
+                <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red); padding:9px 16px;" onclick="logoutClient()">
+                    🚪 <span data-i18n="logoutAccountBtn">Sign Out of Mr.Trader AI</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="panel-box">
+            <div class="box-header">
+                <span data-i18n="vipPlansHeader">💎 Mr.Trader AI — VIP Membership Plans</span>
+                <span style="color:var(--accent-gold); font-size:0.76rem;">@mrtraderai_official</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:8px;" data-i18n="vipPlansSub">
+                Select your preferred VIP bundle and message our official Telegram support for instant payment &amp; account activation:
+            </p>
+            <div class="plans-grid">
+                <div class="plan-card">
+                    <div class="plan-title" data-i18n="plan3dTitle">3-Day Trial</div>
+                    <div class="plan-price">$15</div>
+                    <div class="plan-desc" data-i18n="plan3dDesc">Full live XAU/USD SMC signals & Telegram alerts for 3 days</div>
+                    <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
+                </div>
+                <div class="plan-card popular">
+                    <div class="plan-title" data-i18n="plan1mTitle">1 Month VIP</div>
+                    <div class="plan-price">$99</div>
+                    <div class="plan-desc" data-i18n="plan1mDesc">30 days full terminal access, real-time entries, SL & TP1 alerts</div>
+                    <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
+                </div>
+                <div class="plan-card">
+                    <div class="plan-title" data-i18n="plan3mTitle">3 Months VIP</div>
+                    <div class="plan-price">$250</div>
+                    <div class="plan-desc" data-i18n="plan3mDesc">90 days priority VIP access (Save $47 vs monthly)</div>
+                    <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
 // ============================================================================
-// 1. SUPABASE AUTH, VIP BUNDLES (1M / 3M) & AW PIN SECURITY
+// 0. ENGLISH / ARABIC BILINGUAL TRANSLATION ENGINE
+// ============================================================================
+let currentLang = localStorage.getItem('mrtrader_lang') || 'en';
+
+const I18N = {
+    en: {
+        langBtn: 'العربية',
+        authSub: 'Sign in or create an account to access the live XAU/USD AI terminal',
+        clientLogin: 'Client Login',
+        signUp: 'Sign Up',
+        emailPh: 'Email Address',
+        passPh: 'Password (min 6 chars)',
+        forgotPass: 'Forgot Password?',
+        loginBtn: 'Login to Terminal',
+        signupBtn: 'Create Account',
+        resetBtn: 'Send Reset Link',
+        backLogin: '← Back to Client Login',
+        tgSupportBtn: 'Telegram Official Support & VIP (@mrtraderai_official)',
+        setNewPassTitle: '🔐 SET NEW PASSWORD',
+        setNewPassDesc: 'Enter your new password below to regain access to Mr.Trader AI.',
+        updatePassBtn: 'Update Password & Login',
+        signOut: 'Sign Out',
+        headerSub: 'Autonomous XAU/USD Kill-Zone Signals | Single 1:2.0 R:R Target',
+        liveStream: 'LIVE STREAM ACTIVE',
+        syncBtn: 'Sync',
+        logoutBtn: 'Logout',
+        tabHome: 'Home',
+        tabActive: 'Active Trade',
+        tabClosed: 'Closed Trades',
+        tabWinrate: 'Win Rate & Stats',
+        tabAccount: 'Account',
+        lblLivePrice: 'Live XAU/USD Price',
+        subSpread: 'Exness 80-pt Spread Model',
+        lblTrendBias: 'H1 / H4 Trend Bias',
+        lblEquity: 'Model Equity',
+        lblWinRate: 'Win Rate',
+        chartTitle: 'XAU/USD M5 Live Chart (Closed-Candle SMC Execution)',
+        latestSigTitle: 'Latest Signal Detected',
+        liveAlertsTitle: 'Live Alerts & Feed',
+        activeBoxTitle: '⚡ Live Active / Pending Signal Details',
+        closedBoxTitle: '📜 Closed Trades History (Spread-Adjusted Net P&L)',
+        thDir: 'Dir',
+        thSetup: 'Setup',
+        thEntry: 'Entry',
+        thLot: 'Lot',
+        thOutcome: 'Outcome',
+        thPnl: 'Net P&L',
+        thClosed: 'Closed (UTC)',
+        statWinRateLbl: 'Overall Win Rate',
+        statWLLbl: 'Total Wins / Losses',
+        statNetLbl: 'Net Cumulative Profit',
+        statPfLbl: 'Profit Factor',
+        stratTitle: '📊 Mr.Trader AI Strategy Breakdown',
+        stratDesc: '• <strong>Execution Window:</strong> London Kill Zone (07:00–10:30 UTC) &amp; New York Kill Zone (12:30–16:30 UTC).<br>• <strong>Entry Models:</strong> Asian Range &amp; 24-Bar Liquidity Sweeps with ≥68% Displacement or 50% FVG Retracement.<br>• <strong>Risk Management:</strong> Fixed 1:2.0 Single TP, 1.5x monthly compounding on new equity highs, and automatic 24-hour lockout after 3 consecutive losses.',
+        accProfileTitle: '👤 Account Details & Subscription Status',
+        accEmailLbl: 'Registered Email',
+        accPlanLbl: 'Current VIP Bundle',
+        accExpLbl: 'Subscription Expires',
+        logoutAccountBtn: 'Sign Out of Mr.Trader AI',
+        vipPlansHeader: '💎 Mr.Trader AI — VIP Membership Plans',
+        vipPlansSub: 'Select your preferred VIP bundle and message our official Telegram support for instant payment & account activation:',
+        plan3dTitle: '3-Day Trial',
+        plan3dDesc: 'Full live XAU/USD SMC signals & Telegram alerts for 3 days',
+        plan1mTitle: '1 Month VIP',
+        plan1mDesc: '30 days full terminal access, real-time entries, SL & TP1 alerts',
+        plan3mTitle: '3 Months VIP',
+        plan3mDesc: '90 days priority VIP access (Save $47 vs monthly)',
+        orderTg: 'Activate on Telegram',
+        kzInside: '🟢 Inside Active Kill Zone',
+        kzOutside: '🟡 Outside Kill Zone',
+        scanningTitle: '🤖 Autopilot Scanning',
+        scanningDesc: 'Monitoring Asian Range & 24-bar liquidity pools during London (07:00–10:30 UTC) and NY (12:30–16:30 UTC) Kill Zones.',
+        noClosed: 'No closed trades recorded yet.'
+    },
+    ar: {
+        langBtn: 'English',
+        authSub: 'سجّل الدخول أو أنشئ حساباً للوصول إلى منصة Mr.Trader AI لتداول الذهب',
+        clientLogin: 'تسجيل الدخول',
+        signUp: 'إنشاء حساب',
+        emailPh: 'البريد الإلكتروني',
+        passPh: 'كلمة المرور (6 أحرف على الأقل)',
+        forgotPass: 'نسيت كلمة المرور؟',
+        loginBtn: 'الدخول إلى المنصة',
+        signupBtn: 'إنشاء حساب جديد',
+        resetBtn: 'إرسال رابط استعادة كلمة المرور',
+        backLogin: '← العودة لتسجيل الدخول',
+        tgSupportBtn: 'الدعم الفني واشتراكات VIP عبر تيليجرام (@mrtraderai_official)',
+        setNewPassTitle: '🔐 تعيين كلمة مرور جديدة',
+        setNewPassDesc: 'أدخل كلمة المرور الجديدة أدناه لاستعادة الدخول إلى Mr.Trader AI.',
+        updatePassBtn: 'تحديث كلمة المرور والدخول',
+        signOut: 'تسجيل الخروج',
+        headerSub: 'توصيات الذهب XAU/USD الذكية في أوقات السيولة | هدف 1:2.0',
+        liveStream: 'البث المباشر نشط',
+        syncBtn: 'تحديث',
+        logoutBtn: 'خروج',
+        tabHome: 'الرئيسية',
+        tabActive: 'الصفقة النشطة',
+        tabClosed: 'الصفقات المغلقة',
+        tabWinrate: 'نسبة النجاح والإحصائيات',
+        tabAccount: 'الحساب والاشتراك',
+        lblLivePrice: 'سعر الذهب المباشر XAU/USD',
+        subSpread: 'محاكاة سبريد إكسنس 80 نقطة',
+        lblTrendBias: 'اتجاه السوق العام H1 / H4',
+        lblEquity: 'رأس مال المحفظة',
+        lblWinRate: 'نسبة النجاح',
+        chartTitle: 'شارت الذهب M5 المباشر (تنفيذ SMC عند إغلاق الشمعة)',
+        latestSigTitle: 'أحدث توصية مكتشفة',
+        liveAlertsTitle: 'التنبيهات المباشرة والسجل',
+        activeBoxTitle: '⚡ تفاصيل الصفقة النشطة / المعلقة حالياً',
+        closedBoxTitle: '📜 سجل الصفقات المغلقة (صافي الربح بعد السبريد)',
+        thDir: 'النوع',
+        thSetup: 'النموذج',
+        thEntry: 'الدخول',
+        thLot: 'اللوت',
+        thOutcome: 'النتيجة',
+        thPnl: 'صافي الربح',
+        thClosed: 'وقت الإغلاق (UTC)',
+        statWinRateLbl: 'نسبة النجاح الإجمالية',
+        statWLLbl: 'إجمالي الصفقات الرابحة / الخاسرة',
+        statNetLbl: 'صافي الأرباح التراكمية',
+        statPfLbl: 'معامل الربح (Profit Factor)',
+        stratTitle: '📊 تفاصيل استراتيجية Mr.Trader AI',
+        stratDesc: '• <strong>أوقات التداول:</strong> جلسة لندن (07:00–10:30 UTC) وجلسة نيويورك (12:30–16:30 UTC).<br>• <strong>نماذج الدخول:</strong> سحب سيولة الجلسة الآسيوية وقمم/قيعان 24 شمعة مع شمعة زخم ≥68% أو فجوة سعرية 50% FVG.<br>• <strong>إدارة المخاطر:</strong> هدف واحد ثابت 1:2.0، مضاعفة اللوت 1.5x شهرياً عند تحقيق قمة رصيد جديدة، وإيقاف تلقائي 24 ساعة بعد 3 خسائر متتالية.',
+        accProfileTitle: '👤 تفاصيل الحساب وحالة الاشتراك',
+        accEmailLbl: 'البريد الإلكتروني المسجل',
+        accPlanLbl: 'باقة VIP الحالية',
+        accExpLbl: 'تاريخ انتهاء الاشتراك',
+        logoutAccountBtn: 'تسجيل الخروج من Mr.Trader AI',
+        vipPlansHeader: '💎 باقات VIP الرسمية — Mr.Trader AI',
+        vipPlansSub: 'اختر الباقة المناسبة لك وتواصل مع حسابنا الرسمي على تيليجرام للدفع وتفعيل الاشتراك فوراً:',
+        plan3dTitle: 'تجربة 3 أيام',
+        plan3dDesc: 'توصيات الذهب الحية وتنبيهات تيليجرام كاملة لمدة 3 أيام',
+        plan1mTitle: 'باقة شهر واحد VIP',
+        plan1mDesc: '30 يوماً من الوصول الكامل للمنصة والتوصيات اللحظية',
+        plan3mTitle: 'باقة 3 أشهر VIP',
+        plan3mDesc: '90 يوماً من الوصول الكامل مع أولوية VIP (وفر $47)',
+        orderTg: 'تفعيل عبر تيليجرام',
+        kzInside: '🟢 داخل وقت السيولة النشط (Kill Zone)',
+        kzOutside: '🟡 خارج وقت السيولة',
+        scanningTitle: '🤖 جاري فحص السوق تلقائياً',
+        scanningDesc: 'مراقبة مناطق السيولة خلال جلسة لندن (07:00–10:30 UTC) وجلسة نيويورك (12:30–16:30 UTC).',
+        noClosed: 'لا توجد صفقات مغلقة مسجلة حتى الآن.'
+    }
+};
+
+function t(key) {
+    return (I18N[currentLang] && I18N[currentLang][key]) || I18N.en[key] || key;
+}
+
+function applyLanguage() {
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('.langBtnLabel').forEach(el => el.innerText = t('langBtn'));
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (I18N[currentLang][key]) el.innerHTML = I18N[currentLang][key];
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+        const key = el.getAttribute('data-i18n-ph');
+        if (I18N[currentLang][key]) el.placeholder = I18N[currentLang][key];
+    });
+    switchAuthMode(authMode);
+    if (typeof updateDashboardUI === 'function') updateDashboardUI();
+}
+
+function toggleLanguage() {
+    currentLang = currentLang === 'en' ? 'ar' : 'en';
+    localStorage.setItem('mrtrader_lang', currentLang);
+    applyLanguage();
+}
+
+// ============================================================================
+// 1. SUPABASE AUTH, VIP BUNDLES (3D / 1M / 3M) & AW PIN SECURITY
 // ============================================================================
 const SUPABASE_URL = 'https://wdexwfoplycblaxmrfws.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_6U7d-ihEr1ivc362mhkDeQ_2suPM3gy';
@@ -517,11 +824,11 @@ function formatDateShort(isoStr) {
 }
 
 function switchTerminalTab(tabName) {
-    ['home', 'active', 'closed', 'winrate'].forEach(t => {
-        const btn = document.getElementById('nav' + t.charAt(0).toUpperCase() + t.slice(1));
-        const view = document.getElementById('view' + t.charAt(0).toUpperCase() + t.slice(1));
-        if (btn) btn.classList.toggle('active', t === tabName);
-        if (view) view.classList.toggle('active', t === tabName);
+    ['home', 'active', 'closed', 'winrate', 'account'].forEach(tName => {
+        const btn = document.getElementById('nav' + tName.charAt(0).toUpperCase() + tName.slice(1));
+        const view = document.getElementById('view' + tName.charAt(0).toUpperCase() + tName.slice(1));
+        if (btn) btn.classList.toggle('active', tName === tabName);
+        if (view) view.classList.toggle('active', tName === tabName);
     });
     if (tabName === 'home' && chart) {
         setTimeout(() => chart.applyOptions({ width: document.getElementById('chart').clientWidth }), 50);
@@ -545,24 +852,25 @@ function switchAuthMode(mode) {
     const tabsRow = document.getElementById('authTabsRow');
     const subtitle = document.getElementById('authSubtitle');
     const submitBtn = document.getElementById('authSubmitBtn');
-    document.getElementById('authMessage').innerText = '';
+    const msgEl = document.getElementById('authMessage');
+    if (msgEl) msgEl.innerText = '';
 
     if (mode === 'forgot') {
         tabsRow.style.display = 'none';
         pwdInput.style.display = 'none';
         forgotRow.style.display = 'none';
         backRow.style.display = 'block';
-        subtitle.innerText = 'Enter your registered email to receive a password reset link';
-        submitBtn.innerText = 'Send Reset Link';
+        subtitle.innerText = currentLang === 'ar' ? 'أدخل بريدك الإلكتروني لإرسال رابط استعادة كلمة المرور' : 'Enter your registered email to receive a password reset link';
+        submitBtn.innerText = t('resetBtn');
     } else {
         tabsRow.style.display = 'flex';
         pwdInput.style.display = 'block';
         forgotRow.style.display = mode === 'login' ? 'flex' : 'none';
         backRow.style.display = 'none';
-        subtitle.innerText = 'Sign in or create an account to access the live terminal';
+        subtitle.innerText = t('authSub');
         document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
         document.getElementById('tabSignup').classList.toggle('active', mode === 'signup');
-        submitBtn.innerText = mode === 'login' ? 'Login to Terminal' : 'Create Account';
+        submitBtn.innerText = mode === 'login' ? t('loginBtn') : t('signupBtn');
     }
 }
 
@@ -573,13 +881,13 @@ async function handleAuthSubmit() {
 
     if (!email) {
         msgEl.style.color = 'var(--accent-red)';
-        msgEl.innerText = 'Please enter your email address.';
+        msgEl.innerText = currentLang === 'ar' ? 'يرجى إدخال البريد الإلكتروني.' : 'Please enter your email address.';
         return;
     }
 
     if (authMode === 'forgot') {
         msgEl.style.color = 'var(--accent-gold)';
-        msgEl.innerText = 'Sending password reset email...';
+        msgEl.innerText = currentLang === 'ar' ? 'جاري إرسال رابط الاستعادة...' : 'Sending password reset email...';
         const redirectUrl = window.location.origin + window.location.pathname + '?recovery=1';
         const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
         if (error) {
@@ -587,19 +895,19 @@ async function handleAuthSubmit() {
             msgEl.innerText = error.message;
         } else {
             msgEl.style.color = 'var(--accent-green)';
-            msgEl.innerText = '✅ Reset link sent! Check your email inbox (and spam folder).';
+            msgEl.innerText = currentLang === 'ar' ? '✅ تم إرسال الرابط! تفقد بريدك الإلكتروني.' : '✅ Reset link sent! Check your email inbox (and spam folder).';
         }
         return;
     }
 
     if (password.length < 6) {
         msgEl.style.color = 'var(--accent-red)';
-        msgEl.innerText = 'Password must be at least 6 characters.';
+        msgEl.innerText = currentLang === 'ar' ? 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.' : 'Password must be at least 6 characters.';
         return;
     }
 
     msgEl.style.color = 'var(--accent-gold)';
-    msgEl.innerText = 'Authenticating...';
+    msgEl.innerText = currentLang === 'ar' ? 'جاري التحقق...' : 'Authenticating...';
 
     if (authMode === 'signup') {
         const { error } = await sb.auth.signUp({ email, password });
@@ -608,7 +916,7 @@ async function handleAuthSubmit() {
             msgEl.innerText = error.message;
         } else {
             msgEl.style.color = 'var(--accent-green)';
-            msgEl.innerText = 'Account created! Checking access...';
+            msgEl.innerText = currentLang === 'ar' ? 'تم إنشاء الحساب! جاري الدخول...' : 'Account created! Checking access...';
             setTimeout(checkUserSession, 900);
         }
     } else {
@@ -647,7 +955,7 @@ async function handleUpdatePassword() {
         msgEl.innerText = error.message;
     } else {
         msgEl.style.color = 'var(--accent-green)';
-        msgEl.innerText = '✅ Password updated! Entering terminal...';
+        msgEl.innerText = '✅ Password updated! Entering Mr.Trader AI...';
         isPasswordRecoveryMode = false;
         window.history.replaceState({}, document.title, window.location.pathname);
         setTimeout(() => {
@@ -667,6 +975,7 @@ async function logoutClient() {
 }
 
 async function checkUserSession() {
+    applyLanguage();
     const urlParams = new URLSearchParams(window.location.search);
     if (isPasswordRecoveryMode || urlParams.get('recovery') === '1' || urlParams.get('type') === 'recovery' || (window.location.hash && window.location.hash.includes('type=recovery'))) {
         showNewPasswordScreen();
@@ -693,7 +1002,7 @@ async function checkUserSession() {
     } else {
         const autoRole = userEmail === ADMIN_EMAIL ? 'admin' : 'client';
         const autoApproved = userEmail === ADMIN_EMAIL;
-        currentUserProfile = { id: session.user.id, email: session.user.email, role: autoRole, is_approved: autoApproved, vip_plan: autoApproved ? 'ADMIN' : 'FREE_BETA' };
+        currentUserProfile = { id: session.user.id, email: session.user.email, role: autoRole, is_approved: autoApproved, vip_plan: autoApproved ? 'MASTER' : 'FREE_BETA' };
         await sb.from('client_profiles').upsert(currentUserProfile);
     }
 
@@ -706,8 +1015,10 @@ async function checkUserSession() {
     if (!isAdmin && currentUserProfile.is_approved && !vipActive) {
         document.getElementById('authFormBox').style.display = 'none';
         document.getElementById('pendingApprovalBox').style.display = 'block';
-        document.getElementById('vipLockTitle').innerText = '⏰ VIP Bundle Expired';
-        document.getElementById('vipLockDesc').innerHTML = `Your <strong>${currentUserProfile.vip_plan || 'VIP'}</strong> plan for <strong>${currentUserProfile.email}</strong> expired on <strong>${formatDateShort(currentUserProfile.vip_expires_at)}</strong>. Contact Admin to renew (1 Month or 3 Months).`;
+        document.getElementById('vipLockTitle').innerText = currentLang === 'ar' ? '⏰ انتهى اشتراك VIP' : '⏰ VIP Bundle Expired';
+        document.getElementById('vipLockDesc').innerHTML = currentLang === 'ar'
+            ? `انتهت باقة <strong>${currentUserProfile.vip_plan || 'VIP'}</strong> للحساب <strong>${currentUserProfile.email}</strong> بتاريخ <strong>${formatDateShort(currentUserProfile.vip_expires_at)}</strong>. اختر باقة أدناه وتواصل مع <strong>@mrtraderai_official</strong> للتجديد.`
+            : `Your <strong>${currentUserProfile.vip_plan || 'VIP'}</strong> plan for <strong>${currentUserProfile.email}</strong> expired on <strong>${formatDateShort(currentUserProfile.vip_expires_at)}</strong>. Choose a plan below and message <strong>@mrtraderai_official</strong> to renew.`;
         return;
     }
 
@@ -721,15 +1032,16 @@ async function checkUserSession() {
     document.getElementById('authOverlay').style.display = 'none';
     document.getElementById('terminalApp').style.display = 'flex';
 
+    // Populate Account Tab
+    document.getElementById('accEmailVal').innerText = currentUserProfile.email;
+    document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER OWNER' : (currentUserProfile.is_approved ? (currentUserProfile.vip_plan || 'VIP ACTIVE') : 'FREE BETA');
+    document.getElementById('accExpVal').innerText = isAdmin ? 'UNLIMITED' : (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Beta Access');
+
     if (isAdmin) {
         document.getElementById('openAdminBtn').style.display = 'inline-block';
-        document.getElementById('headerRoleSub').innerText = 'MASTER ENGINE — Live Scanning & Signal Broadcasting';
-    } else {
-        document.getElementById('headerRoleSub').innerText = 'CLIENT LIVE TERMINAL — Real-Time Signals, Alerts & Performance';
-        if (vipActive && currentUserProfile.vip_expires_at) {
-            document.getElementById('vipBadgePill').style.display = 'flex';
-            document.getElementById('vipBadgeText').innerText = `${currentUserProfile.vip_plan} • Exp: ${formatDateShort(currentUserProfile.vip_expires_at)}`;
-        }
+    } else if (vipActive && currentUserProfile.vip_expires_at) {
+        document.getElementById('vipBadgePill').style.display = 'flex';
+        document.getElementById('vipBadgeText').innerText = `${currentUserProfile.vip_plan} • Exp: ${formatDateShort(currentUserProfile.vip_expires_at)}`;
     }
 
     await loadMasterConfig(isAdmin);
@@ -739,7 +1051,7 @@ async function checkUserSession() {
 }
 
 // ============================================================================
-// 2. AW CONFIG, VIP BUNDLES (1M / 3M) & PASSWORD RESET EMAIL
+// 2. AW CONFIG, VIP BUNDLES (3D / 1M / 3M) & PASSWORD RESET EMAIL
 // ============================================================================
 async function loadMasterConfig(isAdmin) {
     if (!isAdmin) return;
@@ -761,7 +1073,7 @@ function updateBetaToggleButton(isBeta) {
         btn.style.borderColor = 'var(--accent-green)';
         btn.style.color = 'var(--accent-green)';
     } else {
-        btn.innerText = '🔒 Mode: PAID VIP ONLY (1M / 3M)';
+        btn.innerText = '🔒 Mode: PAID VIP ONLY (3d / 1M / 3M)';
         btn.style.borderColor = 'var(--accent-gold)';
         btn.style.color = 'var(--accent-gold)';
     }
@@ -782,7 +1094,7 @@ async function toggleBetaMode() {
         state.betaMode = nextBeta;
         updateBetaToggleButton(nextBeta);
         await saveState();
-        logEvent(nextBeta ? '🟢 Switched terminal to FREE BETA mode.' : '🔒 Switched terminal to PAID VIP ONLY (1M / 3M) mode.');
+        logEvent(nextBeta ? '🟢 Switched Mr.Trader AI to FREE BETA mode.' : '🔒 Switched Mr.Trader AI to PAID VIP ONLY mode.');
     }
 }
 
@@ -840,8 +1152,9 @@ async function loadClientList() {
                 ` : `
                     <div style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;">
                         <select id="bundleSel_${u.id}" class="bundle-select">
-                            <option value="1M" ${u.vip_plan === '1_MONTH' ? 'selected' : ''}>1 Month (30d)</option>
-                            <option value="3M" ${u.vip_plan === '3_MONTHS' ? 'selected' : ''}>3 Months (90d)</option>
+                            <option value="3D" ${u.vip_plan === '3_DAYS_TRIAL' ? 'selected' : ''}>3 Days Trial ($15)</option>
+                            <option value="1M" ${u.vip_plan === '1_MONTH' ? 'selected' : ''}>1 Month ($99)</option>
+                            <option value="3M" ${u.vip_plan === '3_MONTHS' ? 'selected' : ''}>3 Months ($250)</option>
                         </select>
                         <button type="button" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="grantVipBundle('${u.id}')">✅ Grant VIP</button>
                         ${u.is_approved ? `<button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="revokeVipBundle('${u.id}')">✖ Revoke</button>` : ''}
@@ -856,8 +1169,8 @@ async function loadClientList() {
 async function grantVipBundle(userId) {
     const sel = document.getElementById('bundleSel_' + userId);
     const choice = sel ? sel.value : '1M';
-    const days = choice === '3M' ? 90 : 30;
-    const planLabel = choice === '3M' ? '3_MONTHS' : '1_MONTH';
+    const days = choice === '3D' ? 3 : (choice === '3M' ? 90 : 30);
+    const planLabel = choice === '3D' ? '3_DAYS_TRIAL' : (choice === '3M' ? '3_MONTHS' : '1_MONTH');
     const startDate = new Date();
     const expireDate = new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
 
@@ -1029,7 +1342,7 @@ function isCircuitBreakerClear() {
 
 function triggerCircuitBreaker() {
     state.lockoutUntil = Date.now() + (TEST_D_CONFIG.lockoutHours * 60 * 60 * 1000);
-    const alertMsg = '🚨 3-SL CIRCUIT BREAKER TRIGGERED — Autopilot paused for 24h.';
+    const alertMsg = '🚨 3-SL CIRCUIT BREAKER TRIGGERED — Mr.Trader AI paused for 24h.';
     logEvent(alertMsg);
     saveState();
     if (isCurrentUserAdmin()) sendTelegramAlert(alertMsg);
@@ -1179,7 +1492,7 @@ function manageActiveTrade(livePrice) {
             trade.type = "ACTIVE";
             logEvent(`⚡ #Trade-${trade.tradeId || 1} LIMIT FILLED @ ${trade.entry.toFixed(2)}`);
             if (isCurrentUserAdmin()) {
-                sendTelegramAlert("⚡ XAUUSD " + trade.dir + " FILLED @ " + trade.entry.toFixed(2) + "\n\n🔴 SL: " + trade.sl.toFixed(2) + "\n🎯 TP1: " + trade.tp.toFixed(2) + "\n\n#Trade-" + (trade.tradeId || 1));
+                sendTelegramAlert("⚡ Mr.Trader AI — XAUUSD " + trade.dir + " FILLED @ " + trade.entry.toFixed(2) + "\n\n🔴 SL: " + trade.sl.toFixed(2) + "\n🎯 TP1: " + trade.tp.toFixed(2) + "\n\n#Trade-" + (trade.tradeId || 1));
             }
             saveState();
         }
@@ -1218,13 +1531,13 @@ function closeTrade(outcome, netDollarPnL) {
     if (outcome === "WIN") {
         state.consecutiveLosses = 0;
         const logStr = "✅ #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ") | Equity: $" + state.balance.toFixed(2);
-        const tgStr = "✅ #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + trade.lot.toFixed(2);
+        const tgStr = "✅ Mr.Trader AI — #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + trade.lot.toFixed(2);
         logEvent(logStr);
         if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
     } else {
         state.consecutiveLosses += 1;
         const logStr = "❌ #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ") | Streak: " + state.consecutiveLosses + "/3";
-        const tgStr = "❌ #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")\nStreak: " + state.consecutiveLosses + "/3 | Equity: $" + state.balance.toFixed(2);
+        const tgStr = "❌ Mr.Trader AI — #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")\nStreak: " + state.consecutiveLosses + "/3 | Equity: $" + state.balance.toFixed(2);
         logEvent(logStr);
         if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
         if (state.consecutiveLosses >= TEST_D_CONFIG.maxConsecutiveLosses) {
@@ -1267,7 +1580,7 @@ async function runAutopilotCycle(forceFresh = false) {
         drawTradeLines(setup);
 
         const orderAction = setup.type === "PENDING" ? (setup.dir + " LIMIT") : (setup.dir + " NOW");
-        const tgText = "🚨 XAUUSD " + orderAction + " " + setup.entry.toFixed(2) + "\n\n🔴 SL: " + setup.sl.toFixed(2) + "\n🎯 TP1: " + setup.tp.toFixed(2) + "\n\n#Trade-" + tradeId;
+        const tgText = "🚨 Mr.Trader AI — XAUUSD " + orderAction + " " + setup.entry.toFixed(2) + "\n\n🔴 SL: " + setup.sl.toFixed(2) + "\n🎯 TP1: " + setup.tp.toFixed(2) + "\n\n#Trade-" + tradeId;
         logEvent(`🚀 Signal #Trade-${tradeId}: <b>${setup.dir} @ ${setup.entry.toFixed(2)}</b>`);
         sendTelegramAlert(tgText);
     }
@@ -1301,12 +1614,12 @@ async function hardSyncRefresh() {
 }
 
 async function testTelegramConnection() {
-    const ok = await sendTelegramAlert("✅ TEST D ENGINE — CONNECTION VERIFIED\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
+    const ok = await sendTelegramAlert("✅ Mr.Trader AI ENGINE — CONNECTION VERIFIED\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
     if (ok) logEvent("✅ Telegram test message delivered!");
 }
 
 async function testTpHitTelegram() {
-    const ok = await sendTelegramAlert("✅ #Trade-TEST TP1 HIT (+$36.80)\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
+    const ok = await sendTelegramAlert("✅ Mr.Trader AI — #Trade-TEST TP1 HIT (+$36.80)\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
     if (ok) logEvent("🎯 Test TP1 HIT alert sent to Telegram!");
 }
 
@@ -1369,7 +1682,7 @@ function updateDashboardUI() {
     if (state.lastPrice) document.getElementById('uiLivePrice').innerText = Number(state.lastPrice).toFixed(2);
     document.getElementById('uiTrendBias').innerText = htfBias;
     document.getElementById('uiTrendBias').style.color = htfBias === "BULLISH" ? "var(--accent-green)" : htfBias === "BEARISH" ? "var(--accent-red)" : "var(--accent-gold)";
-    document.getElementById('uiKillZone').innerText = isInstitutionalKillZone() ? "🟢 Inside Active Kill Zone" : "🟡 Outside Kill Zone";
+    document.getElementById('uiKillZone').innerText = isInstitutionalKillZone() ? t('kzInside') : t('kzOutside');
 
     document.getElementById('uiBalance').innerText = `$${Number(state.balance).toFixed(2)}`;
     document.getElementById('uiLotSub').innerText = `${Number(state.currentLot).toFixed(2)} lots (Tier #${state.monthTier})`;
@@ -1385,15 +1698,15 @@ function updateDashboardUI() {
     const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : (grossProfit > 0 ? '∞' : '0.00');
 
     document.getElementById('uiHomeWinRate').innerText = `${winRatePct}%`;
-    document.getElementById('uiHomeRecord').innerText = `${wins.length}W - ${losses.length}L (${total} Trades)`;
+    document.getElementById('uiHomeRecord').innerText = `${wins.length}W - ${losses.length}L (${total})`;
 
     document.getElementById('statWinRate').innerText = `${winRatePct}%`;
     document.getElementById('statWinsLosses').innerText = `${wins.length}W / ${losses.length}L`;
-    document.getElementById('statTotalTrades').innerText = `${total} Total Closed`;
+    document.getElementById('statTotalTrades').innerText = `${total}`;
     const netEl = document.getElementById('statNetProfit');
     netEl.innerText = `${netProfit >= 0 ? '+' : '-'}$${Math.abs(netProfit).toFixed(2)}`;
     netEl.style.color = netProfit >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
-    document.getElementById('statEquityHigh').innerText = `Peak Equity: $${Number(state.highWaterMark).toFixed(2)}`;
+    document.getElementById('statEquityHigh').innerText = `Peak: $${Number(state.highWaterMark).toFixed(2)}`;
     document.getElementById('statProfitFactor').innerText = profitFactor;
 
     const homeSigBox = document.getElementById('homeSignalContainer');
@@ -1401,38 +1714,38 @@ function updateDashboardUI() {
     const statusTag = document.getElementById('activeTradeStatusTag');
 
     if (state.activeTrade) {
-        const t = state.activeTrade, cls = t.dir.toLowerCase();
-        statusTag.innerText = `🟢 ${t.type} — #Trade-${t.tradeId || 1}`;
+        const tr = state.activeTrade, cls = tr.dir.toLowerCase();
+        statusTag.innerText = `🟢 ${tr.type} — #Trade-${tr.tradeId || 1}`;
         const cardHtml = `
             <div class="signal-card ${cls}">
                 <div class="sig-row">
-                    <strong>#Trade-${t.tradeId || 1} — ${t.setupName}</strong>
-                    <span class="sig-badge ${cls}">${t.dir} (${t.type})</span>
+                    <strong>#Trade-${tr.tradeId || 1} — ${tr.setupName}</strong>
+                    <span class="sig-badge ${cls}">${tr.dir} (${tr.type})</span>
                 </div>
-                <div class="sig-row"><span>Entry Price:</span><strong>${Number(t.entry).toFixed(2)}</strong></div>
-                <div class="sig-row"><span>Stop Loss (SL):</span><strong style="color:var(--accent-red);">${Number(t.sl).toFixed(2)}</strong></div>
-                <div class="sig-row"><span>Take Profit (TP1 1:2):</span><strong style="color:var(--accent-green);">${Number(t.tp).toFixed(2)}</strong></div>
-                <div class="sig-row"><span>Position Size:</span><strong>${Number(t.lot).toFixed(2)} lots</strong></div>
+                <div class="sig-row"><span>${t('thEntry')}:</span><strong>${Number(tr.entry).toFixed(2)}</strong></div>
+                <div class="sig-row"><span>Stop Loss (SL):</span><strong style="color:var(--accent-red);">${Number(tr.sl).toFixed(2)}</strong></div>
+                <div class="sig-row"><span>Take Profit (TP1 1:2):</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
+                <div class="sig-row"><span>${t('thLot')}:</span><strong>${Number(tr.lot).toFixed(2)} lots</strong></div>
             </div>`;
         homeSigBox.innerHTML = cardHtml;
         activeTabBox.innerHTML = cardHtml;
     } else {
-        statusTag.innerText = '🟡 STANDBY — Scanning Kill Zones';
+        statusTag.innerText = '🟡 STANDBY';
         const standbyHtml = `
             <div class="signal-card">
-                <div class="sig-row"><strong>🤖 Autopilot Scanning</strong><span class="sig-badge">STANDBY</span></div>
-                <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 6px;">
-                    Monitoring Asian Range &amp; 24-bar liquidity pools during London (07:00–10:30 UTC) and NY (12:30–16:30 UTC) Kill Zones.
+                <div class="sig-row"><strong>${t('scanningTitle')}</strong><span class="sig-badge">STANDBY</span></div>
+                <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 6px; line-height:1.5;">
+                    ${t('scanningDesc')}
                 </p>
             </div>`;
         homeSigBox.innerHTML = standbyHtml;
         activeTabBox.innerHTML = standbyHtml;
     }
 
-    document.getElementById('closedCountTag').innerText = `${total} Completed Trades`;
+    document.getElementById('closedCountTag').innerText = `${total}`;
     const closedTbody = document.getElementById('closedTradesTableBody');
     if (total === 0) {
-        closedTbody.innerHTML = '<tr><td colspan="10" style="color:var(--text-secondary); text-align:center; padding:18px;">No closed trades recorded yet.</td></tr>';
+        closedTbody.innerHTML = `<tr><td colspan="10" style="color:var(--text-secondary); text-align:center; padding:18px;">${t('noClosed')}</td></tr>`;
     } else {
         closedTbody.innerHTML = hist.map(h => {
             const isWin = h.outcome === 'WIN';
@@ -1470,7 +1783,7 @@ function startTerminalEngine(isAdmin) {
     }
 
     updateDashboardUI();
-    logEvent(`🚀 Connected as ${currentUserProfile.email} (${isAdmin ? 'MASTER' : 'CLIENT VIEW'}).`);
+    logEvent(`🚀 Mr.Trader AI connected: ${currentUserProfile.email} (${isAdmin ? 'MASTER' : 'VIP CLIENT'}).`);
 
     if (isAdmin) {
         runAutopilotCycle(true);
