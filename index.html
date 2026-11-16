@@ -326,7 +326,7 @@
 
 <script>
 // ============================================================================
-// 1. SUPABASE AUTH, SIGN UP & FORGOT PASSWORD RECOVERY
+// 1. SUPABASE AUTH, SIGN UP & FORGOT PASSWORD RECOVERY (PKCE + HASH SUPPORT)
 // ============================================================================
 const SUPABASE_URL = 'https://wdexwfoplycblaxmrfws.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_6U7d-ihEr1ivc362mhkDeQ_2suPM3gy';
@@ -336,8 +336,18 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const FREE_DEMO_BETA_MODE = true;
 
 let authMode = 'login';
+let isPasswordRecoveryMode = false;
 let currentUserProfile = null;
 let masterConfig = { td_api_key: '', tg_bot_token: '', tg_chat_id: '' };
+
+function showNewPasswordScreen() {
+    isPasswordRecoveryMode = true;
+    document.getElementById('authOverlay').style.display = 'flex';
+    document.getElementById('terminalApp').style.display = 'none';
+    document.getElementById('authFormBox').style.display = 'none';
+    document.getElementById('pendingApprovalBox').style.display = 'none';
+    document.getElementById('updatePasswordBox').style.display = 'block';
+}
 
 function switchAuthMode(mode) {
     authMode = mode;
@@ -382,7 +392,8 @@ async function handleAuthSubmit() {
     if (authMode === 'forgot') {
         msgEl.style.color = 'var(--accent-gold)';
         msgEl.innerText = 'Sending password reset email...';
-        const redirectUrl = window.location.origin + window.location.pathname;
+        // Append ?recovery=1 so the returning URL is unmistakably detected
+        const redirectUrl = window.location.origin + window.location.pathname + '?recovery=1';
         const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
         if (error) {
             msgEl.style.color = 'var(--accent-red)';
@@ -450,6 +461,7 @@ async function handleUpdatePassword() {
     } else {
         msgEl.style.color = 'var(--accent-green)';
         msgEl.innerText = '✅ Password updated! Entering terminal...';
+        isPasswordRecoveryMode = false;
         window.history.replaceState({}, document.title, window.location.pathname);
         setTimeout(() => {
             document.getElementById('updatePasswordBox').style.display = 'none';
@@ -458,12 +470,10 @@ async function handleUpdatePassword() {
     }
 }
 
+// Listen for Supabase PASSWORD_RECOVERY event (fires for both PKCE ?code= and #type=recovery)
 sb.auth.onAuthStateChange((event, session) => {
     if (event === 'PASSWORD_RECOVERY') {
-        document.getElementById('authOverlay').style.display = 'flex';
-        document.getElementById('authFormBox').style.display = 'none';
-        document.getElementById('pendingApprovalBox').style.display = 'none';
-        document.getElementById('updatePasswordBox').style.display = 'block';
+        showNewPasswordScreen();
     }
 });
 
@@ -473,11 +483,22 @@ async function logoutClient() {
 }
 
 async function checkUserSession() {
-    if (window.location.hash && window.location.hash.includes('type=recovery')) {
-        document.getElementById('authOverlay').style.display = 'flex';
-        document.getElementById('authFormBox').style.display = 'none';
-        document.getElementById('updatePasswordBox').style.display = 'block';
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasRecoveryIndicator =
+        isPasswordRecoveryMode ||
+        urlParams.get('recovery') === '1' ||
+        urlParams.get('type') === 'recovery' ||
+        (window.location.hash && window.location.hash.includes('type=recovery'));
+
+    if (hasRecoveryIndicator) {
+        showNewPasswordScreen();
         return;
+    }
+
+    // If Supabase PKCE ?code=... is present, wait briefly for Supabase to exchange code & fire PASSWORD_RECOVERY
+    if (urlParams.has('code')) {
+        await new Promise(resolve => setTimeout(resolve, 700));
+        if (isPasswordRecoveryMode) return;
     }
 
     const { data: { session } } = await sb.auth.getSession();
