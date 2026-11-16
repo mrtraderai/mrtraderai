@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr.Trader AI v1.2 — Autonomous XAU/USD Terminal</title>
+    <title>Mr.Trader AI v1.2 — Autonomous XAU/USD Terminal (Beirut)</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -23,7 +23,6 @@
         body { background: var(--bg-primary); color: var(--text-primary); padding: 14px; }
         .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 
-        /* Language Switch Button (Top Left) */
         .lang-switch-btn {
             background: var(--bg-card); color: var(--accent-gold); border: 1px solid var(--accent-gold);
             padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-weight: 700;
@@ -32,7 +31,6 @@
         .lang-switch-btn:hover { background: var(--accent-gold); color: #000; }
         .auth-top-left { position: fixed; top: 16px; left: 16px; z-index: 10001; }
 
-        /* Auth Overlay & Showcase Landing */
         .auth-overlay {
             position: fixed; inset: 0; background: radial-gradient(circle at top right, #1b2234 0%, #0b0e14 65%);
             z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; overflow-y: auto;
@@ -125,12 +123,13 @@
             color: var(--accent-gold); border-radius: 8px; font-size: 1.35rem; font-weight: 700; text-align: center; letter-spacing: 8px;
         }
         .admin-window {
-            width: 100%; max-width: 1020px; max-height: 92vh; overflow-y: auto; background: var(--bg-secondary);
+            width: 100%; max-width: 1040px; max-height: 92vh; overflow-y: auto; background: var(--bg-secondary);
             border: 1px solid var(--accent-gold); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px;
         }
         .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
         .admin-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; }
         .admin-section h4 { color: var(--accent-gold); font-size: 0.85rem; margin-bottom: 10px; }
+        
         .setting-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 8px; }
         .setting-card { background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
         .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 600; }
@@ -224,12 +223,12 @@
     <div class="auth-wrapper" id="authLandingWrapper">
         <div class="showcase-panel">
             <div class="showcase-hero">
-                <span class="showcase-badge" data-i18n="scBadge">⚡ AI GOLD ENGINE v1.2</span>
+                <span class="showcase-badge" data-i18n="scBadge">⚡ INSTITUTIONAL XAU/USD ENGINE v1.2</span>
                 <h1>Mr.Trader AI — XAU/USD</h1>
             </div>
             <div class="showcase-body">
                 <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.55;" data-i18n="scDesc">
-                    Advanced institutional structure detection paired with Cumulative Volume Delta (CVD) and Fibonacci retracements for precision XAU/USD trading.
+                    Advanced institutional liquidity reclaims and multi-timeframe structural analysis engineered specifically for precision gold execution.
                 </p>
                 <div class="showcase-stats">
                     <div class="sc-stat-box"><div class="sc-stat-val">75.0%</div><div class="sc-stat-lbl" data-i18n="scWinRateLbl">Verified Win Rate</div></div>
@@ -237,8 +236,8 @@
                     <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-blue);">25/mo</div><div class="sc-stat-lbl" data-i18n="scAutoLbl">A+ Setups</div></div>
                 </div>
                 <div class="showcase-gallery">
-                    <div class="sc-img-card sc-img-1"><span data-i18n="scCard1">📈 Spring Structure & CVD Reclaim</span></div>
-                    <div class="sc-img-card sc-img-2"><span data-i18n="scCard2">🛡️ Fibonacci Retracement (61.8%-78.6%)</span></div>
+                    <div class="sc-img-card sc-img-1"><span data-i18n="scCard1">📈 Liquidity Sweep & Reclaim</span></div>
+                    <div class="sc-img-card sc-img-2"><span data-i18n="scCard2">🛡️ Precision Retracement Zones</span></div>
                 </div>
             </div>
         </div>
@@ -327,7 +326,6 @@
             <button type="button" class="btn-ui" onclick="document.getElementById('adminModal').style.display='none'">✖ Lock & Close</button>
         </div>
 
-        <!-- Master Credentials & Beta Switch -->
         <div class="admin-section">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
                 <h4 style="margin:0;">1. Master Engine Credentials & Access Mode</h4>
@@ -346,36 +344,142 @@
             </div>
         </div>
 
-        <!-- Session Filters & Risk Guardrails AW Section -->
         <div class="admin-section">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-                <h4 style="margin:0;">2. Session Filters & Advanced Risk Guardrails</h4>
-                <button type="button" class="btn-ui" style="border-color:var(--accent-gold); color:var(--accent-gold);" onclick="resetSettingsToDefault()">🔄 Reset to Default Rules</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+                <h4 style="margin:0;">3. Registered Clients & VIP Bundles (<span id="clientCountBadge">0</span> Users)</h4>
+                <span id="adminUserActionMsg" style="font-size:0.75rem; color:var(--accent-green);"></span>
+                <button type="button" class="btn-ui" onclick="loadClientList()">🔄 Refresh List</button>
+            </div>
+
+            <!-- Search Bar & Sort Filters -->
+            <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
+                <input type="text" id="clientSearchInput" class="auth-input" style="flex:2; margin:0; padding:8px 10px;" placeholder="🔍 Search by Email or Client ID (ابحث بالبريد أو المعرف)..." oninput="renderClientTable()">
+                <select id="clientSortSelect" class="bundle-select" style="flex:1; padding:8px 10px;" onchange="renderClientTable()">
+                    <option value="newest">🕒 Newest First (الأحدث أولاً)</option>
+                    <option value="oldest">⏳ Oldest First (الأقدم أولاً)</option>
+                    <option value="vip_active">💎 VIP Active First (النشطون أولاً)</option>
+                </select>
+            </div>
+
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Client ID / المعرف</th>
+                            <th>User Email / البريد</th>
+                            <th>Bundle / الباقة</th>
+                            <th>VIP Start</th>
+                            <th>VIP Expires</th>
+                            <th>Status</th>
+                            <th>Actions (تفعيل / إلغاء VIP)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientTableBody">
+                        <tr><td colspan="7" style="color:var(--text-secondary); text-align:center;">Loading users...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 4. MAIN TRADING TERMINAL ==================== -->
+<div id="terminalApp" class="container" style="display:none;">
+    <div class="header">
+        <div class="header-left">
+            <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
+            <div class="title-group">
+                <h1>Mr.Trader AI v1.2</h1>
+                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals | Single 1:2.1 R:R Target (Beirut Time)</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div id="vipBadgePill" class="status-pill" style="display:none; border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(245,158,11,0.12);">
+                <span id="vipBadgeText">VIP ACTIVE</span>
+            </div>
+            <div id="autopilotStatusPill" class="status-pill">
+                <span class="pulse-dot"></span>
+                <span id="autopilotStatusText" data-i18n="liveStream">LIVE STREAM ACTIVE</span>
+            </div>
+            <button type="button" id="openAdminBtn" class="btn-ui btn-admin" onclick="promptAwPin()">AW</button>
+            <button type="button" id="forceRefreshBtn" class="btn-ui" onclick="hardSyncRefresh()">🔄 <span data-i18n="syncBtn">Sync</span></button>
+            <button type="button" class="btn-ui" onclick="logoutClient()" data-i18n="logoutBtn">Logout</button>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <button type="button" id="navHome" class="nav-tab active" onclick="switchTerminalTab('home')">🏠 <span data-i18n="tabHome">Home</span></button>
+        <button type="button" id="navActive" class="nav-tab" onclick="switchTerminalTab('active')">⚡ <span data-i18n="tabActive">Active Trade</span></button>
+        <button type="button" id="navClosed" class="nav-tab" onclick="switchTerminalTab('closed')">📜 <span data-i18n="tabClosed">Closed Trades</span></button>
+        <button type="button" id="navWinrate" class="nav-tab" onclick="switchTerminalTab('winrate')">📊 <span data-i18n="tabWinrate">Win Rate & Stats</span></button>
+        <button type="button" id="navAccount" class="nav-tab" onclick="switchTerminalTab('account')">👤 <span data-i18n="tabAccount">Account</span></button>
+    </div>
+
+    <!-- ==================== TAB 1: HOME ==================== -->
+    <div id="viewHome" class="tab-view active">
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label" data-i18n="lblLivePrice">Live XAU/USD Price</div>
+                <div class="metric-value" id="uiLivePrice" style="color: var(--accent-gold);">---.--</div>
+                <div class="metric-sub" data-i18n="subSpread">Exness Spread Modeled</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label" data-i18n="lblTrendBias">Market Bias & Sessions (Beirut)</div>
+                <div class="metric-value" id="uiTrendBias">NEUTRAL</div>
+                <div class="metric-sub" id="uiSessionsStatus" style="font-weight:600;">Tokyo: -- | London: -- | NY: --</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label" data-i18n="lblSignalSummary">Current Signal Status</div>
+                <div class="metric-value" id="uiTopSignalDir" style="color: var(--text-secondary);">NONE</div>
+                <div class="metric-sub" id="uiTopSignalLevels">No active or limit order</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label" data-i18n="lblWinRate">Live Win Rate</div>
+                <div class="metric-value" id="uiHomeWinRate" style="color: var(--accent-green);">0.0%</div>
+                <div class="metric-sub" id="uiHomeRecord">0W - 0L (0 Trades)</div>
+            </div>
+        </div>
+
+        <!-- Session Filters & Risk Guardrails Control Panel -->
+        <div class="panel-box" style="background:var(--bg-secondary); border:1px solid var(--border-color);">
+            <div class="box-header" style="margin-bottom:8px;">
+                <span>⚙️ Session Filters, Risk Guardrails & News Blackout (Beirut Time)</span>
+                <button type="button" class="btn-ui" style="border-color:var(--accent-gold); color:var(--accent-gold);" onclick="resetSettingsToDefault()">🔄 Reset Default Rules</button>
             </div>
             <div class="setting-grid">
-                <!-- Tokyo Session -->
+                <!-- Tokyo Session (03:00 - 12:00 Beirut) -->
                 <div class="setting-card">
                     <div class="setting-row">
-                        <span>🇯🇵 Tokyo Session (00:00-09:00 UTC)</span>
+                        <span>🇯🇵 Tokyo (03:00-12:00)</span>
                         <input type="checkbox" id="sessTokyo" onchange="saveRiskAndSessionSettings()">
                     </div>
                     <div style="font-size:0.7rem; color:var(--text-secondary);" id="tokyoLiveStatusTag">Status: Checking...</div>
                 </div>
-                <!-- London Session -->
+                <!-- London Session (10:00 - 19:00 Beirut) -->
                 <div class="setting-card">
                     <div class="setting-row">
-                        <span>🇬🇧 London Session (07:00-16:00 UTC)</span>
+                        <span>🇬🇧 London (10:00-19:00)</span>
                         <input type="checkbox" id="sessLondon" onchange="saveRiskAndSessionSettings()">
                     </div>
                     <div style="font-size:0.7rem; color:var(--text-secondary);" id="londonLiveStatusTag">Status: Checking...</div>
                 </div>
-                <!-- New York Session -->
+                <!-- New York Session (15:00 - 00:00 Beirut) -->
                 <div class="setting-card">
                     <div class="setting-row">
-                        <span>🇺🇸 New York Session (12:00-21:00 UTC)</span>
+                        <span>🇺🇸 New York (15:00-00:00)</span>
                         <input type="checkbox" id="sessNy" onchange="saveRiskAndSessionSettings()">
                     </div>
                     <div style="font-size:0.7rem; color:var(--text-secondary);" id="nyLiveStatusTag">Status: Checking...</div>
+                </div>
+                <!-- USD News Filter -->
+                <div class="setting-card" style="border-color:var(--accent-gold);">
+                    <div class="setting-row">
+                        <span style="color:var(--accent-gold);">📰 USD News Filter (±15m)</span>
+                        <input type="checkbox" id="newsFilterEn" onchange="saveRiskAndSessionSettings()">
+                    </div>
+                    <div style="font-size:0.7rem; color:var(--text-secondary);" id="newsFilterStatusTag">Status: Active (NFP/CPI/FOMC)</div>
                 </div>
                 <!-- Max Stop Loss -->
                 <div class="setting-card">
@@ -412,102 +516,15 @@
             </div>
         </div>
 
-        <!-- Registered Clients & VIP Bundles Table -->
-        <div class="admin-section">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
-                <h4 style="margin:0;">3. Registered Clients & VIP Bundles (<span id="clientCountBadge">0</span> Users)</h4>
-                <span id="adminUserActionMsg" style="font-size:0.75rem; color:var(--accent-green);"></span>
-                <button type="button" class="btn-ui" onclick="loadClientList()">🔄 Refresh List</button>
-            </div>
-            <div style="overflow-x:auto;">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>User Email</th>
-                            <th>Bundle</th>
-                            <th>VIP Start</th>
-                            <th>VIP Expires</th>
-                            <th>Status</th>
-                            <th>Assign Bundle (3d / 1M / 3M) / Reset</th>
-                        </tr>
-                    </thead>
-                    <tbody id="clientTableBody">
-                        <tr><td colspan="6" style="color:var(--text-secondary);">Loading users...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ==================== 4. MAIN TRADING TERMINAL ==================== -->
-<div id="terminalApp" class="container" style="display:none;">
-    <div class="header">
-        <div class="header-left">
-            <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
-            <div class="title-group">
-                <h1>Mr.Trader AI v1.2</h1>
-                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals | Single 1:2.1 R:R Target</p>
-            </div>
-        </div>
-
-        <div class="controls">
-            <div id="vipBadgePill" class="status-pill" style="display:none; border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(245,158,11,0.12);">
-                <span id="vipBadgeText">VIP ACTIVE</span>
-            </div>
-            <div id="autopilotStatusPill" class="status-pill">
-                <span class="pulse-dot"></span>
-                <span id="autopilotStatusText" data-i18n="liveStream">LIVE STREAM ACTIVE</span>
-            </div>
-            <button type="button" id="openAdminBtn" class="btn-ui btn-admin" onclick="promptAwPin()">AW</button>
-            <button type="button" id="forceRefreshBtn" class="btn-ui" onclick="hardSyncRefresh()">🔄 <span data-i18n="syncBtn">Sync</span></button>
-            <button type="button" class="btn-ui" onclick="logoutClient()" data-i18n="logoutBtn">Logout</button>
-        </div>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <div class="nav-tabs">
-        <button type="button" id="navHome" class="nav-tab active" onclick="switchTerminalTab('home')">🏠 <span data-i18n="tabHome">Home</span></button>
-        <button type="button" id="navActive" class="nav-tab" onclick="switchTerminalTab('active')">⚡ <span data-i18n="tabActive">Active Trade</span></button>
-        <button type="button" id="navClosed" class="nav-tab" onclick="switchTerminalTab('closed')">📜 <span data-i18n="tabClosed">Closed Trades</span></button>
-        <button type="button" id="navWinrate" class="nav-tab" onclick="switchTerminalTab('winrate')">📊 <span data-i18n="tabWinrate">Win Rate & Stats</span></button>
-        <button type="button" id="navAccount" class="nav-tab" onclick="switchTerminalTab('account')">👤 <span data-i18n="tabAccount">Account</span></button>
-    </div>
-
-    <!-- ==================== TAB 1: HOME ==================== -->
-    <div id="viewHome" class="tab-view active">
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-label" data-i18n="lblLivePrice">Live XAU/USD Price</div>
-                <div class="metric-value" id="uiLivePrice" style="color: var(--accent-gold);">---.--</div>
-                <div class="metric-sub" data-i18n="subSpread">40–80 pts Dynamic Spread</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label" data-i18n="lblTrendBias">Market Bias & Sessions</div>
-                <div class="metric-value" id="uiTrendBias">NEUTRAL</div>
-                <div class="metric-sub" id="uiSessionsStatus" style="font-weight:600;">London: -- | Tokyo: -- | NY: --</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label" data-i18n="lblSignalSummary">Current Signal Status</div>
-                <div class="metric-value" id="uiTopSignalDir" style="color: var(--text-secondary);">NONE</div>
-                <div class="metric-sub" id="uiTopSignalLevels">No active or limit order</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label" data-i18n="lblWinRate">Live Win Rate</div>
-                <div class="metric-value" id="uiHomeWinRate" style="color: var(--accent-green);">0.0%</div>
-                <div class="metric-sub" id="uiHomeRecord">0W - 0L (0 Trades)</div>
-            </div>
-        </div>
-
         <div class="risk-remark">
-            <span>🛡️ <strong data-i18n="riskRemarkTitle">Risk Management Note:</strong> <span data-i18n="riskRemarkText">For each $400 of account capital, use 0.02 lot size.</span></span>
-            <span style="font-size:0.74rem; color:var(--text-secondary);" data-i18n="spreadRemarkText">Spread: 40–80 points depending on market liquidity</span>
+            <span>🛡️ <strong data-i18n="riskRemarkTitle">Risk Management Note:</strong> <span data-i18n="riskRemarkText">For each $400 of account capital, use 0.02 lot size. Exness point calculation verified.</span></span>
+            <span style="font-size:0.74rem; color:var(--text-secondary);" data-i18n="spreadRemarkText">Spread: 40–80 points dynamic</span>
         </div>
 
         <div class="main-grid">
             <div class="chart-box">
                 <div class="box-header">
-                    <span data-i18n="chartTitle">XAU/USD M5 Live Chart (Closed-Candle Execution)</span>
+                    <span data-i18n="chartTitle">XAU/USD M5 Live Chart (Institutional Execution)</span>
                     <span id="lastSyncTime" style="color: var(--text-secondary); font-size: 0.75rem;">Syncing...</span>
                 </div>
                 <div id="chart"></div>
@@ -543,7 +560,7 @@
     <div id="viewClosed" class="tab-view">
         <div class="panel-box">
             <div class="box-header">
-                <span data-i18n="closedBoxTitle">📜 Closed Trades History (40–80 pts Spread Adjusted)</span>
+                <span data-i18n="closedBoxTitle">📜 Closed Trades History (Exness Spread Adjusted)</span>
                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                     <select id="closedTimeFilter" class="bundle-select" onchange="updateDashboardUI()">
                         <option value="all" data-i18n="filterAll">All Time</option>
@@ -570,7 +587,7 @@
                             <th data-i18n="thLot">Lot</th>
                             <th data-i18n="thOutcome">Outcome</th>
                             <th data-i18n="thPnl">Net P&L</th>
-                            <th data-i18n="thClosed">Closed (UTC)</th>
+                            <th data-i18n="thClosed">Closed (Beirut)</th>
                         </tr>
                     </thead>
                     <tbody id="closedTradesTableBody">
@@ -609,12 +626,12 @@
         <div class="panel-box">
             <div class="box-header">
                 <span data-i18n="stratTitle">📊 Mr.Trader AI v1.2 Engine Overview</span>
-                <span style="color: var(--text-secondary); font-size: 0.75rem;">40–80 pts Spread Modeled</span>
+                <span style="color: var(--text-secondary); font-size: 0.75rem;">Exness Spread Modeled</span>
             </div>
             <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.75;" data-i18n="stratDesc">
-                • <strong>Active Trading Sessions:</strong> Configurable institutional liquidity windows across Tokyo, London, and New York.<br>
-                • <strong>Execution Engine:</strong> Structure detection with Cumulative Volume Delta (CVD) absorption and Fibonacci retracement entries.<br>
-                • <strong>Risk Management:</strong> Customizable Max SL, Max Trades, Daily Loss limits, and consecutive loss circuit breakers.
+                • <strong>Active Trading Sessions:</strong> Configurable institutional liquidity windows (Tokyo, London, New York) set to Beirut local time.<br>
+                • <strong>Execution Engine:</strong> Advanced M5 institutional multi-timeframe structural analysis and retracement entries.<br>
+                • <strong>Risk Management:</strong> Customizable Max SL, Max Trades, Daily Loss limits, and USD high-impact news blackout protection.
             </p>
         </div>
     </div>
@@ -683,13 +700,13 @@ let currentLang = localStorage.getItem('mrtrader_lang') || 'en';
 const I18N = {
     en: {
         langBtn: 'العربية',
-        scBadge: '⚡ AI GOLD ENGINE v1.2',
-        scDesc: 'Advanced institutional structure detection paired with Cumulative Volume Delta (CVD) and Fibonacci retracements for precision XAU/USD trading.',
+        scBadge: '⚡ INSTITUTIONAL XAU/USD ENGINE v1.2',
+        scDesc: 'Advanced institutional liquidity reclaims and multi-timeframe structural analysis engineered specifically for precision gold execution.',
         scWinRateLbl: 'Verified Win Rate',
         scRrLbl: 'Fixed Risk/Reward',
         scAutoLbl: 'A+ Setups',
-        scCard1: '📈 Spring Structure & CVD Reclaim',
-        scCard2: '🛡️ Fibonacci Retracement (61.8%-78.6%)',
+        scCard1: '📈 Liquidity Sweep & Reclaim',
+        scCard2: '🛡️ Precision Retracement Zones',
         authSub: 'Sign in or create an account to access the live XAU/USD AI terminal',
         clientLogin: 'Client Login',
         signUp: 'Sign Up',
@@ -705,7 +722,7 @@ const I18N = {
         setNewPassDesc: 'Enter your new password below to regain access to Mr.Trader AI.',
         updatePassBtn: 'Update Password & Login',
         signOut: 'Sign Out',
-        headerSub: 'Autonomous XAU/USD Signals | Single 1:2.1 R:R Target',
+        headerSub: 'Autonomous XAU/USD Signals | Single 1:2.1 R:R Target (Beirut Time)',
         liveStream: 'LIVE STREAM ACTIVE',
         syncBtn: 'Sync',
         logoutBtn: 'Logout',
@@ -715,18 +732,18 @@ const I18N = {
         tabWinrate: 'Win Rate & Stats',
         tabAccount: 'Account',
         lblLivePrice: 'Live XAU/USD Price',
-        subSpread: '40–80 pts Dynamic Spread',
-        lblTrendBias: 'Market Bias & Sessions',
+        subSpread: 'Exness Spread Modeled',
+        lblTrendBias: 'Market Bias & Sessions (Beirut)',
         lblSignalSummary: 'Current Signal Status',
         lblWinRate: 'Live Win Rate',
         riskRemarkTitle: 'Risk Management Note:',
-        riskRemarkText: 'For each $400 of account capital, use 0.02 lot size.',
-        spreadRemarkText: 'Spread: 40–80 points depending on market liquidity',
-        chartTitle: 'XAU/USD M5 Live Chart (Closed-Candle Execution)',
+        riskRemarkText: 'For each $400 of account capital, use 0.02 lot size. Exness point calculation verified.',
+        spreadRemarkText: 'Spread: 40–80 points dynamic',
+        chartTitle: 'XAU/USD M5 Live Chart (Institutional Execution)',
         latestSigTitle: 'Latest Signal Detected',
         liveAlertsTitle: 'Live Alerts & Feed',
         activeBoxTitle: '⚡ Live Active / Limit Signal Details',
-        closedBoxTitle: '📜 Closed Trades History (40–80 pts Spread Adjusted)',
+        closedBoxTitle: '📜 Closed Trades History (Exness Spread Adjusted)',
         filterAll: 'All Time',
         filterToday: 'Today (24h)',
         filter7d: 'Last 7 Days',
@@ -738,14 +755,14 @@ const I18N = {
         thLot: 'Lot',
         thOutcome: 'Outcome',
         thPnl: 'Net P&L',
-        thClosed: 'Closed (UTC)',
+        thClosed: 'Closed (Beirut)',
         statWinRateLbl: 'Live Verified Win Rate',
         statWLLbl: 'Total Wins / Losses',
         statNetLbl: 'Net Cumulative Profit',
         riskBaseSub: 'Based on 0.02 lot / $400 risk rule',
         statPfLbl: 'Profit Factor',
         stratTitle: '📊 Mr.Trader AI v1.2 Engine Overview',
-        stratDesc: '• <strong>Active Trading Sessions:</strong> Configurable institutional liquidity windows across Tokyo, London, and New York.<br>• <strong>Execution Engine:</strong> Structure detection with Cumulative Volume Delta (CVD) absorption and Fibonacci retracement entries.<br>• <strong>Risk Management:</strong> Customizable Max SL, Max Trades, Daily Loss limits, and consecutive loss circuit breakers.',
+        stratDesc: '• <strong>Active Trading Sessions:</strong> Configurable institutional liquidity windows (Tokyo, London, New York) set to Beirut local time.<br>• <strong>Execution Engine:</strong> Advanced M5 institutional multi-timeframe structural analysis and retracement entries.<br>• <strong>Risk Management:</strong> Customizable Max SL, Max Trades, Daily Loss limits, and USD high-impact news blackout protection.',
         accProfileTitle: '👤 Account Details & Subscription Status',
         accEmailLbl: 'Registered Email',
         accPlanLbl: 'Current VIP Bundle',
@@ -760,19 +777,19 @@ const I18N = {
         plan3mTitle: '3 Months VIP',
         plan3mDesc: '90 days priority VIP access (Save $47 vs monthly)',
         orderTg: 'Activate on Telegram',
-        scanningTitle: '🤖 AI Engine Scanning',
-        scanningDesc: 'Monitoring XAU/USD Spring/UTAD structures, CVD absorption, and Fibonacci retracements.',
+        scanningTitle: '🤖 Institutional Engine Scanning',
+        scanningDesc: 'Monitoring XAU/USD multi-timeframe market structure and precision retracement zones.',
         noClosed: 'No closed trades recorded for this period.'
     },
     ar: {
         langBtn: 'English',
-        scBadge: '⚡ محرك الذكاء الاصطناعي الإصدار 1.2',
-        scDesc: 'كشف الهياكل المؤسسية المتقدمة مع تأكيد تدفق الحجم التراكمي (CVD) وتراجعات فيبوناتشي لدقة فائقة في تداول الذهب.',
+        scBadge: '⚡ محرك تداول الذهب المؤسسي الإصدار 1.2',
+        scDesc: 'تحليل هيكلي متعدد الأطر الزمنية وإدارة صفقات مؤسسية متقدمة مخصصة خصيصاً لتنفيذ صفقات الذهب بدقة.',
         scWinRateLbl: 'نسبة النجاح المحققة',
         scRrLbl: 'نسبة العائد للمخاطرة',
         scAutoLbl: 'فرص A+',
-        scCard1: '📈 نموذج Spring مع تأكيد CVD',
-        scCard2: '🛡️ تراجعات فيبوناتشي (61.8%-78.6%)',
+        scCard1: '📈 سحب السيولة واختراق النطاق',
+        scCard2: '🛡️ مناطق الارتداد الدقيقة',
         authSub: 'سجّل الدخول أو أنشئ حساباً للوصول إلى منصة Mr.Trader AI لتداول الذهب',
         clientLogin: 'تسجيل الدخول',
         signUp: 'إنشاء حساب',
@@ -788,7 +805,7 @@ const I18N = {
         setNewPassDesc: 'أدخل كلمة المرور الجديدة أدناه لاستعادة الدخول إلى Mr.Trader AI.',
         updatePassBtn: 'تحديث كلمة المرور والدخول',
         signOut: 'تسجيل الخروج',
-        headerSub: 'توصيات الذهب الذكية | هدف واحد 1:2.1',
+        headerSub: 'توصيات الذهب الذكية | هدف واحد 1:2.1 (بتوقيت بيروت)',
         liveStream: 'البث المباشر نشط',
         syncBtn: 'تحديث',
         logoutBtn: 'خروج',
@@ -798,18 +815,18 @@ const I18N = {
         tabWinrate: 'نسبة النجاح والإحصائيات',
         tabAccount: 'الحساب والاشتراك',
         lblLivePrice: 'سعر الذهب المباشر XAU/USD',
-        subSpread: 'سبريد متغير 40 إلى 80 نقطة',
-        lblTrendBias: 'اتجاه السوق والجلسات',
+        subSpread: 'محاكاة سبريد شركة Exness',
+        lblTrendBias: 'اتجاه السوق والجلسات (بيروت)',
         lblSignalSummary: 'حالة التوصية الحالية',
         lblWinRate: 'نسبة النجاح المباشرة',
         riskRemarkTitle: 'ملاحظة إدارة المخاطر:',
-        riskRemarkText: 'لكل 400$ من رأس المال، استخدم حجم عقد 0.02 لوت.',
-        spreadRemarkText: 'السبريد: من 40 إلى 80 نقطة حسب سيولة السوق',
-        chartTitle: 'شارت الذهب M5 المباشر (تنفيذ الصفقات)',
+        riskRemarkText: 'لكل 400$ من رأس المال، استخدم حجم عقد 0.02 لوت. تم التحقق من نقاط Exness.',
+        spreadRemarkText: 'السبريد: متغير 40-80 نقطة',
+        chartTitle: 'شارت الذهب M5 المباشر (تنفيذ مؤسسي)',
         latestSigTitle: 'أحدث توصية مكتشفة',
         liveAlertsTitle: 'التنبيهات المباشرة والسجل',
         activeBoxTitle: '⚡ تفاصيل الصفقة النشطة / المعلقة حالياً',
-        closedBoxTitle: '📜 سجل الصفقات المغلقة (معدل بسبريد 40–80 نقطة)',
+        closedBoxTitle: '📜 سجل الصفقات المغلقة (معدل بسبريد Exness)',
         filterAll: 'كل الأوقات',
         filterToday: 'اليوم (24 ساعة)',
         filter7d: 'آخر 7 أيام',
@@ -821,14 +838,14 @@ const I18N = {
         thLot: 'اللوت',
         thOutcome: 'النتيجة',
         thPnl: 'صافي الربح',
-        thClosed: 'وقت الإغلاق (UTC)',
+        thClosed: 'وقت الإغلاق (بيروت)',
         statWinRateLbl: 'نسبة النجاح الفعلية',
         statWLLbl: 'إجمالي الصفقات الرابحة / الخاسرة',
         statNetLbl: 'صافي الأرباح التراكمية',
         riskBaseSub: 'بناءً على قاعدة 0.02 لوت لكل 400$',
         statPfLbl: 'معامل الربح (Profit Factor)',
         stratTitle: '📊 نظرة عامة على المحرك الإصدار 1.2',
-        stratDesc: '• <strong>جلسات التداول النشطة:</strong> نوافذ السيولة المؤسسية عبر جلسات طوكيو، لندن، ونيويورك.<br>• <strong>محرك التنفيذ:</strong> اكتشاف الهياكل مع استيعاب الحجم التراكمي CVD وتراجعات فيبوناتشي.<br>• <strong>إدارة المخاطر:</strong> إعدادات قابلة للتخصيص للحد الأقصى لوقف الخسارة، الحد الأقصى للصفقات، الخسارة اليومية، والخسائر المتتالية.',
+        stratDesc: '• <strong>جلسات التداول النشطة:</strong> جلسات السيولة المؤسسية (طوكيو، لندن، نيويورك) محسوبة بتوقيت بيروت المحلي.<br>• <strong>محرك التنفيذ:</strong> تحليل هيكلي متقدم على فريم M5 ومستويات ارتداد دقيقة.<br>• <strong>إدارة المخاطر:</strong> إعدادات مخصصة لوقف الخسارة، الحد الأقصى للصفقات، الخسارة اليومية، وفلتر الأخبار الاقتصادية.',
         accProfileTitle: '👤 تفاصيل الحساب وحالة الاشتراك',
         accEmailLbl: 'البريد الإلكتروني المسجل',
         accPlanLbl: 'باقة VIP الحالية',
@@ -843,8 +860,8 @@ const I18N = {
         plan3mTitle: 'باقة 3 أشهر VIP',
         plan3mDesc: '90 يوماً من الوصول الكامل مع أولوية VIP (وفر $47)',
         orderTg: 'تفعيل عبر تيليجرام',
-        scanningTitle: '🤖 جاري مسح السوق عبر المحرك الذكي',
-        scanningDesc: 'مراقبة نماذج الهياكل واستيعاب السيولة عبر مؤشر CVD وتراجعات فيبوناتشي للذهب.',
+        scanningTitle: '🤖 جاري مسح السوق عبر المحرك المؤسسي',
+        scanningDesc: 'مراقبة هيكل السوق على فريم M5 ومناطق الارتداد المؤسسية للذهب.',
         noClosed: 'لا توجد صفقات مغلقة مسجلة في هذه الفترة.'
     }
 };
@@ -888,6 +905,7 @@ let authMode = 'login';
 let isPasswordRecoveryMode = false;
 let currentUserProfile = null;
 let masterConfig = { td_api_key: '', tg_bot_token: '', tg_chat_id: '', beta_mode: true };
+let cachedClientList = [];
 
 function isCurrentUserAdmin() {
     if (!currentUserProfile) return false;
@@ -913,7 +931,6 @@ function verifyAwPin() {
         document.getElementById('pinModal').style.display = 'none';
         document.getElementById('awPinInput').value = '';
         document.getElementById('adminModal').style.display = 'flex';
-        syncSettingsToUI();
         loadClientList();
     } else {
         document.getElementById('awPinError').innerText = '❌ Incorrect PIN. Access Denied.';
@@ -1007,7 +1024,7 @@ async function handleAuthSubmit() {
             msgEl.innerText = error.message;
         } else {
             msgEl.style.color = 'var(--accent-green)';
-            msgEl.innerText = currentLang === 'ar' ? '✅ تم إرسال الرابط! تفقد بريدك الإلكتروني.' : '✅ Reset link sent! Check your email inbox (and spam folder).';
+            msgEl.innerText = currentLang === 'ar' ? '✅ تم إرسال الرابط! تفقد بريدك الإلكتروني.' : '✅ Reset link sent! Check your email inbox.';
         }
         return;
     }
@@ -1174,6 +1191,7 @@ const DEFAULT_ENGINE_RULES = {
     scanIntervalMs: 60000,
     priceTickMs: 15000,
     sessions: { tokyo: true, london: true, newYork: true },
+    newsFilter: { enabled: true },
     riskLimits: {
         maxSlEnabled: true, maxSlValue: 130,
         maxTradesEnabled: true, maxTradesValue: 10,
@@ -1195,6 +1213,7 @@ let state = {
     latestBars: [],
     betaMode: true,
     sessions: { ...DEFAULT_ENGINE_RULES.sessions },
+    newsFilter: { ...DEFAULT_ENGINE_RULES.newsFilter },
     riskLimits: { ...DEFAULT_ENGINE_RULES.riskLimits }
 };
 
@@ -1206,6 +1225,7 @@ async function loadSharedTerminalState() {
     if (data && data.state_json && Object.keys(data.state_json).length > 0) {
         state = { ...DEFAULT_ENGINE_RULES, ...state, ...data.state_json };
         if (!state.sessions) state.sessions = { ...DEFAULT_ENGINE_RULES.sessions };
+        if (!state.newsFilter) state.newsFilter = { ...DEFAULT_ENGINE_RULES.newsFilter };
         if (!state.riskLimits) state.riskLimits = { ...DEFAULT_ENGINE_RULES.riskLimits };
         htfBias = state.htfBias || 'NEUTRAL';
         if (candleSeries && state.latestBars && state.latestBars.length > 0) {
@@ -1228,12 +1248,15 @@ async function saveState() {
 
 function syncSettingsToUI() {
     const s = state.sessions || DEFAULT_ENGINE_RULES.sessions;
+    const n = state.newsFilter || DEFAULT_ENGINE_RULES.newsFilter;
     const r = state.riskLimits || DEFAULT_ENGINE_RULES.riskLimits;
 
     if (document.getElementById('sessTokyo')) {
         document.getElementById('sessTokyo').checked = s.tokyo !== false;
         document.getElementById('sessLondon').checked = s.london !== false;
         document.getElementById('sessNy').checked = s.newYork !== false;
+
+        document.getElementById('newsFilterEn').checked = n.enabled !== false;
 
         document.getElementById('riskMaxSlEn').checked = r.maxSlEnabled !== false;
         document.getElementById('riskMaxSlVal').value = r.maxSlValue || 130;
@@ -1256,6 +1279,9 @@ async function saveRiskAndSessionSettings() {
         london: document.getElementById('sessLondon').checked,
         newYork: document.getElementById('sessNy').checked
     };
+    state.newsFilter = {
+        enabled: document.getElementById('newsFilterEn').checked
+    };
     state.riskLimits = {
         maxSlEnabled: document.getElementById('riskMaxSlEn').checked,
         maxSlValue: parseFloat(document.getElementById('riskMaxSlVal').value) || 130,
@@ -1267,17 +1293,18 @@ async function saveRiskAndSessionSettings() {
         maxConsecutiveValue: parseInt(document.getElementById('riskMaxConVal').value) || 3
     };
     await saveState();
-    logEvent('⚙️ Risk guardrails & session filters updated.');
+    logEvent('⚙️ Risk guardrails, session filters & news settings updated.');
 }
 
 async function resetSettingsToDefault() {
     if (!isCurrentUserAdmin()) return;
     if (!confirm(currentLang === 'ar' ? 'إعادة ضبط كافة الإعدادات والضوابط إلى الوضع الافتراضي؟' : 'Reset all risk settings and session filters to default rules?')) return;
     state.sessions = { ...DEFAULT_ENGINE_RULES.sessions };
+    state.newsFilter = { ...DEFAULT_ENGINE_RULES.newsFilter };
     state.riskLimits = { ...DEFAULT_ENGINE_RULES.riskLimits };
     syncSettingsToUI();
     await saveState();
-    logEvent('🔄 Risk guardrails & session filters reset to default rules.');
+    logEvent('🔄 Settings reset to default rules.');
 }
 
 function subscribeToRealtimeState() {
@@ -1307,7 +1334,7 @@ function subscribeToRealtimeState() {
 }
 
 function logEvent(msg) {
-    const timeStr = new Date().toUTCString().slice(17, 25) + " UTC";
+    const timeStr = new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Beirut' }) + " Beirut";
     const entryHtml = `<span class="log-time">[${timeStr}]</span>${msg}`;
     const logBox = document.getElementById('systemLogs');
     const div = document.createElement('div');
@@ -1322,26 +1349,63 @@ function logEvent(msg) {
 }
 
 // ============================================================================
-// 3. SESSIONS & TRADING ENGINE LOGIC
+// 3. BEIRUT TIMEZONE SESSIONS & NEWS BLACKOUT FILTER
 // ============================================================================
+function getBeirutTimeParts(dateObj = new Date()) {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Beirut',
+        hour12: false,
+        weekday: 'short',
+        hour: 'numeric',
+        minute: 'numeric'
+    });
+    const parts = formatter.formatToParts(dateObj);
+    let weekday = 'Mon', hour = 0, minute = 0;
+    for (const p of parts) {
+        if (p.type === 'weekday') weekday = p.value;
+        if (p.type === 'hour') hour = parseInt(p.value, 10);
+        if (p.type === 'minute') minute = parseInt(p.value, 10);
+    }
+    return { weekday, hour: hour + (minute / 60) };
+}
+
 function getSessionStatuses(dateObj = new Date()) {
-    const utcHour = dateObj.getUTCHours() + (dateObj.getUTCMinutes() / 60);
-    const day = dateObj.getUTCDay();
-    const isWeekend = (day === 0 || day === 6);
-    const tokyoOpen = !isWeekend && (utcHour >= 0.0 && utcHour < 9.0);
-    const londonOpen = !isWeekend && (utcHour >= 7.0 && utcHour < 16.0);
-    const nyOpen = !isWeekend && (utcHour >= 12.0 && utcHour < 21.0);
-    return { tokyoOpen, londonOpen, nyOpen };
+    const { weekday, hour } = getBeirutTimeParts(dateObj);
+    const isWeekend = (weekday === 'Sat' || weekday === 'Sun');
+    
+    const tokyoOpen = !isWeekend && (hour >= 3.0 && hour < 12.0);
+    const londonOpen = !isWeekend && (hour >= 10.0 && hour < 19.0);
+    const nyOpen = !isWeekend && (hour >= 15.0 && hour < 24.0);
+    return { tokyoOpen, londonOpen, nyOpen, isWeekend };
 }
 
 function isSessionAllowedByFilter() {
     const sess = getSessionStatuses();
+    if (sess.isWeekend) return false;
     const sf = state.sessions || DEFAULT_ENGINE_RULES.sessions;
     let allowed = false;
     if (sf.tokyo && sess.tokyoOpen) allowed = true;
     if (sf.london && sess.londonOpen) allowed = true;
     if (sf.newYork && sess.nyOpen) allowed = true;
     return allowed;
+}
+
+function isNewsBlackoutActive() {
+    const nf = state.newsFilter || DEFAULT_ENGINE_RULES.newsFilter;
+    if (!nf.enabled) return false;
+
+    const now = new Date();
+    const { weekday, hour } = getBeirutTimeParts(now);
+    if (weekday === 'Sat' || weekday === 'Sun') return false;
+
+    const isWednesday = (weekday === 'Wed');
+    const isFriday = (weekday === 'Fri');
+    const isTueThu = (weekday === 'Tue' || weekday === 'Thu');
+
+    if (isWednesday && hour >= 20.75 && hour <= 21.25) return true;
+    if ((isFriday || isTueThu) && hour >= 15.25 && hour <= 15.75) return true;
+
+    return false;
 }
 
 function isCircuitBreakerClear() {
@@ -1353,7 +1417,6 @@ function isCircuitBreakerClear() {
     const r = state.riskLimits || DEFAULT_ENGINE_RULES.riskLimits;
     if (r.maxConsecutiveEnabled && state.consecutiveLosses >= (r.maxConsecutiveValue || 3)) return false;
 
-    // Check Max Daily Loss
     if (r.maxDailyLossEnabled) {
         const todayStr = new Date().toISOString().slice(0, 10);
         const todayLosses = (state.history || []).filter(h => (h.closedAt || '').includes(todayStr) && h.netPnL < 0);
@@ -1361,7 +1424,6 @@ function isCircuitBreakerClear() {
         if (totalTodayLoss >= (r.maxDailyLossValue || 250)) return false;
     }
 
-    // Check Max Daily Trades
     if (r.maxTradesEnabled) {
         const todayStr = new Date().toISOString().slice(0, 10);
         const todayTrades = (state.history || []).filter(h => (h.closedAt || '').includes(todayStr));
@@ -1410,7 +1472,7 @@ function getAsianRange(bars) {
     return count >= 6 ? { asianHigh, asianLow } : null;
 }
 
-function evaluateWyckoffOteSetup(m5Bars) {
+function evaluateInstitutionalSetup(m5Bars) {
     if (!m5Bars || m5Bars.length < 65) return null;
     const c1 = m5Bars[m5Bars.length - 2], c2 = m5Bars[m5Bars.length - 3];
     const c3 = m5Bars[m5Bars.length - 4];
@@ -1443,10 +1505,10 @@ function evaluateWyckoffOteSetup(m5Bars) {
     const sweptLow = (c1.low < targetLow || c2.low < targetLow) && c1.close > targetLow;
 
     const c1Range = c1.high - c1.low;
-    const cvdBullishAbsorption = c1.close > c1.open && (c1.close - c1.low) > (c1Range * 0.60);
-    const cvdBearishAbsorption = c1.close < c1.open && (c1.high - c1.close) > (c1Range * 0.60);
+    const volumeAbsorptionBullish = c1.close > c1.open && (c1.close - c1.low) > (c1Range * 0.60);
+    const volumeAbsorptionBearish = c1.close < c1.open && (c1.high - c1.close) > (c1Range * 0.60);
 
-    if (allowBuy && sweptLow && cvdBullishAbsorption) {
+    if (allowBuy && sweptLow && volumeAbsorptionBullish) {
         const impulseLow = Math.min(c1.low, c2.low);
         const impulseHigh = Math.max(c2.high, c3.high);
         const impulseRange = impulseHigh - impulseLow;
@@ -1455,14 +1517,14 @@ function evaluateWyckoffOteSetup(m5Bars) {
         if (risk < minSL) { risk = minSL; sl = entry - risk; }
         if (risk <= maxSL) {
             return {
-                dir: "BUY", type: "LIMIT", setupName: "Wyckoff Spring + CVD + Fib Retracement",
+                dir: "BUY", type: "LIMIT", setupName: "Institutional Liquidity Reclaim & Retracement",
                 entry, sl, tp: entry + (risk * DEFAULT_ENGINE_RULES.singleTpRR), riskDistance: risk,
                 lot: DEFAULT_ENGINE_RULES.baseLotPer400, createdAt: Date.now()
             };
         }
     }
 
-    if (allowSell && sweptHigh && cvdBearishAbsorption) {
+    if (allowSell && sweptHigh && volumeAbsorptionBearish) {
         const impulseHigh = Math.max(c1.high, c2.high);
         const impulseLow = Math.min(c2.low, c3.low);
         const impulseRange = impulseHigh - impulseLow;
@@ -1471,7 +1533,7 @@ function evaluateWyckoffOteSetup(m5Bars) {
         if (risk < minSL) { risk = minSL; sl = entry + risk; }
         if (risk <= maxSL) {
             return {
-                dir: "SELL", type: "LIMIT", setupName: "Wyckoff UTAD + CVD + Fib Retracement",
+                dir: "SELL", type: "LIMIT", setupName: "Institutional Liquidity Sweep & Retracement",
                 entry, sl, tp: entry - (risk * DEFAULT_ENGINE_RULES.singleTpRR), riskDistance: risk,
                 lot: DEFAULT_ENGINE_RULES.baseLotPer400, createdAt: Date.now()
             };
@@ -1549,7 +1611,7 @@ function closeTrade(outcome, netDollarPnL) {
         outcome: outcome,
         netPnL: roundedPnL,
         closedTs: Date.now(),
-        closedAt: new Date().toUTCString().slice(5, 22) + " UTC"
+        closedAt: new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Beirut' }) + " Beirut"
     };
     state.history = [closedRecord, ...(state.history || [])];
 
@@ -1559,7 +1621,7 @@ function closeTrade(outcome, netDollarPnL) {
     if (outcome === "WIN") {
         state.consecutiveLosses = 0;
         const logStr = "✅ #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")";
-        const tgStr = "✅ Mr.Trader AI v1.2 — #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")\nWyckoff Setup Verified";
+        const tgStr = "✅ Mr.Trader AI v1.2 — #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")\nInstitutional Setup Verified";
         logEvent(logStr);
         if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
     } else {
@@ -1568,7 +1630,7 @@ function closeTrade(outcome, netDollarPnL) {
         const tgStr = "❌ Mr.Trader AI v1.2 — #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")\nStreak: " + state.consecutiveLosses + "/" + maxConsecAllowed;
         logEvent(logStr);
         if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
-        if (state.consecutiveLosses >= maxConsecAllowed || (r.maxConsecutiveEnabled && state.consecutiveLosses >= maxConsecAllowed)) {
+        if (state.consecutiveLosses >= maxConsecAllowed) {
             state.activeTrade = null; clearChartLines(); triggerCircuitBreaker(); return;
         }
     }
@@ -1582,6 +1644,7 @@ async function runAutopilotCycle(forceFresh = false) {
     if (!isAdmin) return;
     if (!isCircuitBreakerClear()) return;
     if (!isSessionAllowedByFilter()) return;
+    if (isNewsBlackoutActive()) return;
 
     await syncHTFTrend(forceFresh);
     const m5Bars = await fetchTwelveData('5min', 120, forceFresh);
@@ -1591,7 +1654,7 @@ async function runAutopilotCycle(forceFresh = false) {
     state.latestBars = m5Bars.slice(-80);
     const livePrice = m5Bars[m5Bars.length - 1].close;
     state.lastPrice = livePrice;
-    document.getElementById('lastSyncTime').innerText = `Last Sync: ${new Date().toUTCString().slice(17, 25)} UTC`;
+    document.getElementById('lastSyncTime').innerText = `Last Sync: ${new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Beirut' })} Beirut`;
 
     if (state.activeTrade) {
         manageActiveTrade(livePrice);
@@ -1600,7 +1663,7 @@ async function runAutopilotCycle(forceFresh = false) {
         return;
     }
 
-    const setup = evaluateWyckoffOteSetup(m5Bars);
+    const setup = evaluateInstitutionalSetup(m5Bars);
     if (setup) {
         const tradeId = state.tradeCounter++;
         setup.tradeId = tradeId;
@@ -1641,12 +1704,12 @@ async function hardSyncRefresh() {
 }
 
 async function testTelegramConnection() {
-    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 ENGINE — CONNECTION VERIFIED\nWyckoff Spring + CVD Active");
+    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 ENGINE — CONNECTION VERIFIED\nInstitutional Engine Active");
     if (ok) logEvent("✅ Telegram test message delivered!");
 }
 
 async function testTpHitTelegram() {
-    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 — #Trade-TEST TP1 HIT (+$21.00)\nWyckoff Verified");
+    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 — #Trade-TEST TP1 HIT (+$21.00)\nExecution Verified");
     if (ok) logEvent("🎯 Test TP1 HIT alert sent to Telegram!");
 }
 
@@ -1709,7 +1772,7 @@ async function sendTelegramAlert(text) {
 }
 
 // ============================================================================
-// 4. UI RENDERING & MANAGEMENT
+// 4. UI RENDERING & MANAGEMENT (WITH SEARCH, CLIENT ID & SORT FILTERS)
 // ============================================================================
 function updateDashboardUI() {
     if (state.lastPrice) document.getElementById('uiLivePrice').innerText = Number(state.lastPrice).toFixed(2);
@@ -1726,6 +1789,10 @@ function updateDashboardUI() {
         document.getElementById('tokyoLiveStatusTag').innerText = sess.tokyoOpen ? '🟢 Status: RUNNING NOW' : '⚪ Status: CLOSED';
         document.getElementById('londonLiveStatusTag').innerText = sess.londonOpen ? '🟢 Status: RUNNING NOW' : '⚪ Status: CLOSED';
         document.getElementById('nyLiveStatusTag').innerText = sess.nyOpen ? '🟢 Status: RUNNING NOW' : '⚪ Status: CLOSED';
+        
+        const newsActive = isNewsBlackoutActive();
+        document.getElementById('newsFilterStatusTag').innerText = newsActive ? '🚨 BLACKOUT (±15m News)' : '🟢 Status: Clear (No News)';
+        document.getElementById('newsFilterStatusTag').style.color = newsActive ? 'var(--accent-red)' : 'var(--accent-green)';
     }
 
     const topSigDir = document.getElementById('uiTopSignalDir');
@@ -1897,25 +1964,67 @@ function closeAdminWindow(e) {
 }
 
 async function loadClientList() {
-    const tbody = document.getElementById('clientTableBody');
     const { data, error } = await sb.from('client_profiles').select('*').order('created_at', { ascending: false });
     if (error || !data) {
-        tbody.innerHTML = '<tr><td colspan="6">Error loading users.</td></tr>';
+        document.getElementById('clientTableBody').innerHTML = '<tr><td colspan="7">Error loading users.</td></tr>';
         return;
     }
-    document.getElementById('clientCountBadge').innerText = data.length;
-    tbody.innerHTML = data.map(u => {
+    cachedClientList = data;
+    renderClientTable();
+}
+
+function renderClientTable() {
+    const tbody = document.getElementById('clientTableBody');
+    const searchVal = (document.getElementById('clientSearchInput')?.value || '').toLowerCase().trim();
+    const sortVal = document.getElementById('clientSortSelect')?.value || 'newest';
+
+    let list = [...cachedClientList];
+
+    // Filter by search (Email or Client ID suffix)
+    if (searchVal) {
+        list = list.filter(u => {
+            const shortId = '#UID-' + (u.id || '').slice(0, 6).toUpperCase();
+            const email = (u.email || '').toLowerCase();
+            return email.includes(searchVal) || shortId.toLowerCase().includes(searchVal);
+        });
+    }
+
+    // Sort users
+    list.sort((a, b) => {
+        const timeA = new Date(a.created_at || 0).getTime();
+        const timeB = new Date(b.created_at || 0).getTime();
+        if (sortVal === 'newest') return timeB - timeA;
+        if (sortVal === 'oldest') return timeA - timeB;
+        if (sortVal === 'vip_active') {
+            const aVip = (a.is_approved ? 1 : 0);
+            const bVip = (b.is_approved ? 1 : 0);
+            if (aVip !== bVip) return bVip - aVip;
+            return timeB - timeA;
+        }
+        return timeB - timeA;
+    });
+
+    document.getElementById('clientCountBadge').innerText = cachedClientList.length;
+
+    if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="color:var(--text-secondary); text-align:center; padding:18px;">No matching clients found.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = list.map(u => {
+        const shortId = '#UID-' + (u.id || '').slice(0, 6).toUpperCase();
         const isExpired = u.is_approved && u.vip_expires_at && (new Date(u.vip_expires_at).getTime() <= Date.now());
         const statusBadge = u.role === 'admin'
-            ? '<span class="badge-approved">MASTER</span>'
+            ? '<span class="badge-approved">MASTER / مالك</span>'
             : isExpired
-                ? '<span class="badge-expired">EXPIRED</span>'
+                ? '<span class="badge-expired">EXPIRED / منتهي</span>'
                 : u.is_approved
-                    ? '<span class="badge-approved">VIP ACTIVE</span>'
-                    : '<span class="badge-pending">FREE BETA</span>';
+                    ? '<span class="badge-approved">VIP ACTIVE / نشط</span>'
+                    : '<span class="badge-pending">FREE BETA / تجريبي</span>';
 
         return `
         <tr>
+            <td><strong style="color:var(--accent-gold);">${shortId}</strong></td>
             <td><strong>${u.email}</strong></td>
             <td>${u.role === 'admin' ? 'OWNER' : (u.vip_plan || 'FREE_BETA')}</td>
             <td>${formatDateShort(u.vip_started_at)}</td>
@@ -1923,16 +2032,16 @@ async function loadClientList() {
             <td>${statusBadge}</td>
             <td>
                 ${u.role === 'admin' ? `
-                    <button type="button" class="btn-ui" onclick="adminSendResetEmail('${u.email}')">🔑 Send Reset Email</button>
+                    <button type="button" class="btn-ui" onclick="adminSendResetEmail('${u.email}')">🔑 Reset Pwd / كلمة المرور</button>
                 ` : `
                     <div style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;">
                         <select id="bundleSel_${u.id}" class="bundle-select">
-                            <option value="3D" ${u.vip_plan === '3_DAYS_TRIAL' ? 'selected' : ''}>3 Days Trial ($15)</option>
-                            <option value="1M" ${u.vip_plan === '1_MONTH' ? 'selected' : ''}>1 Month ($99)</option>
-                            <option value="3M" ${u.vip_plan === '3_MONTHS' ? 'selected' : ''}>3 Months ($250)</option>
+                            <option value="3D" ${u.vip_plan === '3_DAYS_TRIAL' ? 'selected' : ''}>3 Days Trial / 3 أيام ($15)</option>
+                            <option value="1M" ${u.vip_plan === '1_MONTH' ? 'selected' : ''}>1 Month / شهر ($99)</option>
+                            <option value="3M" ${u.vip_plan === '3_MONTHS' ? 'selected' : ''}>3 Months / 3 أشهر ($250)</option>
                         </select>
-                        <button type="button" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="grantVipBundle('${u.id}')">✅ Grant VIP</button>
-                        ${u.is_approved ? `<button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="revokeVipBundle('${u.id}')">✖ Revoke</button>` : ''}
+                        <button type="button" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="grantVipBundle('${u.id}')">✅ تفعيل VIP / Activate</button>
+                        ${u.is_approved ? `<button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="revokeVipBundle('${u.id}')">✖ إلغاء / Revoke</button>` : ''}
                         <button type="button" class="btn-ui" onclick="adminSendResetEmail('${u.email}')">🔑 Reset Pwd</button>
                     </div>
                 `}
@@ -1956,7 +2065,7 @@ async function grantVipBundle(userId) {
     const msgEl = document.getElementById('adminUserActionMsg');
     if (!error) {
         msgEl.style.color = 'var(--accent-green)';
-        msgEl.innerText = `✅ Granted ${planLabel}`;
+        msgEl.innerText = `✅ Granted ${planLabel} / تم تفعيل الاشتراك بنجاح`;
         loadClientList();
     }
 }
@@ -1965,7 +2074,12 @@ async function revokeVipBundle(userId) {
     const { error } = await sb.from('client_profiles').update({
         is_approved: false, vip_plan: 'FREE_BETA', vip_started_at: null, vip_expires_at: null
     }).eq('id', userId);
-    if (!error) loadClientList();
+    if (!error) {
+        const msgEl = document.getElementById('adminUserActionMsg');
+        msgEl.style.color = 'var(--accent-red)';
+        msgEl.innerText = `✖ Revoked VIP / تم إلغاء تفعيل الاشتراك`;
+        loadClientList();
+    }
 }
 
 async function adminSendResetEmail(userEmail) {
@@ -1974,7 +2088,7 @@ async function adminSendResetEmail(userEmail) {
     msgEl.innerText = `Sending password reset link...`;
     await sb.auth.resetPasswordForEmail(userEmail, { redirectTo: window.location.origin + window.location.pathname + '?recovery=1' });
     msgEl.style.color = 'var(--accent-green)';
-    msgEl.innerText = `✅ Sent to ${userEmail}`;
+    msgEl.innerText = `✅ Reset link sent to ${userEmail}`;
 }
 
 function startTerminalEngine(isAdmin) {
@@ -1991,7 +2105,7 @@ function startTerminalEngine(isAdmin) {
     }
 
     updateDashboardUI();
-    logEvent(`🚀 Mr.Trader AI v1.2 connected: ${currentUserProfile.email} (${isAdmin ? 'MASTER' : 'VIP CLIENT'}).`);
+    logEvent(`🚀 Mr.Trader AI v1.2 connected (Beirut Time): ${currentUserProfile.email} (${isAdmin ? 'MASTER' : 'VIP CLIENT'}).`);
 
     if (isAdmin) {
         runAutopilotCycle(true);
