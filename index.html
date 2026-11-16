@@ -163,15 +163,15 @@
         <h2>XAU/USD TEST D TERMINAL</h2>
         <p id="authSubtitle">Free Demo Testing Beta — Create a Free Account for Instant Access</p>
         <div class="auth-tabs" id="authTabsRow">
-            <button id="tabLogin" class="auth-tab active" onclick="switchAuthMode('login')">Client Login</button>
-            <button id="tabSignup" class="auth-tab" onclick="switchAuthMode('signup')">Sign Up Free</button>
+            <button type="button" id="tabLogin" class="auth-tab active" onclick="switchAuthMode('login')">Client Login</button>
+            <button type="button" id="tabSignup" class="auth-tab" onclick="switchAuthMode('signup')">Sign Up Free</button>
         </div>
         <input type="email" id="authEmail" class="auth-input" placeholder="Email Address">
         <input type="password" id="authPassword" class="auth-input" placeholder="Password (min 6 chars)">
         <div class="auth-link-row" id="forgotLinkRow">
             <button type="button" class="auth-link" onclick="switchAuthMode('forgot')">Forgot Password?</button>
         </div>
-        <button id="authSubmitBtn" class="auth-btn" onclick="handleAuthSubmit()">Login to Terminal</button>
+        <button type="button" id="authSubmitBtn" class="auth-btn" onclick="handleAuthSubmit()">Login to Terminal</button>
         <div style="text-align:center; margin-top:10px; display:none;" id="backToLoginRow">
             <button type="button" class="auth-link" onclick="switchAuthMode('login')">← Back to Client Login</button>
         </div>
@@ -184,7 +184,7 @@
         <p>Enter your new password below to regain access to your terminal.</p>
         <input type="password" id="newPasswordInput" class="auth-input" placeholder="New Password (min 6 chars)">
         <input type="password" id="confirmPasswordInput" class="auth-input" placeholder="Confirm New Password">
-        <button class="auth-btn" onclick="handleUpdatePassword()">Update Password & Login</button>
+        <button type="button" class="auth-btn" onclick="handleUpdatePassword()">Update Password & Login</button>
         <div id="updatePwdMessage" class="auth-msg"></div>
     </div>
 
@@ -192,7 +192,7 @@
     <div class="auth-box" id="pendingApprovalBox" style="display:none; text-align:center;">
         <h2>⏳ VIP Subscription Required</h2>
         <p style="margin-top:8px;">Your account (<strong id="pendingEmailText"></strong>) has been registered. Please contact the Admin to activate your paid signal subscription.</p>
-        <button class="auth-btn" style="background:var(--bg-card); color:#fff; border:1px solid var(--border-color);" onclick="logoutClient()">Sign Out</button>
+        <button type="button" class="auth-btn" style="background:var(--bg-card); color:#fff; border:1px solid var(--border-color);" onclick="logoutClient()">Sign Out</button>
     </div>
 </div>
 
@@ -201,7 +201,7 @@
     <div class="admin-window" onclick="event.stopPropagation()">
         <div class="admin-header">
             <h3 style="color:var(--accent-gold);">🛡️ ADMIN CONTROL WINDOW</h3>
-            <button class="btn-ui" onclick="document.getElementById('adminModal').style.display='none'">✖ Close</button>
+            <button type="button" class="btn-ui" onclick="document.getElementById('adminModal').style.display='none'">✖ Close</button>
         </div>
 
         <!-- Master API & Telegram Config -->
@@ -213,10 +213,10 @@
                 <input type="text" id="adminTgChat" class="auth-input" style="flex:1; margin:0;" placeholder="Telegram Chat ID">
             </div>
             <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
-                <button class="auth-btn" style="width:auto; padding:8px 14px;" onclick="saveMasterConfig()">💾 Save Master Keys</button>
-                <button class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="testTelegramConnection()">📨 Test Telegram</button>
-                <button class="btn-ui" style="border-color:var(--accent-blue); color:var(--accent-blue);" onclick="testTpHitTelegram()">🎯 Test TP1 Hit Alert</button>
-                <button class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="resetLiveAccountState()">♻️ Reset $400 / #Trade-1</button>
+                <button type="button" class="auth-btn" style="width:auto; padding:8px 14px;" onclick="saveMasterConfig()">💾 Save Master Keys</button>
+                <button type="button" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="testTelegramConnection()">📨 Test Telegram</button>
+                <button type="button" class="btn-ui" style="border-color:var(--accent-blue); color:var(--accent-blue);" onclick="testTpHitTelegram()">🎯 Test TP1 Hit Alert</button>
+                <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="resetLiveAccountState()">♻️ Reset $400 / #Trade-1</button>
             </div>
         </div>
 
@@ -224,7 +224,7 @@
         <div class="admin-section">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <h4 style="margin:0;">2. Registered Demo Beta Users (Ready for Paid Switch Later)</h4>
-                <button class="btn-ui" onclick="loadClientList()">🔄 Refresh List</button>
+                <button type="button" class="btn-ui" onclick="loadClientList()">🔄 Refresh List</button>
             </div>
             <table class="client-table">
                 <thead>
@@ -255,9 +255,9 @@
                 <span class="pulse-dot"></span>
                 <span id="autopilotStatusText">FREE BETA ACTIVE</span>
             </div>
-            <button id="openAdminBtn" class="btn-ui btn-admin" onclick="openAdminWindow()">🛡️ Admin Window</button>
-            <button id="forceRefreshBtn" class="btn-ui" onclick="hardSyncRefresh()">🔄 Sync</button>
-            <button class="btn-ui" onclick="logoutClient()">Logout</button>
+            <button type="button" id="openAdminBtn" class="btn-ui btn-admin" onclick="openAdminWindow()">🛡️ Admin Window</button>
+            <button type="button" id="forceRefreshBtn" class="btn-ui" onclick="hardSyncRefresh()">🔄 Sync</button>
+            <button type="button" class="btn-ui" onclick="logoutClient()">Logout</button>
         </div>
     </div>
 
@@ -458,7 +458,6 @@ async function handleUpdatePassword() {
     }
 }
 
-// Listen for Supabase PASSWORD_RECOVERY link redirect
 sb.auth.onAuthStateChange((event, session) => {
     if (event === 'PASSWORD_RECOVERY') {
         document.getElementById('authOverlay').style.display = 'flex';
@@ -572,7 +571,7 @@ async function loadClientList() {
             <td>${u.is_approved ? '<span class="badge-approved">VIP PAID</span>' : '<span class="badge-pending">FREE BETA</span>'}</td>
             <td>
                 ${u.role === 'admin' ? '—' : `
-                    <button class="btn-ui" onclick="toggleClientApproval('${u.id}', ${!u.is_approved})">
+                    <button type="button" class="btn-ui" onclick="toggleClientApproval('${u.id}', ${!u.is_approved})">
                         ${u.is_approved ? 'Revoke VIP' : '✅ Mark VIP Paid'}
                     </button>
                 `}
@@ -802,12 +801,7 @@ function manageActiveTrade(livePrice) {
         if ((trade.dir === "BUY" && livePrice <= trade.entry) || (trade.dir === "SELL" && livePrice >= trade.entry)) {
             trade.type = "ACTIVE";
             if (currentUserProfile?.role === 'admin') {
-                sendTelegramAlert("⚡ XAUUSD " + trade.dir + " FILLED @ " + trade.entry.toFixed(2) + "
-
-🔴 SL: " + trade.sl.toFixed(2) + "
-🎯 TP1: " + trade.tp.toFixed(2) + "
-
-#Trade-" + (trade.tradeId || 1));
+                sendTelegramAlert("⚡ XAUUSD " + trade.dir + " FILLED @ " + trade.entry.toFixed(2) + "\n\n🔴 SL: " + trade.sl.toFixed(2) + "\n🎯 TP1: " + trade.tp.toFixed(2) + "\n\n#Trade-" + (trade.tradeId || 1));
             }
             saveState();
         }
@@ -830,15 +824,13 @@ function closeTrade(outcome, netDollarPnL) {
     if (outcome === "WIN") {
         state.consecutiveLosses = 0;
         const logStr = "✅ #Trade-" + (trade.tradeId || 1) + " TP1 HIT (+$" + netDollarPnL.toFixed(2) + ") | Equity: $" + state.balance.toFixed(2);
-        const tgStr = "✅ #Trade-" + (trade.tradeId || 1) + " TP1 HIT (+$" + netDollarPnL.toFixed(2) + ")
-Equity: $" + state.balance.toFixed(2) + " | Lot: " + trade.lot.toFixed(2);
+        const tgStr = "✅ #Trade-" + (trade.tradeId || 1) + " TP1 HIT (+$" + netDollarPnL.toFixed(2) + ")\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + trade.lot.toFixed(2);
         logEvent(logStr);
         if (currentUserProfile?.role === 'admin') sendTelegramAlert(tgStr);
     } else {
         state.consecutiveLosses += 1;
         const logStr = "❌ #Trade-" + (trade.tradeId || 1) + " SL HIT (-$" + Math.abs(netDollarPnL).toFixed(2) + ") | Streak: " + state.consecutiveLosses + "/3";
-        const tgStr = "❌ #Trade-" + (trade.tradeId || 1) + " SL HIT (-$" + Math.abs(netDollarPnL).toFixed(2) + ")
-Streak: " + state.consecutiveLosses + "/3 | Equity: $" + state.balance.toFixed(2);
+        const tgStr = "❌ #Trade-" + (trade.tradeId || 1) + " SL HIT (-$" + Math.abs(netDollarPnL).toFixed(2) + ")\nStreak: " + state.consecutiveLosses + "/3 | Equity: $" + state.balance.toFixed(2);
         logEvent(logStr);
         if (currentUserProfile?.role === 'admin') sendTelegramAlert(tgStr);
         if (state.consecutiveLosses >= TEST_D_CONFIG.maxConsecutiveLosses) {
@@ -872,12 +864,7 @@ async function runAutopilotCycle(forceFresh = false) {
         saveState();
 
         const orderAction = setup.type === "PENDING" ? (setup.dir + " LIMIT") : (setup.dir + " NOW");
-        const tgText = "🚨 XAUUSD " + orderAction + " " + setup.entry.toFixed(2) + "
-
-🔴 SL: " + setup.sl.toFixed(2) + "
-🎯 TP1: " + setup.tp.toFixed(2) + "
-
-#Trade-" + tradeId;
+        const tgText = "🚨 XAUUSD " + orderAction + " " + setup.entry.toFixed(2) + "\n\n🔴 SL: " + setup.sl.toFixed(2) + "\n🎯 TP1: " + setup.tp.toFixed(2) + "\n\n#Trade-" + tradeId;
         logEvent(`🚀 Signal #Trade-${tradeId}: <b>${setup.dir} @ ${setup.entry.toFixed(2)}</b>`);
         if (currentUserProfile?.role === 'admin') sendTelegramAlert(tgText);
     }
@@ -903,14 +890,12 @@ async function hardSyncRefresh() {
 }
 
 async function testTelegramConnection() {
-    const ok = await sendTelegramAlert("✅ TEST D ENGINE — CONNECTION VERIFIED
-Equity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
+    const ok = await sendTelegramAlert("✅ TEST D ENGINE — CONNECTION VERIFIED\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
     if (ok) logEvent("✅ Telegram test message delivered!");
 }
 
 async function testTpHitTelegram() {
-    const ok = await sendTelegramAlert("✅ #Trade-TEST TP1 HIT (+$36.80)
-Equity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
+    const ok = await sendTelegramAlert("✅ #Trade-TEST TP1 HIT (+$36.80)\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
     if (ok) logEvent("🎯 Test TP1 HIT alert sent to Telegram!");
 }
 
@@ -953,8 +938,7 @@ async function sendTelegramAlert(text) {
     try {
         const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: chatId, text: text.replace(/\n/g, '
-'), parse_mode: 'HTML' })
+            body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' })
         });
         return (await res.json()).ok;
     } catch (e) { return false; }
