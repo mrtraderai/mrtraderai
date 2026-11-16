@@ -442,7 +442,7 @@ async function loadClientList() {
     const tbody = document.getElementById('clientTableBody');
     const { data, error } = await sb.from('client_profiles').select('*').order('created_at', { ascending: false });
     if (error || !data) {
-        tbody.innerHTML = `<tr><td colspan="4">Error loading users.</td></tr>`;
+        tbody.innerHTML = '<tr><td colspan="4">Error loading users.</td></tr>';
         return;
     }
     tbody.innerHTML = data.map(u => `
@@ -529,7 +529,7 @@ function isCircuitBreakerClear() {
 function triggerCircuitBreaker() {
     state.lockoutUntil = Date.now() + (TEST_D_CONFIG.lockoutHours * 60 * 60 * 1000);
     saveState();
-    const alertMsg = `🚨 3-SL CIRCUIT BREAKER TRIGGERED — Autopilot paused for 24h.`;
+    const alertMsg = '🚨 3-SL CIRCUIT BREAKER TRIGGERED — Autopilot paused for 24h.';
     logEvent(alertMsg);
     if (currentUserProfile?.role === 'admin') sendTelegramAlert(alertMsg);
 }
@@ -682,12 +682,7 @@ function manageActiveTrade(livePrice) {
         if ((trade.dir === "BUY" && livePrice <= trade.entry) || (trade.dir === "SELL" && livePrice >= trade.entry)) {
             trade.type = "ACTIVE";
             if (currentUserProfile?.role === 'admin') {
-                sendTelegramAlert(`⚡ XAUUSD ${trade.dir} FILLED @ ${trade.entry.toFixed(2)}
-
-🔴 SL: ${trade.sl.toFixed(2)}
-🎯 TP1: ${trade.tp.toFixed(2)}
-
-#Trade-${trade.tradeId || 1}`);
+                sendTelegramAlert("⚡ XAUUSD " + trade.dir + " FILLED @ " + trade.entry.toFixed(2) + "\n\n🔴 SL: " + trade.sl.toFixed(2) + "\n🎯 TP1: " + trade.tp.toFixed(2) + "\n\n#Trade-" + (trade.tradeId || 1));
             }
             saveState();
         }
@@ -709,18 +704,16 @@ function closeTrade(outcome, netDollarPnL) {
     if (state.balance > state.highWaterMark) state.highWaterMark = state.balance;
     if (outcome === "WIN") {
         state.consecutiveLosses = 0;
-        const msg = `✅ #Trade-${trade.tradeId || 1} TP1 HIT (+$${netDollarPnL.toFixed(2)})
-Equity: $${state.balance.toFixed(2)} | Lot: ${trade.lot.toFixed(2)}`;
-        logEvent(msg.replace(/
-/g, ' | '));
-        if (currentUserProfile?.role === 'admin') sendTelegramAlert(msg);
+        const logStr = "✅ #Trade-" + (trade.tradeId || 1) + " TP1 HIT (+$" + netDollarPnL.toFixed(2) + ") | Equity: $" + state.balance.toFixed(2);
+        const tgStr = "✅ #Trade-" + (trade.tradeId || 1) + " TP1 HIT (+$" + netDollarPnL.toFixed(2) + ")\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + trade.lot.toFixed(2);
+        logEvent(logStr);
+        if (currentUserProfile?.role === 'admin') sendTelegramAlert(tgStr);
     } else {
         state.consecutiveLosses += 1;
-        const msg = `❌ #Trade-${trade.tradeId || 1} SL HIT (-$${Math.abs(netDollarPnL).toFixed(2)})
-Streak: ${state.consecutiveLosses}/3 | Equity: $${state.balance.toFixed(2)}`;
-        logEvent(msg.replace(/
-/g, ' | '));
-        if (currentUserProfile?.role === 'admin') sendTelegramAlert(msg);
+        const logStr = "❌ #Trade-" + (trade.tradeId || 1) + " SL HIT (-$" + Math.abs(netDollarPnL).toFixed(2) + ") | Streak: " + state.consecutiveLosses + "/3";
+        const tgStr = "❌ #Trade-" + (trade.tradeId || 1) + " SL HIT (-$" + Math.abs(netDollarPnL).toFixed(2) + ")\nStreak: " + state.consecutiveLosses + "/3 | Equity: $" + state.balance.toFixed(2);
+        logEvent(logStr);
+        if (currentUserProfile?.role === 'admin') sendTelegramAlert(tgStr);
         if (state.consecutiveLosses >= TEST_D_CONFIG.maxConsecutiveLosses) {
             state.activeTrade = null; clearChartLines(); triggerCircuitBreaker(); return;
         }
@@ -751,19 +744,13 @@ async function runAutopilotCycle(forceFresh = false) {
         drawTradeLines(setup);
         saveState();
 
-        const orderAction = setup.type === "PENDING" ? `${setup.dir} LIMIT` : `${setup.dir} NOW`;
-        const tgText = `🚨 XAUUSD ${orderAction} ${setup.entry.toFixed(2)}
-
-🔴 SL: ${setup.sl.toFixed(2)}
-🎯 TP1: ${setup.tp.toFixed(2)}
-
-#Trade-${tradeId}`;
+        const orderAction = setup.type === "PENDING" ? (setup.dir + " LIMIT") : (setup.dir + " NOW");
+        const tgText = "🚨 XAUUSD " + orderAction + " " + setup.entry.toFixed(2) + "\n\n🔴 SL: " + setup.sl.toFixed(2) + "\n🎯 TP1: " + setup.tp.toFixed(2) + "\n\n#Trade-" + tradeId;
         logEvent(`🚀 Signal #Trade-${tradeId}: <b>${setup.dir} @ ${setup.entry.toFixed(2)}</b>`);
         if (currentUserProfile?.role === 'admin') sendTelegramAlert(tgText);
     }
 }
 
-// 15-second live price ticker so TP1 HIT / SL HIT triggers rapidly on price touch
 async function pollLivePriceOnly() {
     const apiKey = masterConfig.td_api_key;
     if (!apiKey || !state.activeTrade) return;
@@ -775,7 +762,7 @@ async function pollLivePriceOnly() {
             document.getElementById('uiLivePrice').innerText = p.toFixed(2);
             manageActiveTrade(p);
         }
-    } catch (e) { /* Silent tick retry */ }
+    } catch (e) {}
 }
 
 async function hardSyncRefresh() {
@@ -784,14 +771,12 @@ async function hardSyncRefresh() {
 }
 
 async function testTelegramConnection() {
-    const ok = await sendTelegramAlert(`✅ TEST D ENGINE — CONNECTION VERIFIED
-Equity: $${state.balance.toFixed(2)} | Lot: ${state.currentLot.toFixed(2)}`);
+    const ok = await sendTelegramAlert("✅ TEST D ENGINE — CONNECTION VERIFIED\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
     if (ok) logEvent("✅ Telegram test message delivered!");
 }
 
 async function testTpHitTelegram() {
-    const ok = await sendTelegramAlert(`✅ #Trade-TEST TP1 HIT (+$36.80)
-Equity: $${state.balance.toFixed(2)} | Lot: ${state.currentLot.toFixed(2)}`);
+    const ok = await sendTelegramAlert("✅ #Trade-TEST TP1 HIT (+$36.80)\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
     if (ok) logEvent("🎯 Test TP1 HIT alert sent to Telegram!");
 }
 
@@ -823,7 +808,7 @@ function clearChartLines() { priceLines.forEach(l => candleSeries.removePriceLin
 function drawTradeLines(trade) {
     clearChartLines();
     if (!trade) return;
-    priceLines.push(candleSeries.createPriceLine({ price: trade.entry, color: '#3b82f6', lineWidth: 2, lineStyle: 0, title: `ENTRY` }));
+    priceLines.push(candleSeries.createPriceLine({ price: trade.entry, color: '#3b82f6', lineWidth: 2, lineStyle: 0, title: 'ENTRY' }));
     priceLines.push(candleSeries.createPriceLine({ price: trade.sl, color: '#ef4444', lineWidth: 2, lineStyle: 2, title: 'SL' }));
     priceLines.push(candleSeries.createPriceLine({ price: trade.tp, color: '#10b981', lineWidth: 2, lineStyle: 0, title: 'TP1 (1:2)' }));
 }
@@ -834,7 +819,7 @@ async function sendTelegramAlert(text) {
     try {
         const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' })
+            body: JSON.stringify({ chat_id: chatId, text: text.replace(/\\n/g, '\n'), parse_mode: 'HTML' })
         });
         return (await res.json()).ok;
     } catch (e) { return false; }
