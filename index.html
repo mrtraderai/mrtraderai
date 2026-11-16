@@ -1096,34 +1096,50 @@
             }
         }
 
-        // --- STRATEGY & FAST TEST MODE ---
+        // --- NEW: RSI Calculator Helper ---
+        function calculateRSI(bars, period = 14) {
+            if (bars.length < period + 1) return 50;
+            let gains = 0, losses = 0;
+            for (let i = bars.length - period; i < bars.length; i++) {
+                const diff = bars[i].close - bars[i - 1].close;
+                if (diff >= 0) gains += diff;
+                else losses -= diff;
+            }
+            let avgGain = gains / period;
+            let avgLoss = losses / period;
+            if (avgLoss === 0) return 100;
+            let rs = avgGain / avgLoss;
+            return 100 - (100 / (1 + rs));
+        }
+
+        // --- UPGRADED SMC STRATEGY ---
         function findSMCSetup(bars){
             if(bars.length < 50) return null;
 
             const lastBar = bars[bars.length-1];
+            const prevBar = bars[bars.length-2];
             const currentPrice = lastBar.close;
             const pipSize = getPipSize(currentAsset);
+            const rsi = calculateRSI(bars, 14);
 
             // 🧪 ================= TEST MODE START =================
-            // Set isTestMode to false when you finish testing
-            const isTestMode = true; 
+            const isTestMode = false; // <--- SET TO false TO USE THE REAL STRATEGY
             if (isTestMode) {
-                // Force a SELL trade with 10 pips TP1 and 500 pips SL
                 return {
                     dir: "SELL",
                     entry: currentPrice,
-                    sl: currentPrice + (500 * pipSize), // Huge SL (500 pips) so it never loses
-                    tp1: currentPrice - (10 * pipSize), // Exactly 10 pips away
-                    tp2: currentPrice - (20 * pipSize), // 20 pips away
+                    sl: currentPrice + (500 * pipSize), 
+                    tp1: currentPrice - (10 * pipSize), 
+                    tp2: currentPrice - (20 * pipSize), 
                     tf: currentTF,
                     status: "ACTIVE"
                 };
             }
             // 🧪 ================= TEST MODE END ===================
 
-            // RULE 1: Absolute Minimum 40 Pips SL, Max 150 Pips
-            const MIN_SL_PRICE = 40 * getPipSize(currentAsset);
-            const MAX_SL_PRICE = 150 * getPipSize(currentAsset);
+            // RULES
+            const MIN_SL_PRICE = 40 * pipSize;
+            const MAX_SL_PRICE = 150 * pipSize;
             
             const allowBuy = generalTrend === "BULLISH" || generalTrend === "NEUTRAL";
             const allowSell = generalTrend === "BEARISH" || generalTrend === "NEUTRAL";
@@ -1131,7 +1147,6 @@
             let recentSwingHigh = -Infinity;
             let recentSwingLow = Infinity;
             
-            // DYNAMIC LOOKBACK (EDITED)
             const lookback = currentTF === '1h' || currentTF === '1min' ? 40 : 15; 
 
             for(let i = bars.length - 3; i >= Math.max(0, bars.length - lookback); i--) {
@@ -1140,61 +1155,51 @@
                 if(b.low < recentSwingLow) recentSwingLow = b.low;
             }
 
-            const prevBar = bars[bars.length - 2];
-            const isBearishRejection = prevBar.open > prevBar.close && (prevBar.high - prevBar.close) > (prevBar.close - prevBar.low);
-            const isBullishRejection = prevBar.close > prevBar.open && (prevBar.close - prevBar.low) > (prevBar.high - prevBar.close);
+            // --- SMC LIQUIDITY SWEEP LOGIC ---
+            // Sweep Low: Price goes below recent low, but closes back above it (Bullish)
+            const sweptLow = prevBar.low < recentSwingLow && prevBar.close > recentSwingLow;
+            // Sweep High: Price goes above recent high, but closes back below it (Bearish)
+            const sweptHigh = prevBar.high > recentSwingHigh && prevBar.close < recentSwingHigh;
 
-            // 1. CHECK FOR IMMEDIATE ACTIVE TRADE FIRST
-            if (allowSell && isBearishRejection) {
-                let sl = recentSwingHigh + (getPipSize(currentAsset) * 3);
+            // Rejection Candles (Pinbars)
+            const isBullishRejection = prevBar.close > prevBar.open && (prevBar.close - prevBar.low) > (prevBar.high - prevBar.close);
+            const isBearishRejection = prevBar.open > prevBar.close && (prevBar.high - prevBar.close) > (prevBar.close - prevBar.low);
+
+            // 1. CHECK FOR IMMEDIATE ACTIVE TRADE (Sweep + Rejection + RSI Filter)
+            if (allowSell && (sweptHigh || isBearishRejection) && rsi < 70) {
+                let sl = recentSwingHigh + (pipSize * 5);
                 let risk = sl - currentPrice;
                 
-                // Enforce 40-pip minimum
                 if (risk < MIN_SL_PRICE) {
                     risk = MIN_SL_PRICE;
                     sl = currentPrice + risk;
                 }
-                
-                // Enforce 150-pip maximum (KILL trade if too big)
-                if (risk > MAX_SL_PRICE) {
-                    return null; 
-                }
+                if (risk > MAX_SL_PRICE) return null; 
                 
                 return {dir:"SELL", entry:currentPrice, sl:sl, tp1:currentPrice-(risk*2), tp2:currentPrice-(risk*3), tf:currentTF, status:"ACTIVE"};
             }
 
-            if (allowBuy && isBullishRejection) {
-                let sl = recentSwingLow - (getPipSize(currentAsset) * 3);
+            if (allowBuy && (sweptLow || isBullishRejection) && rsi > 30) {
+                let sl = recentSwingLow - (pipSize * 5);
                 let risk = currentPrice - sl;
                 
-                // Enforce 40-pip minimum
                 if (risk < MIN_SL_PRICE) {
                     risk = MIN_SL_PRICE;
                     sl = currentPrice - risk;
                 }
-                
-                // Enforce 150-pip maximum (KILL trade if too big)
-                if (risk > MAX_SL_PRICE) {
-                    return null;
-                }
+                if (risk > MAX_SL_PRICE) return null;
 
                 return {dir:"BUY", entry:currentPrice, sl:sl, tp1:currentPrice+(risk*2), tp2:currentPrice+(risk*3), tf:currentTF, status:"ACTIVE"};
             }
 
-            // 2. IF NO IMMEDIATE TRADE, ALWAYS SHOW A PENDING SETUP
+            // 2. PENDING SETUPS (If no immediate sweep, place limits at key SMC levels)
             if (allowSell) {
                 const entry = recentSwingHigh;
-                let sl = entry + (getPipSize(currentAsset) * 5); 
+                let sl = entry + (pipSize * 5); 
                 let risk = sl - entry;
                 
-                if (risk < MIN_SL_PRICE) {
-                    risk = MIN_SL_PRICE;
-                    sl = entry + risk;
-                }
-                
-                if (risk > MAX_SL_PRICE) {
-                    return null; // Kill trade if SL is > 150 pips
-                }
+                if (risk < MIN_SL_PRICE) { risk = MIN_SL_PRICE; sl = entry + risk; }
+                if (risk > MAX_SL_PRICE) return null; 
                 
                 if (entry > currentPrice) {
                     return {dir:"SELL", entry:entry, sl:sl, tp1:entry-(risk*2), tp2:entry-(risk*3), tf:currentTF, status:"PENDING"};
@@ -1203,17 +1208,11 @@
 
             if (allowBuy) {
                 const entry = recentSwingLow;
-                let sl = entry - (getPipSize(currentAsset) * 5); 
+                let sl = entry - (pipSize * 5); 
                 let risk = entry - sl;
                 
-                if (risk < MIN_SL_PRICE) {
-                    risk = MIN_SL_PRICE;
-                    sl = entry - risk;
-                }
-                
-                if (risk > MAX_SL_PRICE) {
-                    return null; // Kill trade if SL is > 150 pips
-                }
+                if (risk < MIN_SL_PRICE) { risk = MIN_SL_PRICE; sl = entry - risk; }
+                if (risk > MAX_SL_PRICE) return null; 
                 
                 if (entry < currentPrice) {
                     return {dir:"BUY", entry:entry, sl:sl, tp1:entry+(risk*2), tp2:entry+(risk*3), tf:currentTF, status:"PENDING"};
