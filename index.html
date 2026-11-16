@@ -295,7 +295,6 @@
 
             <div class="tf-selector" id="tfSelector">
                 <button class="tf-btn active" onclick="selectTF('5min',this)">M5</button>
-                <button class="tf-btn" onclick="selectTF('15min',this)">M15</button>
                 <button class="tf-btn" onclick="selectTF('1h',this)">H1</button>
             </div>
 
@@ -323,6 +322,15 @@
                 <div class="active-tab-btn active" id="tab-btn-active" onclick="switchActiveTab('active')">Active Signals</div>
                 <div class="active-tab-btn" id="tab-btn-closed" onclick="switchActiveTab('closed')">Closed Signals</div>
             </div>
+            
+            <!-- TIME FILTERS -->
+            <div class="stats-filter" style="margin-bottom:16px; justify-content:center;">
+                <button class="filter-btn active" onclick="filterClosed('all', this)">All</button>
+                <button class="filter-btn" onclick="filterClosed('1d', this)">1D</button>
+                <button class="filter-btn" onclick="filterClosed('1w', this)">1W</button>
+                <button class="filter-btn" onclick="filterClosed('1m', this)">1M</button>
+            </div>
+
             <div id="activeSignalsList"></div>
             <div id="closedSignalsList" style="display:none"></div>
             
@@ -408,6 +416,7 @@
         let sessionInterval;
         let currentFilter='all';
         let currentAssetFilter='all';
+        let currentHistoryFilter='all'; // NEW: For closed trades filter
         let isManualRefresh=false;
         let maxSL=150;
         let brokerTZ=localStorage.getItem('brokerTZ')||'3';
@@ -1352,15 +1361,39 @@
             list.innerHTML=html
         }
         
+        // --- NEW: TIME FILTER LOGIC ---
+        function filterClosed(range, btn) {
+            currentHistoryFilter = range;
+            document.querySelectorAll('.stats-filter .filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderClosedSignalsList();
+        }
+
         function renderClosedSignalsList(){
             const list=document.getElementById('closedSignalsList');
             if(!list)return;
-            if(tradeHistory.length===0){
+            
+            let filteredHistory = tradeHistory;
+            const now = new Date();
+            
+            // Apply Time Filter
+            if (currentHistoryFilter === '1d') {
+                const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+                filteredHistory = tradeHistory.filter(t => new Date(t.date) >= oneDayAgo);
+            } else if (currentHistoryFilter === '1w') {
+                const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                filteredHistory = tradeHistory.filter(t => new Date(t.date) >= oneWeekAgo);
+            } else if (currentHistoryFilter === '1m') {
+                const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                filteredHistory = tradeHistory.filter(t => new Date(t.date) >= oneMonthAgo);
+            }
+
+            if(filteredHistory.length===0){
                 list.innerHTML='<div class="loading">No closed signals yet.</div>';
                 return
             }
             let html='';
-            for(const t of tradeHistory){
+            for(const t of filteredHistory){
                 const color=t.result==='WIN'?'text-green':t.result==='LOSS'?'text-red':'text-yellow';
                 html+=`
                 <div class="history-item">
@@ -1373,12 +1406,13 @@
             }
             list.innerHTML=html;
             
-            const total=tradeHistory.length;
-            const wins=tradeHistory.filter(t=>t.result==='WIN').length;
+            // Stats calculation (based on ALL trades or filtered? Usually all for stats, but we can update to filtered)
+            const total=filteredHistory.length;
+            const wins=filteredHistory.filter(t=>t.result==='WIN').length;
             const winRate=total>0?Math.round((wins/total)*100):0;
             document.getElementById('statWinRateActive').innerText=winRate+'%';
             document.getElementById('statTotalTradesActive').innerText=total;
-            document.getElementById('homeTotalTrades').innerText=total;
+            document.getElementById('homeTotalTrades').innerText=total; // Update home stats too
             document.getElementById('homeWinRate').innerText=winRate+'%';
         }
         
@@ -1395,6 +1429,11 @@
             document.getElementById('tab-btn-closed').classList.toggle('active',tab==='closed');
             document.getElementById('activeSignalsList').style.display=tab==='active'?'block':'none';
             document.getElementById('closedSignalsList').style.display=tab==='closed'?'block':'none';
+            
+            // Toggle time filter visibility
+            const filterRow = document.querySelector('.stats-filter');
+            if (filterRow) filterRow.style.display = tab === 'closed' ? 'flex' : 'none';
+            
             if(tab==='active')renderActiveSignalsList();
             else renderClosedSignalsList()
         }
