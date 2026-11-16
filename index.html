@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr.Trader AI v1.2 — Autonomous XAU/USD Terminal (Beirut)</title>
+    <title>Mr.Trader AI v1.2 — Autonomous XAU/USD Terminal (GMT)</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -232,7 +232,7 @@
                 </p>
                 <div class="showcase-stats">
                     <div class="sc-stat-box"><div class="sc-stat-val">75.0%</div><div class="sc-stat-lbl" data-i18n="scWinRateLbl">Verified Win Rate</div></div>
-                    <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-gold);">1 : 2.0</div><div class="sc-stat-lbl" data-i18n="scRrLbl">Fixed Risk/Reward</div></div>
+                    <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-gold);">1 : 2.1</div><div class="sc-stat-lbl" data-i18n="scRrLbl">Fixed Risk/Reward</div></div>
                     <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-blue);">25/mo</div><div class="sc-stat-lbl" data-i18n="scAutoLbl">A+ Setups</div></div>
                 </div>
                 <div class="showcase-gallery">
@@ -390,7 +390,7 @@
             <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
             <div class="title-group">
                 <h1>Mr.Trader AI v1.2</h1>
-                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals | Single 1:2.0 R:R Target (Beirut Time)</p>
+                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals | Single 1:2.1 R:R Target (GMT Time)</p>
             </div>
         </div>
 
@@ -426,7 +426,7 @@
                 <div class="metric-sub" data-i18n="subSpread">Exness Spread Modeled</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label" data-i18n="lblTrendBias">Market Bias & Sessions (Beirut)</div>
+                <div class="metric-label" data-i18n="lblTrendBias">Market Bias & Sessions (GMT)</div>
                 <div class="metric-value" id="uiTrendBias">NEUTRAL</div>
                 <div class="metric-sub" id="uiSessionsStatus" style="font-weight:600;">Tokyo: -- | London: -- | NY: --</div>
             </div>
@@ -442,36 +442,50 @@
             </div>
         </div>
 
-        <!-- Session Filters & Risk Guardrails Control Panel (WITH HIDE / SHOW TOGGLE) -->
+        <!-- Session Filters & Risk Guardrails Control Panel (WITH HIDE / SHOW TOGGLE & SAVE BUTTON) -->
         <div class="panel-box" style="background:var(--bg-secondary); border:1px solid var(--border-color);">
             <div class="box-header" style="margin-bottom:8px; cursor:pointer;" onclick="toggleSettingsCard()">
-                <span>⚙️ Session Filters, Risk Guardrails & News Blackout (Beirut Time) <span id="settingsToggleIcon" style="font-size:0.75rem; color:var(--accent-gold);">[▲ Hide / إخفاء]</span></span>
+                <span>⚙️ Session Filters, Risk Guardrails & News Blackout (<span id="settingsTzLabel">GMT</span>) <span id="settingsToggleIcon" style="font-size:0.75rem; color:var(--accent-gold);"><span data-i18n="hideShowToggle">[▲ Hide / إخفاء]</span></span></span>
                 <div style="display:flex; gap:8px;">
-                    <button type="button" class="btn-ui" style="border-color:var(--accent-gold); color:var(--accent-gold); padding:4px 8px;" onclick="event.stopPropagation(); resetSettingsToDefault()">🔄 Reset Rules</button>
+                    <button type="button" class="btn-ui" style="border-color:var(--accent-gold); color:var(--accent-gold); padding:4px 8px;" onclick="event.stopPropagation(); resetSettingsToDefault()">🔄 <span data-i18n="resetRulesBtn">Reset Rules</span></button>
                 </div>
             </div>
             <div id="settingsCardBody" style="display:flex; flex-direction:column; gap:10px;">
                 <div class="setting-grid">
-                    <!-- Tokyo Session (03:00 - 12:00 Beirut) -->
+                    <!-- Terminal Timezone Selector -->
+                    <div class="setting-card" style="border-color:var(--accent-gold);">
+                        <div class="setting-row">
+                            <span style="color:var(--accent-gold);" data-i18n="tzSettingLbl">🌍 Timezone Offset</span>
+                        </div>
+                        <select id="settingTzOffset" class="setting-input" onchange="saveRiskAndSessionSettings()">
+                            <option value="0">GMT / UTC (0)</option>
+                            <option value="1">GMT+1</option>
+                            <option value="2">GMT+2</option>
+                            <option value="3" selected>GMT+3</option>
+                            <option value="4">GMT+4</option>
+                            <option value="5">GMT+5</option>
+                        </select>
+                    </div>
+                    <!-- Tokyo Session -->
                     <div class="setting-card">
                         <div class="setting-row">
-                            <span>🇯🇵 Tokyo (03:00-12:00)</span>
+                            <span>🇯🇵 Tokyo (00:00-09:00 GMT)</span>
                             <input type="checkbox" id="sessTokyo" onchange="saveRiskAndSessionSettings()">
                         </div>
                         <div style="font-size:0.7rem; color:var(--text-secondary);" id="tokyoLiveStatusTag">Status: Checking...</div>
                     </div>
-                    <!-- London Session (10:00 - 19:00 Beirut) -->
+                    <!-- London Session -->
                     <div class="setting-card">
                         <div class="setting-row">
-                            <span>🇬🇧 London (10:00-19:00)</span>
+                            <span>🇬🇧 London (07:00-16:00 GMT)</span>
                             <input type="checkbox" id="sessLondon" onchange="saveRiskAndSessionSettings()">
                         </div>
                         <div style="font-size:0.7rem; color:var(--text-secondary);" id="londonLiveStatusTag">Status: Checking...</div>
                     </div>
-                    <!-- New York Session (15:00 - 00:00 Beirut) -->
+                    <!-- New York Session -->
                     <div class="setting-card">
                         <div class="setting-row">
-                            <span>🇺🇸 New York (15:00-00:00)</span>
+                            <span>🇺🇸 New York (12:00-21:00 GMT)</span>
                             <input type="checkbox" id="sessNy" onchange="saveRiskAndSessionSettings()">
                         </div>
                         <div style="font-size:0.7rem; color:var(--text-secondary);" id="nyLiveStatusTag">Status: Checking...</div>
@@ -490,7 +504,7 @@
                             <span>🛡️ Max Stop Loss (Pts)</span>
                             <input type="checkbox" id="riskMaxSlEn" onchange="saveRiskAndSessionSettings()">
                         </div>
-                        <input type="number" id="riskMaxSlVal" class="setting-input" value="70" min="20" max="300" onchange="saveRiskAndSessionSettings()">
+                        <input type="number" id="riskMaxSlVal" class="setting-input" value="130" min="20" max="300" onchange="saveRiskAndSessionSettings()">
                     </div>
                     <!-- Max Trades / Day -->
                     <div class="setting-card">
@@ -517,6 +531,10 @@
                         <input type="number" id="riskMaxConVal" class="setting-input" value="3" min="1" max="10" onchange="saveRiskAndSessionSettings()">
                     </div>
                 </div>
+                <!-- Dedicated Save Settings Button Bar -->
+                <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:4px;">
+                    <button type="button" class="auth-btn" style="width:auto; padding:8px 18px; font-size:0.8rem;" onclick="saveRiskAndSessionSettings()"><span data-i18n="saveSettingsBtn">💾 Save Settings / حفظ الإعدادات</span></button>
+                </div>
             </div>
         </div>
 
@@ -537,7 +555,7 @@
             <div class="panel-box">
                 <div class="box-header">
                     <span data-i18n="latestSigTitle">Latest Signal Detected</span>
-                    <span style="color: var(--accent-green); font-size: 0.75rem;">1:2.0 Single TP</span>
+                    <span style="color: var(--accent-green); font-size: 0.75rem;">1:2.1 Single TP</span>
                 </div>
                 <div id="homeSignalContainer"></div>
 
@@ -587,11 +605,11 @@
                             <th data-i18n="thSetup">Model</th>
                             <th data-i18n="thEntry">Entry</th>
                             <th>SL</th>
-                            <th>TP1 (1:2.0)</th>
+                            <th>TP1 (1:2.1)</th>
                             <th data-i18n="thLot">Lot</th>
                             <th data-i18n="thOutcome">Outcome</th>
                             <th data-i18n="thPnl">Net P&L</th>
-                            <th data-i18n="thClosed">Closed (Beirut)</th>
+                            <th data-i18n="thClosed">Closed (GMT)</th>
                         </tr>
                     </thead>
                     <tbody id="closedTradesTableBody">
@@ -608,7 +626,7 @@
             <div class="metric-card">
                 <div class="metric-label" data-i18n="statWinRateLbl">Live Verified Win Rate</div>
                 <div class="metric-value" id="statWinRate" style="color: var(--accent-green);">0.0%</div>
-                <div class="metric-sub">Target R:R = 1:2.0</div>
+                <div class="metric-sub">Target R:R = 1:2.1</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label" data-i18n="statWLLbl">Total Wins / Losses</div>
@@ -633,7 +651,7 @@
                 <span style="color: var(--text-secondary); font-size: 0.75rem;">Exness Spread Modeled</span>
             </div>
             <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.75;" data-i18n="stratDesc">
-                • <strong>Active Trading Sessions:</strong> Configurable institutional liquidity windows (Tokyo, London, New York) set to Beirut local time.<br>
+                • <strong>Active Trading Sessions:</strong> Configurable institutional liquidity windows (Tokyo, London, New York) set to GMT time.<br>
                 • <strong>Execution Engine:</strong> Advanced M5 institutional multi-timeframe structural analysis and retracement entries.<br>
                 • <strong>Risk Management:</strong> Customizable Max SL, Max Trades, Daily Loss limits, and USD high-impact news blackout protection.
             </p>
@@ -739,7 +757,7 @@ const I18N = {
         setNewPassDesc: 'Enter your new password below to regain access to Mr.Trader AI.',
         updatePassBtn: 'Update Password & Login',
         signOut: 'Sign Out',
-        headerSub: 'Autonomous XAU/USD Signals | Single 1:2.0 R:R Target (Beirut Time)',
+        headerSub: 'Autonomous XAU/USD Signals | Single 1:2.1 R:R Target (GMT Time)',
         liveStream: 'LIVE STREAM ACTIVE',
         syncBtn: 'Sync',
         logoutBtn: 'Logout',
@@ -750,7 +768,7 @@ const I18N = {
         tabAccount: 'Account',
         lblLivePrice: 'Live XAU/USD Price',
         subSpread: 'Exness Spread Modeled',
-        lblTrendBias: 'Market Bias & Sessions (Beirut)',
+        lblTrendBias: 'Market Bias & Sessions (GMT)',
         lblSignalSummary: 'Current Signal Status',
         lblWinRate: 'Live Win Rate',
         riskRemarkTitle: 'Risk Management Note:',
@@ -772,14 +790,14 @@ const I18N = {
         thLot: 'Lot',
         thOutcome: 'Outcome',
         thPnl: 'Net P&L',
-        thClosed: 'Closed (Beirut)',
+        thClosed: 'Closed (GMT)',
         statWinRateLbl: 'Live Verified Win Rate',
         statWLLbl: 'Total Wins / Losses',
         statNetLbl: 'Net Cumulative Profit',
         riskBaseSub: 'Based on 0.02 lot / $400 risk rule',
         statPfLbl: 'Profit Factor',
         stratTitle: '📊 Mr.Trader AI v1.2 Engine Overview',
-        stratDesc: '• <strong>Active Trading Sessions:</strong> Configurable institutional liquidity windows (Tokyo, London, New York) set to Beirut local time.<br>• <strong>Execution Engine:</strong> Advanced M5 institutional multi-timeframe structural analysis and retracement entries.<br>• <strong>Risk Management:</strong> Customizable Max SL, Max Trades, Daily Loss limits, and USD high-impact news blackout protection.',
+        stratDesc: '• <strong>Active Trading Sessions:</strong> Configurable institutional liquidity windows (Tokyo, London, New York) set to GMT time.<br>• <strong>Execution Engine:</strong> Advanced M5 institutional multi-timeframe structural analysis and retracement entries.<br>• <strong>Risk Management:</strong> Customizable Max SL, Max Trades, Daily Loss limits, and USD high-impact news blackout protection.',
         accProfileTitle: '👤 Account Details & Subscription Status',
         accEmailLbl: 'Registered Email',
         accIdLbl: 'Client ID / المعرف',
@@ -787,7 +805,7 @@ const I18N = {
         accExpLbl: 'Subscription Expires',
         logoutAccountBtn: 'Sign Out of Mr.Trader AI',
         vipPlansHeader: '💎 Mr.Trader AI — VIP Membership Plans',
-        vipPlansSub: 'Select your preferred VIP bundle and message our official Telegram support for instant payment & account activation:',
+        vipPlansSub: 'Select your preferred VIP bundle and message our official Telegram support for instant payment &amp; account activation:',
         plan3dTitle: '3-Day Trial',
         plan3dDesc: 'Full live XAU/USD signals & Telegram alerts for 3 days',
         plan1mTitle: '1 Month VIP',
@@ -797,7 +815,10 @@ const I18N = {
         orderTg: 'Activate on Telegram',
         scanningTitle: '🤖 Institutional Engine Scanning',
         scanningDesc: 'Monitoring XAU/USD multi-timeframe market structure and precision retracement zones.',
-        noClosed: 'No closed trades recorded for this period.'
+        noClosed: 'No closed trades recorded for this period.',
+        hideShowToggle: '[▲ Hide / إخفاء]',
+        saveSettingsBtn: '💾 Save Settings / حفظ الإعدادات',
+        resetRulesBtn: 'Reset Rules'
     },
     ar: {
         langBtn: 'English',
@@ -823,7 +844,7 @@ const I18N = {
         setNewPassDesc: 'أدخل كلمة المرور الجديدة أدناه لاستعادة الدخول إلى Mr.Trader AI.',
         updatePassBtn: 'تحديث كلمة المرور والدخول',
         signOut: 'تسجيل الخروج',
-        headerSub: 'توصيات الذهب الذكية | هدف واحد 1:2.0 (بتوقيت بيروت)',
+        headerSub: 'توصيات الذهب الذكية | هدف واحد 1:2.1 (بتوقيت جرينتش GMT)',
         liveStream: 'البث المباشر نشط',
         syncBtn: 'تحديث',
         logoutBtn: 'خروج',
@@ -834,7 +855,7 @@ const I18N = {
         tabAccount: 'الحساب والاشتراك',
         lblLivePrice: 'سعر الذهب المباشر XAU/USD',
         subSpread: 'محاكاة سبريد شركة Exness',
-        lblTrendBias: 'اتجاه السوق والجلسات (بيروت)',
+        lblTrendBias: 'اتجاه السوق والجلسات (GMT)',
         lblSignalSummary: 'حالة التوصية الحالية',
         lblWinRate: 'نسبة النجاح المباشرة',
         riskRemarkTitle: 'ملاحظة إدارة المخاطر:',
@@ -856,14 +877,14 @@ const I18N = {
         thLot: 'اللوت',
         thOutcome: 'النتيجة',
         thPnl: 'صافي الربح',
-        thClosed: 'وقت الإغلاق (بيروت)',
+        thClosed: 'وقت الإغلاق (GMT)',
         statWinRateLbl: 'نسبة النجاح الفعلية',
         statWLLbl: 'إجمالي الصفقات الرابحة / الخاسرة',
         statNetLbl: 'صافي الأرباح التراكمية',
         riskBaseSub: 'بناءً على قاعدة 0.02 لوت لكل 400$',
         statPfLbl: 'معامل الربح (Profit Factor)',
         stratTitle: '📊 نظرة عامة على المحرك الإصدار 1.2',
-        stratDesc: '• <strong>جلسات التداول النشطة:</strong> جلسات السيولة المؤسسية (طوكيو، لندن، نيويورك) محسوبة بتوقيت بيروت المحلي.<br>• <strong>محرك التنفيذ:</strong> تحليل هيكلي متقدم على فريم M5 ومستويات ارتداد دقيقة.<br>• <strong>إدارة المخاطر:</strong> إعدادات مخصصة لوقف الخسارة، الحد الأقصى للصفقات، الخسارة اليومية، وفلتر الأخبار الاقتصادية.',
+        stratDesc: '• <strong>جلسات التداول النشطة:</strong> جلسات السيولة المؤسسية (طوكيو، لندن، نيويورك) محسوبة بتوقيت جرينتش GMT.<br>• <strong>محرك التنفيذ:</strong> تحليل هيكلي متقدم على فريم M5 ومستويات ارتداد دقيقة.<br>• <strong>إدارة المخاطر:</strong> إعدادات مخصصة لوقف الخسارة، الحد الأقصى للصفقات، الخسارة اليومية، وفلتر الأخبار الاقتصادية.',
         accProfileTitle: '👤 تفاصيل الحساب وحالة الاشتراك',
         accEmailLbl: 'البريد الإلكتروني المسجل',
         accIdLbl: 'معرف العميل / Client ID',
@@ -881,7 +902,10 @@ const I18N = {
         orderTg: 'تفعيل عبر تيليجرام',
         scanningTitle: '🤖 جاري مسح السوق عبر المحرك المؤسسي',
         scanningDesc: 'مراقبة هيكل السوق على فريم M5 ومناطق الارتداد المؤسسية للذهب.',
-        noClosed: 'لا توجد صفقات مسجلة في هذه الفترة.'
+        noClosed: 'لا توجد صفقات مسجلة في هذه الفترة.',
+        hideShowToggle: '[▲ إخفاء / Hide]',
+        saveSettingsBtn: '💾 حفظ الإعدادات / Save Settings',
+        resetRulesBtn: 'إعادة ضبط القواعد'
     }
 };
 
@@ -932,7 +956,7 @@ function toggleSettingsCard() {
     const body = document.getElementById('settingsCardBody');
     const icon = document.getElementById('settingsToggleIcon');
     if (body) body.style.display = settingsVisible ? 'flex' : 'none';
-    if (icon) icon.innerText = settingsVisible ? '[▲ Hide / إخفاء]' : '[▼ Show / إظهار]';
+    if (icon) icon.innerHTML = settingsVisible ? `<span data-i18n="hideShowToggle">${t('hideShowToggle')}</span>` : `<span>[▼ Show / إظهار]</span>`;
 }
 
 function isCurrentUserAdmin() {
@@ -1216,14 +1240,15 @@ const DEFAULT_ENGINE_RULES = {
     referenceCapital: 400.00,
     baseLotPer400: 0.02,
     spreadPoints: 60,
-    singleTpRR: 2.0,
+    singleTpRR: 2.1,
     lockoutHours: 24,
     scanIntervalMs: 60000,
     priceTickMs: 15000,
+    timezoneOffset: 3,
     sessions: { tokyo: true, london: true, newYork: true },
     newsFilter: { enabled: true },
     riskLimits: {
-        maxSlEnabled: true, maxSlValue: 70,
+        maxSlEnabled: true, maxSlValue: 130,
         maxTradesEnabled: true, maxTradesValue: 10,
         maxDailyLossEnabled: true, maxDailyLossValue: 250,
         maxConsecutiveEnabled: true, maxConsecutiveValue: 3
@@ -1242,6 +1267,7 @@ let state = {
     recentLogs: [],
     latestBars: [],
     betaMode: true,
+    timezoneOffset: 3,
     sessions: { ...DEFAULT_ENGINE_RULES.sessions },
     newsFilter: { ...DEFAULT_ENGINE_RULES.newsFilter },
     riskLimits: { ...DEFAULT_ENGINE_RULES.riskLimits }
@@ -1282,6 +1308,9 @@ function syncSettingsToUI() {
     const r = state.riskLimits || DEFAULT_ENGINE_RULES.riskLimits;
 
     if (document.getElementById('sessTokyo')) {
+        document.getElementById('settingTzOffset').value = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
+        document.getElementById('settingsTzLabel').innerText = `GMT+${state.timezoneOffset !== undefined ? state.timezoneOffset : 3}`;
+
         document.getElementById('sessTokyo').checked = s.tokyo !== false;
         document.getElementById('sessLondon').checked = s.london !== false;
         document.getElementById('sessNy').checked = s.newYork !== false;
@@ -1289,7 +1318,7 @@ function syncSettingsToUI() {
         document.getElementById('newsFilterEn').checked = n.enabled !== false;
 
         document.getElementById('riskMaxSlEn').checked = r.maxSlEnabled !== false;
-        document.getElementById('riskMaxSlVal').value = r.maxSlValue || 70;
+        document.getElementById('riskMaxSlVal').value = r.maxSlValue || 130;
 
         document.getElementById('riskMaxTradesEn').checked = r.maxTradesEnabled !== false;
         document.getElementById('riskMaxTradesVal').value = r.maxTradesValue || 10;
@@ -1304,6 +1333,8 @@ function syncSettingsToUI() {
 
 async function saveRiskAndSessionSettings() {
     if (!isCurrentUserAdmin()) return;
+    const tzOffset = parseInt(document.getElementById('settingTzOffset').value) || 3;
+    state.timezoneOffset = tzOffset;
     state.sessions = {
         tokyo: document.getElementById('sessTokyo').checked,
         london: document.getElementById('sessLondon').checked,
@@ -1314,7 +1345,7 @@ async function saveRiskAndSessionSettings() {
     };
     state.riskLimits = {
         maxSlEnabled: document.getElementById('riskMaxSlEn').checked,
-        maxSlValue: parseFloat(document.getElementById('riskMaxSlVal').value) || 70,
+        maxSlValue: parseFloat(document.getElementById('riskMaxSlVal').value) || 130,
         maxTradesEnabled: document.getElementById('riskMaxTradesEn').checked,
         maxTradesValue: parseInt(document.getElementById('riskMaxTradesVal').value) || 10,
         maxDailyLossEnabled: document.getElementById('riskMaxLossEn').checked,
@@ -1323,12 +1354,15 @@ async function saveRiskAndSessionSettings() {
         maxConsecutiveValue: parseInt(document.getElementById('riskMaxConVal').value) || 3
     };
     await saveState();
-    logEvent('⚙️ Risk guardrails, session filters & news settings updated.');
+    syncSettingsToUI();
+    logEvent('⚙️ Settings & Risk guardrails saved successfully.');
+    alert(currentLang === 'ar' ? '✅ تم حفظ الإعدادات بنجاح!' : '✅ Settings saved successfully!');
 }
 
 async function resetSettingsToDefault() {
     if (!isCurrentUserAdmin()) return;
     if (!confirm(currentLang === 'ar' ? 'إعادة ضبط كافة الإعدادات والضوابط إلى الوضع الافتراضي؟' : 'Reset all risk settings and session filters to default rules?')) return;
+    state.timezoneOffset = 3;
     state.sessions = { ...DEFAULT_ENGINE_RULES.sessions };
     state.newsFilter = { ...DEFAULT_ENGINE_RULES.newsFilter };
     state.riskLimits = { ...DEFAULT_ENGINE_RULES.riskLimits };
@@ -1364,7 +1398,8 @@ function subscribeToRealtimeState() {
 }
 
 function logEvent(msg) {
-    const timeStr = new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Beirut' }) + " Beirut";
+    const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
+    const timeStr = new Date().toLocaleTimeString('en-GB', { timeZone: 'UTC' }) + ` (GMT+${tzVal})`;
     const entryHtml = `<span class="log-time">[${timeStr}]</span>${msg}`;
     const logBox = document.getElementById('systemLogs');
     const div = document.createElement('div');
@@ -1379,17 +1414,19 @@ function logEvent(msg) {
 }
 
 // ============================================================================
-// 3. BEIRUT TIMEZONE SESSIONS & NEWS BLACKOUT FILTER
+// 3. GMT TIMEZONE SESSIONS & NEWS BLACKOUT FILTER
 // ============================================================================
-function getBeirutTimeParts(dateObj = new Date()) {
+function getGmtTimeParts(dateObj = new Date()) {
+    const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
+    const shifted = new Date(dateObj.getTime() + tzVal * 3600 * 1000);
     const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'Asia/Beirut',
+        timeZone: 'UTC',
         hour12: false,
         weekday: 'short',
         hour: 'numeric',
         minute: 'numeric'
     });
-    const parts = formatter.formatToParts(dateObj);
+    const parts = formatter.formatToParts(shifted);
     let weekday = 'Mon', hour = 0, minute = 0;
     for (const p of parts) {
         if (p.type === 'weekday') weekday = p.value;
@@ -1400,12 +1437,12 @@ function getBeirutTimeParts(dateObj = new Date()) {
 }
 
 function getSessionStatuses(dateObj = new Date()) {
-    const { weekday, hour } = getBeirutTimeParts(dateObj);
+    const { weekday, hour } = getGmtTimeParts(dateObj);
     const isWeekend = (weekday === 'Sat' || weekday === 'Sun');
     
-    const tokyoOpen = !isWeekend && (hour >= 3.0 && hour < 12.0);
-    const londonOpen = !isWeekend && (hour >= 10.0 && hour < 19.0);
-    const nyOpen = !isWeekend && (hour >= 15.0 && hour < 24.0);
+    const tokyoOpen = !isWeekend && (hour >= 0.0 && hour < 9.0);
+    const londonOpen = !isWeekend && (hour >= 7.0 && hour < 16.0);
+    const nyOpen = !isWeekend && (hour >= 12.0 && hour < 21.0);
     return { tokyoOpen, londonOpen, nyOpen, isWeekend };
 }
 
@@ -1425,15 +1462,15 @@ function isNewsBlackoutActive() {
     if (!nf.enabled) return false;
 
     const now = new Date();
-    const { weekday, hour } = getBeirutTimeParts(now);
+    const { weekday, hour } = getGmtTimeParts(now);
     if (weekday === 'Sat' || weekday === 'Sun') return false;
 
     const isWednesday = (weekday === 'Wed');
     const isFriday = (weekday === 'Fri');
     const isTueThu = (weekday === 'Tue' || weekday === 'Thu');
 
-    if (isWednesday && hour >= 20.75 && hour <= 21.25) return true;
-    if ((isFriday || isTueThu) && hour >= 15.25 && hour <= 15.75) return true;
+    if (isWednesday && hour >= 17.75 && hour <= 18.25) return true;
+    if ((isFriday || isTueThu) && hour >= 12.25 && hour <= 12.75) return true;
 
     return false;
 }
@@ -1513,11 +1550,11 @@ function evaluateInstitutionalSetup(m5Bars) {
 
     const pipSize = 0.10, spreadPrice = DEFAULT_ENGINE_RULES.spreadPoints * 0.01;
     const r = state.riskLimits || DEFAULT_ENGINE_RULES.riskLimits;
-    const maxAllowedSL = r.maxSlEnabled ? (r.maxSlValue * pipSize) : 70 * pipSize;
+    const maxAllowedSL = r.maxSlEnabled ? (r.maxSlValue * pipSize) : 130 * pipSize;
 
-    const minSL = Math.max(30 * pipSize, atr * 0.90);
-    const maxSL = Math.min(70 * pipSize, maxAllowedSL);
-    const slBuffer = Math.max(5 * pipSize, atr * 0.40) + spreadPrice;
+    const minSL = Math.max(45 * pipSize, atr * 1.10);
+    const maxSL = Math.min(130 * pipSize, maxAllowedSL);
+    const slBuffer = Math.max(6 * pipSize, atr * 0.45) + spreadPrice;
 
     const allowBuy = (htfBias === "BULLISH" || htfBias === "NEUTRAL");
     const allowSell = (htfBias === "BEARISH" || htfBias === "NEUTRAL");
@@ -1629,6 +1666,7 @@ function manageActiveTrade(livePrice) {
 function closeTrade(outcome, netDollarPnL) {
     const trade = state.activeTrade;
     const roundedPnL = Math.round(netDollarPnL * 100) / 100;
+    const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
 
     const closedRecord = {
         tradeId: trade.tradeId || 1,
@@ -1641,7 +1679,7 @@ function closeTrade(outcome, netDollarPnL) {
         outcome: outcome,
         netPnL: roundedPnL,
         closedTs: Date.now(),
-        closedAt: new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Beirut' }) + " Beirut"
+        closedAt: new Date().toLocaleTimeString('en-GB', { timeZone: 'UTC' }) + ` (GMT+${tzVal})`
     };
     state.history = [closedRecord, ...(state.history || [])];
 
@@ -1684,7 +1722,8 @@ async function runAutopilotCycle(forceFresh = false) {
     state.latestBars = m5Bars.slice(-80);
     const livePrice = m5Bars[m5Bars.length - 1].close;
     state.lastPrice = livePrice;
-    document.getElementById('lastSyncTime').innerText = `Last Sync: ${new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Beirut' })} Beirut`;
+    const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
+    document.getElementById('lastSyncTime').innerText = `Last Sync: ${new Date().toLocaleTimeString('en-GB', { timeZone: 'UTC' })} (GMT+${tzVal})`;
 
     if (state.activeTrade) {
         manageActiveTrade(livePrice);
@@ -1786,7 +1825,7 @@ function drawTradeLines(trade) {
     if (!trade || !candleSeries) return;
     priceLines.push(candleSeries.createPriceLine({ price: trade.entry, color: '#3b82f6', lineWidth: 2, lineStyle: 0, title: 'ENTRY' }));
     priceLines.push(candleSeries.createPriceLine({ price: trade.sl, color: '#ef4444', lineWidth: 2, lineStyle: 2, title: 'SL' }));
-    priceLines.push(candleSeries.createPriceLine({ price: trade.tp, color: '#10b981', lineWidth: 2, lineStyle: 0, title: 'TP1 (1:2.0)' }));
+    priceLines.push(candleSeries.createPriceLine({ price: trade.tp, color: '#10b981', lineWidth: 2, lineStyle: 0, title: 'TP1 (1:2.1)' }));
 }
 
 async function sendTelegramAlert(text) {
@@ -1873,7 +1912,7 @@ function updateDashboardUI() {
                 <div class="sig-row"><strong>#Trade-${tr.tradeId || 1} — ${tr.setupName}</strong><span class="sig-badge ${cls}">${tr.dir} (${modeLabel})</span></div>
                 <div class="sig-row"><span>${t('thEntry')}:</span><strong>${Number(tr.entry).toFixed(2)}</strong></div>
                 <div class="sig-row"><span>Stop Loss (SL):</span><strong style="color:var(--accent-red);">${Number(tr.sl).toFixed(2)}</strong></div>
-                <div class="sig-row"><span>Take Profit (TP1 1:2.0):</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
+                <div class="sig-row"><span>Take Profit (TP1 1:2.1):</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
                 <div class="sig-row"><span>${t('thLot')}:</span><strong>0.02 lot / $400</strong></div>
             </div>`;
         homeSigBox.innerHTML = cardHtml;
@@ -2133,7 +2172,8 @@ function startTerminalEngine(isAdmin) {
     }
 
     updateDashboardUI();
-    logEvent(`🚀 Mr.Trader AI v1.2 connected (Beirut Time): ${currentUserProfile.email} (${isAdmin ? 'MASTER' : 'VIP CLIENT'}).`);
+    const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
+    logEvent(`🚀 Mr.Trader AI v1.2 connected (GMT+${tzVal}): ${currentUserProfile.email} (${isAdmin ? 'MASTER' : 'VIP CLIENT'}).`);
 
     if (isAdmin) {
         runAutopilotCycle(true);
