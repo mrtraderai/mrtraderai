@@ -1415,18 +1415,38 @@
             if(autopilotInterval)clearInterval(autopilotInterval);
             autopilotInterval=setInterval(async()=>{
                 if(document.hidden)return;
-                const sessions=getActiveSessions();
-                const enabled=enabledSessions;
-                const anyActive=Object.keys(enabled).some(k=>enabled[k]&&sessions[k]);
-                if(!anyActive)return;
+                
+                // --- THE 2 AM TO 8 PM RULE ---
+                const now = new Date();
+                const utcHour = now.getUTCHours();
+                if (utcHour < 2 || utcHour >= 20) {
+                    // Log only once every few hours to avoid spam
+                    if(autoLogs.length === 0 || !autoLogs[autoLogs.length-1].msg.includes('Outside hours')){
+                        logAuto("Outside 2AM-8PM UTC window. Autopilot pausing.");
+                    }
+                    return; 
+                }
+
+                // --- STOP IF ACTIVE TRADE ---
                 const key=getTradeKey(currentAsset,currentTF);
                 if(activeTrades[key])return;
+                
+                // --- CHECK NEWS ---
                 const blocked=await getBlockingNews(30,30);
-                if(blocked)return;
+                if(blocked){
+                    logAuto(`Blocked by news: ${blocked.title}`);
+                    return;
+                }
+                
+                // --- FETCH CHART ---
                 const bars=await loadChartData(currentTF);
                 if(!bars)return;
+                
+                // --- FIND SETUP ---
                 const setup=findSMCSetup(bars);
+                
                 if(setup){
+                    logAuto(`Valid setup found: ${setup.dir} at ${setup.entry}`);
                     const trade={
                         asset:currentAsset,
                         dir:setup.dir,
@@ -1435,7 +1455,7 @@
                         tp1:setup.tp1,
                         tp2:setup.tp2,
                         tf:setup.tf,
-                        status:setup.status, // Handles PENDING or ACTIVE
+                        status:setup.status, 
                         date:new Date().toISOString(),
                         tp1Hit:false
                     };
@@ -1451,111 +1471,30 @@
                         sendPushNotification('Auto Pending',`${currentAsset} ${trade.dir} limit at ${trade.entry.toFixed(2)}`);
                         sendToTelegram(`Auto Pending: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)}`);
                     }
+                } else {
+                    logAuto("Auto-scan checked, but no valid setup found.");
                 }
             },5*60*1000)
         }
-        
-        function startLiveTracking(){
-            if(liveInterval)clearInterval(liveInterval);
-            liveInterval=setInterval(async()=>{
-                const key=getTradeKey(currentAsset,currentTF);
-                const trade=activeTrades[key];
-                if(!trade)return;
-                
-                const bars=await fetchChartDataFromSource(currentTF);
-                if(!bars||bars.length===0)return;
-                const currentPrice=bars[bars.length-1].close;
-                
-                // --- HANDLE PENDING ACTIVATION ---
-                if (trade.status === 'PENDING') {
-                    let activated = false;
-                    if (trade.dir === 'BUY' && currentPrice <= trade.entry) activated = true;
-                    if (trade.dir === 'SELL' && currentPrice >= trade.entry) activated = true;
-                    
-                    if (activated) {
-                        trade.status = 'ACTIVE';
-                        localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
-                        await saveActiveTradeToCloud(trade);
-                        renderActiveSignalsList();
-                        sendPushNotification('Pending Triggered',`${currentAsset} ${trade.dir} is now active!`);
-                        sendToTelegram(`Pending Triggered: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)}`);
-                    }
-                    return; // Wait for next tick to track ACTIVE
-                }
 
-                // --- TRACK ACTIVE TRADE ---
-                if(trade.dir==='BUY'){
-                    if(currentPrice<=trade.sl){
-                        await closeTrade(key,'LOSS',currentPrice);
-                        return
-                    }
-                    if(currentPrice>=trade.tp1&&!trade.tp1Hit){
-                        trade.tp1Hit=true;
-                        localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
-                        await saveActiveTradeToCloud(trade);
-                        sendPushNotification('TP1 Hit!',`${trade.asset} reached TP1 at ${trade.tp1.toFixed(2)}`);
-                        renderActiveSignalsList()
-                    }
-                    if(currentPrice>=trade.tp2){
-                        await closeTrade(key,'WIN',currentPrice);
-                        return
-                    }
-                }else{
-                    if(currentPrice>=trade.sl){
-                        await closeTrade(key,'LOSS',currentPrice);
-                        return
-                    }
-                    if(currentPrice<=trade.tp1&&!trade.tp1Hit){
-                        trade.tp1Hit=true;
-                        localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
-                        await saveActiveTradeToCloud(trade);
-                        sendPushNotification('TP1 Hit!',`${trade.asset} reached TP1 at ${trade.tp1.toFixed(2)}`);
-                        renderActiveSignalsList()
-                    }
-                    if(currentPrice<=trade.tp2){
-                        await closeTrade(key,'WIN',currentPrice);
-                        return
-                    }
-                }
-            },5*1000) // Checks every 5 seconds
+        // Helper for Auto Logs
+        function logAuto(msg){
+            const newLog = { time: new Date().toISOString(), msg: msg };
+            autoLogs.push(newLog);
+            if(autoLogs.length > 50) autoLogs.shift(); // Keep last 50
+            localStorage.setItem('autoLogs', JSON.stringify(autoLogs));
+            renderAutoLogs();
         }
-        
-        async function closeTrade(key,result,exitPrice){
-            const trade=activeTrades[key];
-            if(!trade)return;
-            const record={
-                ...trade,
-                result:result,
-                exitPrice:exitPrice,
-                date:new Date().toISOString()
-            };
-            tradeHistory.unshift(record);
-            localStorage.setItem('tradeHistory',JSON.stringify(tradeHistory));
-            delete activeTrades[key];
-            localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
-            
-            // Clear Chart Lines
-            priceLines.forEach(l=>candleSeries.removePriceLine(l));
-            priceLines=[];
-            document.getElementById('signalBox').innerHTML=`<div class="loading">${dict[currentLang].loading}</div>`;
-            
-            await deleteActiveTradeFromCloud(key);
-            await saveHistoryToCloud(record);
-            renderActiveSignalsList();
-            renderClosedSignalsList();
-            sendPushNotification(result==='WIN'?'Trade Won! 🎉':'Trade Lost',`${trade.asset} ${trade.dir} closed at ${exitPrice.toFixed(2)}`)
-        }
-        
+
         function renderAutoLogs(){
             const box=document.getElementById('autoLogBox');
             if(!box)return;
             if(autoLogs.length===0){
-                box.innerHTML='<div class="log-item"><div class="log-time">System</div><div>Autopilot initialized. Waiting for session...</div></div>';
+                box.innerHTML='<div class="log-item"><div class="log-time">System</div><div>Autopilot initialized. Waiting...</div></div>';
                 return
             }
             let html='';
             for(const log of autoLogs.slice(-20).reverse()){
-                // Added safety fallback for missing data
                 const logTime = log.time ? new Date(log.time).toLocaleTimeString() : "System";
                 const logMsg = log.msg ? log.msg : "No message";
                 html+=`<div class="log-item"><div class="log-time">${logTime}</div><div>${logMsg}</div></div>`
