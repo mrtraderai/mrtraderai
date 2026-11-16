@@ -29,7 +29,7 @@
             display: flex; justify-content: center; align-items: center; padding: 16px;
         }
         .auth-box {
-            width: 100%; max-width: 400px; background: var(--bg-secondary);
+            width: 100%; max-width: 410px; background: var(--bg-secondary);
             border: 1px solid var(--border-color); border-radius: 12px; padding: 26px;
             box-shadow: 0 12px 35px rgba(0,0,0,0.6);
         }
@@ -57,13 +57,23 @@
         .auth-link:hover { color: var(--accent-gold); }
         .auth-msg { font-size: 0.78rem; margin-top: 10px; text-align: center; color: var(--accent-green); }
 
-        /* Admin Window Modal */
+        /* PIN & AW Modal */
         .modal-backdrop {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.82); z-index: 5000;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000;
             display: none; justify-content: center; align-items: center; padding: 16px;
         }
+        .pin-box {
+            width: 100%; max-width: 340px; background: var(--bg-secondary);
+            border: 1px solid var(--accent-gold); border-radius: 12px; padding: 24px;
+            text-align: center; box-shadow: 0 12px 35px rgba(0,0,0,0.75);
+        }
+        .pin-input {
+            width: 100%; padding: 12px; margin: 14px 0 10px; background: var(--bg-primary);
+            border: 1px solid var(--border-color); color: var(--accent-gold); border-radius: 8px;
+            font-size: 1.35rem; font-weight: 700; text-align: center; letter-spacing: 8px;
+        }
         .admin-window {
-            width: 100%; max-width: 820px; max-height: 90vh; overflow-y: auto;
+            width: 100%; max-width: 960px; max-height: 92vh; overflow-y: auto;
             background: var(--bg-secondary); border: 1px solid var(--accent-gold);
             border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px;
         }
@@ -76,13 +86,18 @@
             border-radius: 8px; padding: 14px;
         }
         .admin-section h4 { color: var(--accent-gold); font-size: 0.85rem; margin-bottom: 10px; }
-        .data-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
         .data-table th, .data-table td {
-            padding: 9px 8px; border-bottom: 1px solid var(--border-color); text-align: left;
+            padding: 8px 6px; border-bottom: 1px solid var(--border-color); text-align: left; vertical-align: middle;
         }
-        .data-table th { color: var(--text-secondary); font-size: 0.72rem; text-transform: uppercase; }
+        .data-table th { color: var(--text-secondary); font-size: 0.7rem; text-transform: uppercase; }
         .badge-approved { color: var(--accent-green); font-weight: 700; }
         .badge-pending { color: var(--accent-gold); font-weight: 700; }
+        .badge-expired { color: var(--accent-red); font-weight: 700; }
+        .bundle-select {
+            background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color);
+            padding: 5px 7px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+        }
 
         /* Header & Navigation Bar */
         .header {
@@ -98,20 +113,17 @@
             background: rgba(16, 185, 129, 0.12); border: 1px solid var(--accent-green);
             color: var(--accent-green); border-radius: 20px; font-size: 0.78rem; font-weight: 600;
         }
-        .status-pill.paused {
-            background: rgba(239, 68, 68, 0.15); border-color: var(--accent-red); color: var(--accent-red);
-        }
         .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 1.6s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
         .btn-ui {
             background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);
-            padding: 7px 12px; border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-weight: 600;
+            padding: 6px 10px; border-radius: 7px; cursor: pointer; font-size: 0.75rem; font-weight: 600;
         }
         .btn-ui:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
-        .btn-admin { border-color: var(--accent-gold); color: var(--accent-gold); display: none; }
+        .btn-admin { border-color: var(--accent-gold); color: var(--accent-gold); display: none; letter-spacing: 1px; }
 
-        /* Navigation Tabs (Home / Active Trade / Closed Trades / Win Rate) */
+        /* Navigation Tabs */
         .nav-tabs {
             display: flex; gap: 8px; flex-wrap: wrap; background: var(--bg-secondary);
             padding: 8px; border-radius: 10px; border: 1px solid var(--border-color);
@@ -177,10 +189,10 @@
 <div id="authOverlay" class="auth-overlay">
     <div class="auth-box" id="authFormBox">
         <h2>XAU/USD TEST D TERMINAL</h2>
-        <p id="authSubtitle">Free Demo Testing Beta — Create a Free Account for Instant Access</p>
+        <p id="authSubtitle">Sign in or create an account to access the live terminal</p>
         <div class="auth-tabs" id="authTabsRow">
             <button type="button" id="tabLogin" class="auth-tab active" onclick="switchAuthMode('login')">Client Login</button>
-            <button type="button" id="tabSignup" class="auth-tab" onclick="switchAuthMode('signup')">Sign Up Free</button>
+            <button type="button" id="tabSignup" class="auth-tab" onclick="switchAuthMode('signup')">Sign Up</button>
         </div>
         <input type="email" id="authEmail" class="auth-input" placeholder="Email Address">
         <input type="password" id="authPassword" class="auth-input" placeholder="Password (min 6 chars)">
@@ -204,25 +216,46 @@
         <div id="updatePwdMessage" class="auth-msg"></div>
     </div>
 
-    <!-- Pending VIP Approval Box -->
+    <!-- Pending / Expired VIP Subscription Screen -->
     <div class="auth-box" id="pendingApprovalBox" style="display:none; text-align:center;">
-        <h2>⏳ VIP Subscription Required</h2>
-        <p style="margin-top:8px;">Your account (<strong id="pendingEmailText"></strong>) has been registered. Please contact the Admin to activate your paid signal subscription.</p>
+        <h2 id="vipLockTitle">⏳ VIP Subscription Required</h2>
+        <p id="vipLockDesc" style="margin-top:8px;">
+            Your account (<strong id="pendingEmailText"></strong>) requires an active <strong>1-Month</strong> or <strong>3-Month VIP Bundle</strong>. Please contact the Admin to activate or renew your plan.
+        </p>
         <button type="button" class="auth-btn" style="background:var(--bg-card); color:#fff; border:1px solid var(--border-color);" onclick="logoutClient()">Sign Out</button>
     </div>
 </div>
 
-<!-- ==================== 2. ADMIN CONTROL WINDOW (ADMINS ONLY) ==================== -->
+<!-- ==================== 2. PIN GATE FOR AW ==================== -->
+<div id="pinModal" class="modal-backdrop" onclick="closePinModal(event)">
+    <div class="pin-box" onclick="event.stopPropagation()">
+        <h3 style="color:var(--accent-gold); letter-spacing:1px;">🔒 ENTER AW PIN</h3>
+        <p style="color:var(--text-secondary); font-size:0.76rem; margin-top:6px;">Security verification required to unlock AW</p>
+        <input type="password" id="awPinInput" class="pin-input" maxlength="8" placeholder="••••" onkeydown="if(event.key==='Enter') verifyAwPin()">
+        <div id="awPinError" style="color:var(--accent-red); font-size:0.76rem; min-height:18px; margin-bottom:8px;"></div>
+        <div style="display:flex; gap:8px;">
+            <button type="button" class="btn-ui" style="flex:1;" onclick="document.getElementById('pinModal').style.display='none'">Cancel</button>
+            <button type="button" class="auth-btn" style="flex:1; padding:8px;" onclick="verifyAwPin()">Unlock AW</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 3. AW CONTROL WINDOW (PIN-PROTECTED) ==================== -->
 <div id="adminModal" class="modal-backdrop" onclick="closeAdminWindow(event)">
     <div class="admin-window" onclick="event.stopPropagation()">
         <div class="admin-header">
-            <h3 style="color:var(--accent-gold);">🛡️ ADMIN CONTROL WINDOW</h3>
-            <button type="button" class="btn-ui" onclick="document.getElementById('adminModal').style.display='none'">✖ Close</button>
+            <h3 style="color:var(--accent-gold); letter-spacing:1px;">🛡️ AW — CONTROL WINDOW</h3>
+            <button type="button" class="btn-ui" onclick="document.getElementById('adminModal').style.display='none'">✖ Lock & Close</button>
         </div>
 
-        <!-- Master TwelveData & Telegram Credentials -->
+        <!-- Master TwelveData & Telegram Credentials + Beta Switch -->
         <div class="admin-section">
-            <h4>1. Master Engine Credentials (Admin Only — Never Exposed to Clients)</h4>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+                <h4 style="margin:0;">1. Master Engine Credentials & Access Mode</h4>
+                <button type="button" id="betaModeToggleBtn" class="btn-ui" onclick="toggleBetaMode()">
+                    Loading Access Mode...
+                </button>
+            </div>
             <div style="display:flex; flex-wrap:wrap; gap:8px;">
                 <input type="password" id="adminTdKey" class="auth-input" style="flex:1; margin:0;" placeholder="TwelveData API Key">
                 <input type="password" id="adminTgToken" class="auth-input" style="flex:1; margin:0;" placeholder="Telegram Bot Token">
@@ -236,30 +269,35 @@
             </div>
         </div>
 
-        <!-- Registered Clients Table -->
+        <!-- Registered Clients & VIP Bundles Table -->
         <div class="admin-section">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <h4 style="margin:0;">2. Registered Clients (<span id="clientCountBadge">0</span> Users)</h4>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                <h4 style="margin:0;">2. Registered Clients & VIP Bundles (<span id="clientCountBadge">0</span> Users)</h4>
+                <span id="adminUserActionMsg" style="font-size:0.75rem; color:var(--accent-green);"></span>
                 <button type="button" class="btn-ui" onclick="loadClientList()">🔄 Refresh List</button>
             </div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>User Email</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="clientTableBody">
-                    <tr><td colspan="4" style="color:var(--text-secondary);">Loading users...</td></tr>
-                </tbody>
-            </table>
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>User Email</th>
+                            <th>Bundle</th>
+                            <th>VIP Start</th>
+                            <th>VIP Expires</th>
+                            <th>Status</th>
+                            <th>Assign Bundle / Password Reset</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientTableBody">
+                        <tr><td colspan="6" style="color:var(--text-secondary);">Loading users...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- ==================== 3. MAIN TRADING TERMINAL (CLIENT & ADMIN) ==================== -->
+<!-- ==================== 4. MAIN TRADING TERMINAL ==================== -->
 <div id="terminalApp" class="container" style="display:none;">
     <div class="header">
         <div class="title-group">
@@ -267,11 +305,14 @@
             <p id="headerRoleSub">Live Institutional Kill-Zone Signals | Single 1:2.0 R:R Target</p>
         </div>
         <div class="controls">
+            <div id="vipBadgePill" class="status-pill" style="display:none; border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(245,158,11,0.12);">
+                <span id="vipBadgeText">VIP ACTIVE</span>
+            </div>
             <div id="autopilotStatusPill" class="status-pill">
                 <span class="pulse-dot"></span>
                 <span id="autopilotStatusText">LIVE STREAM ACTIVE</span>
             </div>
-            <button type="button" id="openAdminBtn" class="btn-ui btn-admin" onclick="openAdminWindow()">🛡️ Admin Window</button>
+            <button type="button" id="openAdminBtn" class="btn-ui btn-admin" onclick="promptAwPin()">AW</button>
             <button type="button" id="forceRefreshBtn" class="btn-ui" onclick="hardSyncRefresh()">🔄 Sync</button>
             <button type="button" class="btn-ui" onclick="logoutClient()">Logout</button>
         </div>
@@ -417,22 +458,62 @@
 
 <script>
 // ============================================================================
-// 1. SUPABASE AUTH, ROLE DETECTION & PASSWORD RECOVERY
+// 1. SUPABASE AUTH, VIP BUNDLES (1M / 3M) & AW PIN SECURITY
 // ============================================================================
 const SUPABASE_URL = 'https://wdexwfoplycblaxmrfws.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_6U7d-ihEr1ivc362mhkDeQ_2suPM3gy';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ADMIN_EMAIL = 'bacharrachiini97@gmail.com';
-const FREE_DEMO_BETA_MODE = true;
+const AW_PIN = '1997';
 let authMode = 'login';
 let isPasswordRecoveryMode = false;
 let currentUserProfile = null;
-let masterConfig = { td_api_key: '', tg_bot_token: '', tg_chat_id: '' };
+let masterConfig = { td_api_key: '', tg_bot_token: '', tg_chat_id: '', beta_mode: true };
 
 function isCurrentUserAdmin() {
     if (!currentUserProfile) return false;
     return currentUserProfile.role === 'admin' || (currentUserProfile.email || '').toLowerCase() === ADMIN_EMAIL;
+}
+
+function promptAwPin() {
+    if (!isCurrentUserAdmin()) return;
+    document.getElementById('awPinInput').value = '';
+    document.getElementById('awPinError').innerText = '';
+    document.getElementById('pinModal').style.display = 'flex';
+    setTimeout(() => document.getElementById('awPinInput').focus(), 50);
+}
+
+function closePinModal(e) {
+    if (e.target.id === 'pinModal') document.getElementById('pinModal').style.display = 'none';
+}
+
+function verifyAwPin() {
+    if (!isCurrentUserAdmin()) return;
+    const entered = document.getElementById('awPinInput').value.trim();
+    if (entered === AW_PIN) {
+        document.getElementById('pinModal').style.display = 'none';
+        document.getElementById('awPinInput').value = '';
+        document.getElementById('adminModal').style.display = 'flex';
+        loadClientList();
+    } else {
+        document.getElementById('awPinError').innerText = '❌ Incorrect PIN. Access Denied.';
+        document.getElementById('awPinInput').value = '';
+        document.getElementById('awPinInput').focus();
+    }
+}
+
+function hasValidVipAccess(profile) {
+    if (!profile) return false;
+    if (profile.role === 'admin' || (profile.email || '').toLowerCase() === ADMIN_EMAIL) return true;
+    if (!profile.is_approved) return false;
+    if (!profile.vip_expires_at) return true;
+    return new Date(profile.vip_expires_at).getTime() > Date.now();
+}
+
+function formatDateShort(isoStr) {
+    if (!isoStr) return '—';
+    return new Date(isoStr).toISOString().slice(0, 10);
 }
 
 function switchTerminalTab(tabName) {
@@ -478,10 +559,10 @@ function switchAuthMode(mode) {
         pwdInput.style.display = 'block';
         forgotRow.style.display = mode === 'login' ? 'flex' : 'none';
         backRow.style.display = 'none';
-        subtitle.innerText = 'Free Demo Testing Beta — Create a Free Account for Instant Access';
+        subtitle.innerText = 'Sign in or create an account to access the live terminal';
         document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
         document.getElementById('tabSignup').classList.toggle('active', mode === 'signup');
-        submitBtn.innerText = mode === 'login' ? 'Login to Terminal' : 'Create Free Beta Account';
+        submitBtn.innerText = mode === 'login' ? 'Login to Terminal' : 'Create Account';
     }
 }
 
@@ -527,7 +608,7 @@ async function handleAuthSubmit() {
             msgEl.innerText = error.message;
         } else {
             msgEl.style.color = 'var(--accent-green)';
-            msgEl.innerText = 'Account created! Entering terminal...';
+            msgEl.innerText = 'Account created! Checking access...';
             setTimeout(checkUserSession, 900);
         }
     } else {
@@ -612,13 +693,25 @@ async function checkUserSession() {
     } else {
         const autoRole = userEmail === ADMIN_EMAIL ? 'admin' : 'client';
         const autoApproved = userEmail === ADMIN_EMAIL;
-        currentUserProfile = { id: session.user.id, email: session.user.email, role: autoRole, is_approved: autoApproved };
+        currentUserProfile = { id: session.user.id, email: session.user.email, role: autoRole, is_approved: autoApproved, vip_plan: autoApproved ? 'ADMIN' : 'FREE_BETA' };
         await sb.from('client_profiles').upsert(currentUserProfile);
     }
 
     const isAdmin = isCurrentUserAdmin();
 
-    if (!FREE_DEMO_BETA_MODE && !currentUserProfile.is_approved && !isAdmin) {
+    const { data: termRow } = await sb.from('terminal_state').select('state_json').eq('id', 1).single();
+    const globalBetaActive = termRow?.state_json?.betaMode !== false;
+    const vipActive = hasValidVipAccess(currentUserProfile);
+
+    if (!isAdmin && currentUserProfile.is_approved && !vipActive) {
+        document.getElementById('authFormBox').style.display = 'none';
+        document.getElementById('pendingApprovalBox').style.display = 'block';
+        document.getElementById('vipLockTitle').innerText = '⏰ VIP Bundle Expired';
+        document.getElementById('vipLockDesc').innerHTML = `Your <strong>${currentUserProfile.vip_plan || 'VIP'}</strong> plan for <strong>${currentUserProfile.email}</strong> expired on <strong>${formatDateShort(currentUserProfile.vip_expires_at)}</strong>. Contact Admin to renew (1 Month or 3 Months).`;
+        return;
+    }
+
+    if (!globalBetaActive && !vipActive && !isAdmin) {
         document.getElementById('authFormBox').style.display = 'none';
         document.getElementById('pendingApprovalBox').style.display = 'block';
         document.getElementById('pendingEmailText').innerText = currentUserProfile.email;
@@ -630,9 +723,13 @@ async function checkUserSession() {
 
     if (isAdmin) {
         document.getElementById('openAdminBtn').style.display = 'inline-block';
-        document.getElementById('headerRoleSub').innerText = 'ADMIN MASTER ENGINE — Live Scanning & Signal Broadcasting';
+        document.getElementById('headerRoleSub').innerText = 'MASTER ENGINE — Live Scanning & Signal Broadcasting';
     } else {
         document.getElementById('headerRoleSub').innerText = 'CLIENT LIVE TERMINAL — Real-Time Signals, Alerts & Performance';
+        if (vipActive && currentUserProfile.vip_expires_at) {
+            document.getElementById('vipBadgePill').style.display = 'flex';
+            document.getElementById('vipBadgeText').innerText = `${currentUserProfile.vip_plan} • Exp: ${formatDateShort(currentUserProfile.vip_expires_at)}`;
+        }
     }
 
     await loadMasterConfig(isAdmin);
@@ -642,7 +739,7 @@ async function checkUserSession() {
 }
 
 // ============================================================================
-// 2. ADMIN CONFIG & SHARED SUPABASE STATE SYNC (ZERO CLIENT API POLLING)
+// 2. AW CONFIG, VIP BUNDLES (1M / 3M) & PASSWORD RESET EMAIL
 // ============================================================================
 async function loadMasterConfig(isAdmin) {
     if (!isAdmin) return;
@@ -652,6 +749,40 @@ async function loadMasterConfig(isAdmin) {
         document.getElementById('adminTdKey').value = data.td_api_key || '';
         document.getElementById('adminTgToken').value = data.tg_bot_token || '';
         document.getElementById('adminTgChat').value = data.tg_chat_id || '';
+        updateBetaToggleButton(data.beta_mode !== false);
+    }
+}
+
+function updateBetaToggleButton(isBeta) {
+    const btn = document.getElementById('betaModeToggleBtn');
+    if (!btn) return;
+    if (isBeta) {
+        btn.innerText = '🟢 Mode: FREE BETA (Everyone In)';
+        btn.style.borderColor = 'var(--accent-green)';
+        btn.style.color = 'var(--accent-green)';
+    } else {
+        btn.innerText = '🔒 Mode: PAID VIP ONLY (1M / 3M)';
+        btn.style.borderColor = 'var(--accent-gold)';
+        btn.style.color = 'var(--accent-gold)';
+    }
+}
+
+async function toggleBetaMode() {
+    if (!isCurrentUserAdmin()) return;
+    const nextBeta = !(masterConfig.beta_mode !== false);
+    const { error } = await sb.from('engine_config').upsert({
+        id: 1,
+        td_api_key: masterConfig.td_api_key || '',
+        tg_bot_token: masterConfig.tg_bot_token || '',
+        tg_chat_id: masterConfig.tg_chat_id || '',
+        beta_mode: nextBeta
+    });
+    if (!error) {
+        masterConfig.beta_mode = nextBeta;
+        state.betaMode = nextBeta;
+        updateBetaToggleButton(nextBeta);
+        await saveState();
+        logEvent(nextBeta ? '🟢 Switched terminal to FREE BETA mode.' : '🔒 Switched terminal to PAID VIP ONLY (1M / 3M) mode.');
     }
 }
 
@@ -662,22 +793,16 @@ async function saveMasterConfig() {
     const chat = document.getElementById('adminTgChat').value.trim();
 
     const { error } = await sb.from('engine_config').upsert({
-        id: 1, td_api_key: td, tg_bot_token: tg, tg_chat_id: chat
+        id: 1, td_api_key: td, tg_bot_token: tg, tg_chat_id: chat, beta_mode: masterConfig.beta_mode !== false
     });
 
     if (!error) {
-        masterConfig = { td_api_key: td, tg_bot_token: tg, tg_chat_id: chat };
+        masterConfig = { ...masterConfig, td_api_key: td, tg_bot_token: tg, tg_chat_id: chat };
         logEvent('🔑 Master TwelveData & Telegram credentials saved.');
         hardSyncRefresh();
     } else {
         logEvent('⚠️ Error saving config: ' + error.message);
     }
-}
-
-function openAdminWindow() {
-    if (!isCurrentUserAdmin()) return;
-    document.getElementById('adminModal').style.display = 'flex';
-    loadClientList();
 }
 
 function closeAdminWindow(e) {
@@ -688,33 +813,104 @@ async function loadClientList() {
     const tbody = document.getElementById('clientTableBody');
     const { data, error } = await sb.from('client_profiles').select('*').order('created_at', { ascending: false });
     if (error || !data) {
-        tbody.innerHTML = '<tr><td colspan="4">Error loading users.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6">Error loading users.</td></tr>';
         return;
     }
     document.getElementById('clientCountBadge').innerText = data.length;
-    tbody.innerHTML = data.map(u => `
+    tbody.innerHTML = data.map(u => {
+        const isExpired = u.is_approved && u.vip_expires_at && (new Date(u.vip_expires_at).getTime() <= Date.now());
+        const statusBadge = u.role === 'admin'
+            ? '<span class="badge-approved">MASTER</span>'
+            : isExpired
+                ? '<span class="badge-expired">EXPIRED</span>'
+                : u.is_approved
+                    ? '<span class="badge-approved">VIP ACTIVE</span>'
+                    : '<span class="badge-pending">FREE BETA</span>';
+
+        return `
         <tr>
-            <td>${u.email}</td>
-            <td><strong>${(u.role || 'client').toUpperCase()}</strong></td>
-            <td>${u.is_approved ? '<span class="badge-approved">VIP PAID</span>' : '<span class="badge-pending">FREE BETA</span>'}</td>
+            <td><strong>${u.email}</strong></td>
+            <td>${u.role === 'admin' ? 'OWNER' : (u.vip_plan || 'FREE_BETA')}</td>
+            <td>${formatDateShort(u.vip_started_at)}</td>
+            <td>${formatDateShort(u.vip_expires_at)}</td>
+            <td>${statusBadge}</td>
             <td>
-                ${u.role === 'admin' ? '—' : `
-                    <button type="button" class="btn-ui" onclick="toggleClientApproval('${u.id}', ${!u.is_approved})">
-                        ${u.is_approved ? 'Revoke VIP' : '✅ Mark VIP Paid'}
-                    </button>
+                ${u.role === 'admin' ? `
+                    <button type="button" class="btn-ui" onclick="adminSendResetEmail('${u.email}')">🔑 Send Reset Email</button>
+                ` : `
+                    <div style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;">
+                        <select id="bundleSel_${u.id}" class="bundle-select">
+                            <option value="1M" ${u.vip_plan === '1_MONTH' ? 'selected' : ''}>1 Month (30d)</option>
+                            <option value="3M" ${u.vip_plan === '3_MONTHS' ? 'selected' : ''}>3 Months (90d)</option>
+                        </select>
+                        <button type="button" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="grantVipBundle('${u.id}')">✅ Grant VIP</button>
+                        ${u.is_approved ? `<button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="revokeVipBundle('${u.id}')">✖ Revoke</button>` : ''}
+                        <button type="button" class="btn-ui" onclick="adminSendResetEmail('${u.email}')">🔑 Reset Pwd</button>
+                    </div>
                 `}
             </td>
-        </tr>
-    `).join('');
+        </tr>`;
+    }).join('');
 }
 
-async function toggleClientApproval(userId, approveState) {
-    await sb.from('client_profiles').update({ is_approved: approveState }).eq('id', userId);
-    loadClientList();
+async function grantVipBundle(userId) {
+    const sel = document.getElementById('bundleSel_' + userId);
+    const choice = sel ? sel.value : '1M';
+    const days = choice === '3M' ? 90 : 30;
+    const planLabel = choice === '3M' ? '3_MONTHS' : '1_MONTH';
+    const startDate = new Date();
+    const expireDate = new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
+
+    const { error } = await sb.from('client_profiles').update({
+        is_approved: true,
+        vip_plan: planLabel,
+        vip_started_at: startDate.toISOString(),
+        vip_expires_at: expireDate.toISOString()
+    }).eq('id', userId);
+
+    const msgEl = document.getElementById('adminUserActionMsg');
+    if (!error) {
+        msgEl.style.color = 'var(--accent-green)';
+        msgEl.innerText = `✅ Granted ${planLabel} (Expires ${formatDateShort(expireDate.toISOString())})`;
+        loadClientList();
+    } else {
+        msgEl.style.color = 'var(--accent-red)';
+        msgEl.innerText = '⚠️ ' + error.message;
+    }
+}
+
+async function revokeVipBundle(userId) {
+    const { error } = await sb.from('client_profiles').update({
+        is_approved: false,
+        vip_plan: 'FREE_BETA',
+        vip_started_at: null,
+        vip_expires_at: null
+    }).eq('id', userId);
+
+    if (!error) {
+        document.getElementById('adminUserActionMsg').style.color = 'var(--accent-green)';
+        document.getElementById('adminUserActionMsg').innerText = '✅ VIP access revoked.';
+        loadClientList();
+    }
+}
+
+async function adminSendResetEmail(userEmail) {
+    const msgEl = document.getElementById('adminUserActionMsg');
+    msgEl.style.color = 'var(--accent-gold)';
+    msgEl.innerText = `Sending password reset link to ${userEmail}...`;
+    const redirectUrl = window.location.origin + window.location.pathname + '?recovery=1';
+    const { error } = await sb.auth.resetPasswordForEmail(userEmail, { redirectTo: redirectUrl });
+    if (error) {
+        msgEl.style.color = 'var(--accent-red)';
+        msgEl.innerText = '⚠️ ' + error.message;
+    } else {
+        msgEl.style.color = 'var(--accent-green)';
+        msgEl.innerText = `✅ Password reset link emailed to ${userEmail}!`;
+    }
 }
 
 // ============================================================================
-// 3. SHARED STATE & REALTIME BROADCAST (ADMIN WRITES -> CLIENTS RECEIVE)
+// 3. SHARED STATE & REALTIME BROADCAST
 // ============================================================================
 const TEST_D_CONFIG = {
     startBalance: 400.00, baseLot: 0.04, monthlyMultiplier: 1.5, maxLotCap: 3.46,
@@ -728,7 +924,7 @@ let state = {
     monthStartBalance: TEST_D_CONFIG.startBalance, currentLot: TEST_D_CONFIG.baseLot,
     monthTier: 1, lastScaledMonth: new Date().toISOString().slice(0, 7),
     consecutiveLosses: 0, lockoutUntil: 0, tradeCounter: 1, activeTrade: null, history: [],
-    lastPrice: null, htfBias: 'NEUTRAL', recentLogs: [], latestBars: []
+    lastPrice: null, htfBias: 'NEUTRAL', recentLogs: [], latestBars: [], betaMode: true
 };
 
 let chart, candleSeries, priceLines = [], chartCache = {}, htfBias = "NEUTRAL";
@@ -751,6 +947,7 @@ async function saveState() {
     updateDashboardUI();
     if (isCurrentUserAdmin()) {
         state.htfBias = htfBias;
+        state.betaMode = masterConfig.beta_mode !== false;
         await sb.from('terminal_state').upsert({ id: 1, state_json: state, updated_at: new Date().toISOString() });
     }
 }
@@ -763,6 +960,12 @@ function subscribeToRealtimeState() {
                 const prevHistoryLen = (state.history || []).length;
                 state = { ...state, ...payload.new.state_json };
                 htfBias = state.htfBias || 'NEUTRAL';
+
+                if (state.betaMode === false && !hasValidVipAccess(currentUserProfile)) {
+                    location.reload();
+                    return;
+                }
+
                 updateDashboardUI();
 
                 if (candleSeries && state.latestBars && state.latestBars.length > 0) {
@@ -1113,7 +1316,8 @@ async function resetLiveAccountState() {
         balance: 400.00, highWaterMark: 400.00, monthStartBalance: 400.00,
         currentLot: 0.04, monthTier: 1, lastScaledMonth: new Date().toISOString().slice(0, 7),
         consecutiveLosses: 0, lockoutUntil: 0, tradeCounter: 1, activeTrade: null, history: [],
-        lastPrice: state.lastPrice, htfBias: htfBias, recentLogs: [], latestBars: state.latestBars || []
+        lastPrice: state.lastPrice, htfBias: htfBias, recentLogs: [], latestBars: state.latestBars || [],
+        betaMode: masterConfig.beta_mode !== false
     };
     clearChartLines();
     logEvent("♻️ Account reset to $400.00 | #Trade-1.");
@@ -1159,7 +1363,7 @@ async function sendTelegramAlert(text) {
 }
 
 // ============================================================================
-// 5. UNIFIED UI RENDERING (HOME, ACTIVE TRADE, CLOSED TRADES, WIN RATE)
+// 5. UNIFIED UI RENDERING
 // ============================================================================
 function updateDashboardUI() {
     if (state.lastPrice) document.getElementById('uiLivePrice').innerText = Number(state.lastPrice).toFixed(2);
@@ -1266,7 +1470,7 @@ function startTerminalEngine(isAdmin) {
     }
 
     updateDashboardUI();
-    logEvent(`🚀 Connected as ${currentUserProfile.email} (${isAdmin ? 'ADMIN MASTER' : 'CLIENT VIEW'}).`);
+    logEvent(`🚀 Connected as ${currentUserProfile.email} (${isAdmin ? 'MASTER' : 'CLIENT VIEW'}).`);
 
     if (isAdmin) {
         runAutopilotCycle(true);
