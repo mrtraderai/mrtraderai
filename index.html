@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr.Trader AI v1.2 — Autonomous XAU/USD Wyckoff OTE Terminal</title>
+    <title>Mr.Trader AI v1.2 — Autonomous XAU/USD Terminal</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -280,12 +280,12 @@
         <!-- Left Showcase Visuals (Outer Login Page Only) -->
         <div class="showcase-panel">
             <div class="showcase-hero">
-                <span class="showcase-badge" data-i18n="scBadge">⚡ WYCKOFF OTE AI ENGINE v1.2</span>
+                <span class="showcase-badge" data-i18n="scBadge">⚡ AI GOLD ENGINE v1.2</span>
                 <h1>Mr.Trader AI — XAU/USD</h1>
             </div>
             <div class="showcase-body">
                 <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.55;" data-i18n="scDesc">
-                    Advanced Wyckoff Spring/UTAD structure detection paired with Cumulative Volume Delta (CVD) and Fibonacci OTE retracements for institutional XAU/USD precision.
+                    Advanced institutional structure detection paired with Cumulative Volume Delta (CVD) and Fibonacci retracements for precision XAU/USD trading.
                 </p>
                 <div class="showcase-stats">
                     <div class="sc-stat-box">
@@ -303,10 +303,10 @@
                 </div>
                 <div class="showcase-gallery">
                     <div class="sc-img-card sc-img-1">
-                        <span data-i18n="scCard1">📈 Wyckoff Spring & CVD Reclaim</span>
+                        <span data-i18n="scCard1">📈 Spring Structure & CVD Reclaim</span>
                     </div>
                     <div class="sc-img-card sc-img-2">
-                        <span data-i18n="scCard2">🛡️ Fibonacci OTE (61.8%-78.6%)</span>
+                        <span data-i18n="scCard2">🛡️ Fibonacci Retracement (61.8%-78.6%)</span>
                     </div>
                 </div>
             </div>
@@ -454,7 +454,7 @@
             <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
             <div class="title-group">
                 <h1>Mr.Trader AI v1.2</h1>
-                <p id="headerRoleSub" data-i18n="headerSub">Wyckoff OTE & CVD XAU/USD Signals | Single 1:2.1 R:R Target</p>
+                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals | Single 1:2.1 R:R Target</p>
             </div>
         </div>
 
@@ -497,7 +497,7 @@
             <div class="metric-card">
                 <div class="metric-label" data-i18n="lblSignalSummary">Current Signal Status</div>
                 <div class="metric-value" id="uiTopSignalDir" style="color: var(--text-secondary);">NONE</div>
-                <div class="metric-sub" id="uiTopSignalLevels">No active or OTE limit order</div>
+                <div class="metric-sub" id="uiTopSignalLevels">No active or limit order</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label" data-i18n="lblWinRate">Live Win Rate</div>
@@ -515,7 +515,7 @@
         <div class="main-grid">
             <div class="chart-box">
                 <div class="box-header">
-                    <span data-i18n="chartTitle">XAU/USD M5 Live Chart (Wyckoff OTE Execution)</span>
+                    <span data-i18n="chartTitle">XAU/USD M5 Live Chart (Closed-Candle Execution)</span>
                     <span id="lastSyncTime" style="color: var(--text-secondary); font-size: 0.75rem;">Syncing...</span>
                 </div>
                 <div id="chart"></div>
@@ -540,7 +540,7 @@
     <div id="viewActive" class="tab-view">
         <div class="panel-box">
             <div class="box-header">
-                <span data-i18n="activeBoxTitle">⚡ Live Active / OTE Limit Signal Details</span>
+                <span data-i18n="activeBoxTitle">⚡ Live Active / Limit Signal Details</span>
                 <span id="activeTradeStatusTag" style="color: var(--accent-gold); font-size: 0.78rem;">Scanning...</span>
             </div>
             <div id="dedicatedActiveContainer"></div>
@@ -616,12 +616,12 @@
 
         <div class="panel-box">
             <div class="box-header">
-                <span data-i18n="stratTitle">📊 Mr.Trader AI v1.2 Wyckoff OTE Engine</span>
+                <span data-i18n="stratTitle">📊 Mr.Trader AI v1.2 Engine Overview</span>
                 <span style="color: var(--text-secondary); font-size: 0.75rem;">40–80 pts Spread Modeled</span>
             </div>
             <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.75;" data-i18n="stratDesc">
                 • <strong>Active Trading Sessions:</strong> Institutional liquidity windows across Tokyo, London, and New York.<br>
-                • <strong>Execution Engine (Model C):</strong> Wyckoff Spring/UTAD structure detection with Cumulative Volume Delta (CVD) absorption and Fibonacci OTE (61.8%–78.6%) retracement entries.<br>
+                • <strong>Execution Engine:</strong> Structure detection with Cumulative Volume Delta (CVD) absorption and Fibonacci retracement entries.<br>
                 • <strong>Risk Management:</strong> Recommended 0.02 lots per $400 capital, fixed 1:2.1 single target, and automated consecutive-loss circuit breaker protection.
             </p>
         </div>
@@ -700,13 +700,13 @@ let currentLang = localStorage.getItem('mrtrader_lang') || 'en';
 const I18N = {
     en: {
         langBtn: 'العربية',
-        scBadge: '⚡ WYCKOFF OTE AI ENGINE v1.2',
-        scDesc: 'Advanced Wyckoff Spring/UTAD structure detection paired with Cumulative Volume Delta (CVD) and Fibonacci OTE retracements for institutional XAU/USD precision.',
+        scBadge: '⚡ AI GOLD ENGINE v1.2',
+        scDesc: 'Advanced institutional structure detection paired with Cumulative Volume Delta (CVD) and Fibonacci retracements for precision XAU/USD trading.',
         scWinRateLbl: 'Verified Win Rate',
         scRrLbl: 'Fixed Risk/Reward',
         scAutoLbl: 'A+ Setups',
-        scCard1: '📈 Wyckoff Spring & CVD Reclaim',
-        scCard2: '🛡️ Fibonacci OTE (61.8%-78.6%)',
+        scCard1: '📈 Spring Structure & CVD Reclaim',
+        scCard2: '🛡️ Fibonacci Retracement (61.8%-78.6%)',
         authSub: 'Sign in or create an account to access the live XAU/USD AI terminal',
         clientLogin: 'Client Login',
         signUp: 'Sign Up',
@@ -722,7 +722,7 @@ const I18N = {
         setNewPassDesc: 'Enter your new password below to regain access to Mr.Trader AI.',
         updatePassBtn: 'Update Password & Login',
         signOut: 'Sign Out',
-        headerSub: 'Wyckoff OTE & CVD XAU/USD Signals | Single 1:2.1 R:R Target',
+        headerSub: 'Autonomous XAU/USD Signals | Single 1:2.1 R:R Target',
         liveStream: 'LIVE STREAM ACTIVE',
         syncBtn: 'Sync',
         logoutBtn: 'Logout',
@@ -739,10 +739,10 @@ const I18N = {
         riskRemarkTitle: 'Risk Management Note:',
         riskRemarkText: 'For each $400 of account capital, use 0.02 lot size.',
         spreadRemarkText: 'Spread: 40–80 points depending on market liquidity',
-        chartTitle: 'XAU/USD M5 Live Chart (Wyckoff OTE Execution)',
+        chartTitle: 'XAU/USD M5 Live Chart (Closed-Candle Execution)',
         latestSigTitle: 'Latest Signal Detected',
         liveAlertsTitle: 'Live Alerts & Feed',
-        activeBoxTitle: '⚡ Live Active / OTE Limit Signal Details',
+        activeBoxTitle: '⚡ Live Active / Limit Signal Details',
         closedBoxTitle: '📜 Closed Trades History (40–80 pts Spread Adjusted)',
         filterAll: 'All Time',
         filterToday: 'Today (24h)',
@@ -761,8 +761,8 @@ const I18N = {
         statNetLbl: 'Net Cumulative Profit',
         riskBaseSub: 'Based on 0.02 lot / $400 risk rule',
         statPfLbl: 'Profit Factor',
-        stratTitle: '📊 Mr.Trader AI v1.2 Wyckoff OTE Engine',
-        stratDesc: '• <strong>Active Trading Sessions:</strong> Institutional liquidity windows across Tokyo, London, and New York.<br>• <strong>Execution Engine (Model C):</strong> Wyckoff Spring/UTAD structure detection with Cumulative Volume Delta (CVD) absorption and Fibonacci OTE (61.8%–78.6%) retracement entries.<br>• <strong>Risk Management:</strong> Recommended 0.02 lots per $400 capital, fixed 1:2.1 single target, and automated consecutive-loss circuit breaker protection.',
+        stratTitle: '📊 Mr.Trader AI v1.2 Engine Overview',
+        stratDesc: '• <strong>Active Trading Sessions:</strong> Institutional liquidity windows across Tokyo, London, and New York.<br>• <strong>Execution Engine:</strong> Structure detection with Cumulative Volume Delta (CVD) absorption and Fibonacci retracement entries.<br>• <strong>Risk Management:</strong> Recommended 0.02 lots per $400 capital, fixed 1:2.1 single target, and automated consecutive-loss circuit breaker protection.',
         accProfileTitle: '👤 Account Details & Subscription Status',
         accEmailLbl: 'Registered Email',
         accPlanLbl: 'Current VIP Bundle',
@@ -777,19 +777,19 @@ const I18N = {
         plan3mTitle: '3 Months VIP',
         plan3mDesc: '90 days priority VIP access (Save $47 vs monthly)',
         orderTg: 'Activate on Telegram',
-        scanningTitle: '🤖 Wyckoff OTE Engine Scanning',
-        scanningDesc: 'Monitoring XAU/USD Spring/UTAD structures, CVD absorption, and Fibonacci OTE retracements.',
+        scanningTitle: '🤖 AI Engine Scanning',
+        scanningDesc: 'Monitoring XAU/USD Spring/UTAD structures, CVD absorption, and Fibonacci retracements.',
         noClosed: 'No closed trades recorded for this period.'
     },
     ar: {
         langBtn: 'English',
-        scBadge: '⚡ محرك Wyckoff OTE الذكي الإصدار 1.2',
-        scDesc: 'كشف هياكل وايكوف (Spring/UTAD) المتقدمة مع تأكيد تدفق الحجم التراكمي (CVD) وتراجعات فيبوناتشي (OTE) لدقة فائقة في تداول الذهب.',
+        scBadge: '⚡ محرك الذكاء الاصطناعي الإصدار 1.2',
+        scDesc: 'كشف الهياكل المؤسسية المتقدمة مع تأكيد تدفق الحجم التراكمي (CVD) وتراجعات فيبوناتشي لدقة فائقة في تداول الذهب.',
         scWinRateLbl: 'نسبة النجاح المحققة',
         scRrLbl: 'نسبة العائد للمخاطرة',
         scAutoLbl: 'فرص A+',
-        scCard1: '📈 نموذج وايكوف Spring مع تأكيد CVD',
-        scCard2: '🛡️ تراجعات فيبوناتشي OTE (61.8%-78.6%)',
+        scCard1: '📈 نموذج Spring مع تأكيد CVD',
+        scCard2: '🛡️ تراجعات فيبوناتشي (61.8%-78.6%)',
         authSub: 'سجّل الدخول أو أنشئ حساباً للوصول إلى منصة Mr.Trader AI لتداول الذهب',
         clientLogin: 'تسجيل الدخول',
         signUp: 'إنشاء حساب',
@@ -805,7 +805,7 @@ const I18N = {
         setNewPassDesc: 'أدخل كلمة المرور الجديدة أدناه لاستعادة الدخول إلى Mr.Trader AI.',
         updatePassBtn: 'تحديث كلمة المرور والدخول',
         signOut: 'تسجيل الخروج',
-        headerSub: 'توصيات وايكوف OTE للذهب | هدف واحد 1:2.1',
+        headerSub: 'توصيات الذهب الذكية | هدف واحد 1:2.1',
         liveStream: 'البث المباشر نشط',
         syncBtn: 'تحديث',
         logoutBtn: 'خروج',
@@ -822,7 +822,7 @@ const I18N = {
         riskRemarkTitle: 'ملاحظة إدارة المخاطر:',
         riskRemarkText: 'لكل 400$ من رأس المال، استخدم حجم عقد 0.02 لوت.',
         spreadRemarkText: 'السبريد: من 40 إلى 80 نقطة حسب سيولة السوق',
-        chartTitle: 'شارت الذهب M5 المباشر (تنفيذ وايكوف OTE)',
+        chartTitle: 'شارت الذهب M5 المباشر (تنفيذ الصفقات)',
         latestSigTitle: 'أحدث توصية مكتشفة',
         liveAlertsTitle: 'التنبيهات المباشرة والسجل',
         activeBoxTitle: '⚡ تفاصيل الصفقة النشطة / المعلقة حالياً',
@@ -844,8 +844,8 @@ const I18N = {
         statNetLbl: 'صافي الأرباح التراكمية',
         riskBaseSub: 'بناءً على قاعدة 0.02 لوت لكل 400$',
         statPfLbl: 'معامل الربح (Profit Factor)',
-        stratTitle: '📊 نظرة عامة على محرك Wyckoff OTE الإصدار 1.2',
-        stratDesc: '• <strong>جلسات التداول النشطة:</strong> نوافذ السيولة المؤسسية عبر جلسات طوكيو، لندن، ونيويورك.<br>• <strong>محرك التنفيذ (نموذج C):</strong> اكتشاف هياكل وايكوف (Spring/UTAD) مع استيعاب الحجم التراكمي CVD وتراجعات فيبوناتشي OTE (61.8%–78.6%).<br>• <strong>إدارة المخاطر:</strong> يُنصح بحجم 0.02 لوت لكل 400$ رأس مال، هدف واحد ثابت 1:2.1، وحماية تلقائية ضد الخسائر المتتالية.',
+        stratTitle: '📊 نظرة عامة على المحرك الإصدار 1.2',
+        stratDesc: '• <strong>جلسات التداول النشطة:</strong> نوافذ السيولة المؤسسية عبر جلسات طوكيو، لندن، ونيويورك.<br>• <strong>محرك التنفيذ:</strong> اكتشاف الهياكل مع استيعاب الحجم التراكمي CVD وتراجعات فيبوناتشي.<br>• <strong>إدارة المخاطر:</strong> يُنصح بحجم 0.02 لوت لكل 400$ رأس مال، هدف واحد ثابت 1:2.1، وحماية تلقائية ضد الخسائر المتتالية.',
         accProfileTitle: '👤 تفاصيل الحساب وحالة الاشتراك',
         accEmailLbl: 'البريد الإلكتروني المسجل',
         accPlanLbl: 'باقة VIP الحالية',
@@ -860,8 +860,8 @@ const I18N = {
         plan3mTitle: 'باقة 3 أشهر VIP',
         plan3mDesc: '90 يوماً من الوصول الكامل مع أولوية VIP (وفر $47)',
         orderTg: 'تفعيل عبر تيليجرام',
-        scanningTitle: '🤖 جاري مسح السوق عبر محرك Wyckoff OTE',
-        scanningDesc: 'مراقبة نماذج Spring/UTAD واستيعاب السيولة عبر مؤشر CVD وتراجعات OTE للذهب.',
+        scanningTitle: '🤖 جاري مسح السوق عبر المحرك الذكي',
+        scanningDesc: 'مراقبة نماذج الهياكل واستيعاب السيولة عبر مؤشر CVD وتراجعات فيبوناتشي للذهب.',
         noClosed: 'لا توجد صفقات مغلقة مسجلة في هذه الفترة.'
     }
 };
@@ -1180,7 +1180,7 @@ async function checkUserSession() {
 }
 
 // ============================================================================
-// 2. AW CONFIG, VIP BUNDLES (3D / 1M / 3M) & PASSWORD RESET EMAIL
+// 2. AW CONFIG, VIP BUNDLES & PASSWORD RESET EMAIL
 // ============================================================================
 async function loadMasterConfig(isAdmin) {
     if (!isAdmin) return;
@@ -1352,7 +1352,7 @@ async function adminSendResetEmail(userEmail) {
 }
 
 // ============================================================================
-// 3. SHARED STATE & NEW MODEL C ENGINE CONFIG (0.02 Lot / $400 Rule)
+// 3. SHARED STATE & ENGINE CONFIG (0.02 Lot / $400 Rule)
 // ============================================================================
 const ENGINE_CONFIG = {
     referenceCapital: 400.00,
@@ -1429,7 +1429,7 @@ function subscribeToRealtimeState() {
                 if (candleSeries && !state.activeTrade) clearChartLines();
 
                 if (state.activeTrade && state.activeTrade.tradeId !== prevTradeId) {
-                    logEvent(`🚨 NEW WYCKOFF OTE SIGNAL #Trade-${state.activeTrade.tradeId}: <b>${state.activeTrade.dir} (${state.activeTrade.type}) @ ${state.activeTrade.entry.toFixed(2)}</b>`);
+                    logEvent(`🚨 NEW SIGNAL #Trade-${state.activeTrade.tradeId}: <b>${state.activeTrade.dir} (${state.activeTrade.type}) @ ${state.activeTrade.entry.toFixed(2)}</b>`);
                 } else if ((state.history || []).length > prevHistoryLen) {
                     const lastClosed = state.history[0];
                     logEvent(`${lastClosed.outcome === 'WIN' ? '✅' : '❌'} #Trade-${lastClosed.tradeId} ${lastClosed.outcome} (${lastClosed.netPnL >= 0 ? '+' : ''}$${lastClosed.netPnL.toFixed(2)})`);
@@ -1455,7 +1455,7 @@ function logEvent(msg) {
 }
 
 // ============================================================================
-// 4. MARKET SESSIONS & NEW MODEL C (WYCKOFF SPRING + CVD + FIB OTE)
+// 4. MARKET SESSIONS & WYCKOFF / CVD / FIBO ENGINE (MODEL C)
 // ============================================================================
 function getSessionStatuses(dateObj = new Date()) {
     const utcHour = dateObj.getUTCHours() + (dateObj.getUTCMinutes() / 60);
@@ -1514,7 +1514,6 @@ function getAsianRange(bars) {
     return count >= 6 ? { asianHigh, asianLow } : null;
 }
 
-// NEW MODEL C: Wyckoff Spring/UTAD + CVD + Fibonacci OTE (61.8% - 78.6%)
 function evaluateWyckoffOteSetup(m5Bars) {
     if (!m5Bars || m5Bars.length < 65) return null;
     const c1 = m5Bars[m5Bars.length - 2], c2 = m5Bars[m5Bars.length - 3];
@@ -1541,28 +1540,23 @@ function evaluateWyckoffOteSetup(m5Bars) {
     const targetHigh = asian ? Math.max(swingHigh, asian.asianHigh) : swingHigh;
     const targetLow = asian ? Math.min(swingLow, asian.asianLow) : swingLow;
 
-    // Wyckoff Spring / Upthrust (UTAD) recognition + CVD absorption filter
     const sweptHigh = (c1.high > targetHigh || c2.high > targetHigh) && c1.close < targetHigh;
     const sweptLow = (c1.low < targetLow || c2.low < targetLow) && c1.close > targetLow;
 
-    // Simulated Cumulative Volume Delta (CVD) absorption check based on body expansion and wick rejection
-    const c1Body = Math.abs(c1.close - c1.open);
     const c1Range = c1.high - c1.low;
     const cvdBullishAbsorption = c1.close > c1.open && (c1.close - c1.low) > (c1Range * 0.60);
     const cvdBearishAbsorption = c1.close < c1.open && (c1.high - c1.close) > (c1Range * 0.60);
 
-    // Fibonacci OTE (61.8% - 78.6% retracement of impulse leg c3 -> c1)
     if (allowBuy && sweptLow && cvdBullishAbsorption) {
         const impulseLow = Math.min(c1.low, c2.low);
         const impulseHigh = Math.max(c2.high, c3.high);
         const impulseRange = impulseHigh - impulseLow;
-        // OTE entry at 70.2% retracement midpoint
         const entry = impulseHigh - (impulseRange * 0.702);
         let sl = impulseLow - slBuffer, risk = entry - sl;
         if (risk < minSL) { risk = minSL; sl = entry - risk; }
         if (risk <= maxSL) {
             return {
-                dir: "BUY", type: "LIMIT", setupName: "Wyckoff Spring + CVD + Fib OTE",
+                dir: "BUY", type: "LIMIT", setupName: "Wyckoff Spring + CVD + Fib Retracement",
                 entry, sl, tp: entry + (risk * ENGINE_CONFIG.singleTpRR), riskDistance: risk,
                 lot: ENGINE_CONFIG.baseLotPer400, createdAt: Date.now()
             };
@@ -1578,7 +1572,7 @@ function evaluateWyckoffOteSetup(m5Bars) {
         if (risk < minSL) { risk = minSL; sl = entry + risk; }
         if (risk <= maxSL) {
             return {
-                dir: "SELL", type: "LIMIT", setupName: "Wyckoff UTAD + CVD + Fib OTE",
+                dir: "SELL", type: "LIMIT", setupName: "Wyckoff UTAD + CVD + Fib Retracement",
                 entry, sl, tp: entry - (risk * ENGINE_CONFIG.singleTpRR), riskDistance: risk,
                 lot: ENGINE_CONFIG.baseLotPer400, createdAt: Date.now()
             };
@@ -1621,9 +1615,9 @@ function manageActiveTrade(livePrice) {
         if (Date.now() - trade.createdAt > 45 * 60 * 1000) { state.activeTrade = null; clearChartLines(); saveState(); return; }
         if ((trade.dir === "BUY" && livePrice <= trade.entry) || (trade.dir === "SELL" && livePrice >= trade.entry)) {
             trade.type = "ACTIVE";
-            logEvent(`⚡ #Trade-${trade.tradeId || 1} OTE LIMIT FILLED @ ${trade.entry.toFixed(2)}`);
+            logEvent(`⚡ #Trade-${trade.tradeId || 1} LIMIT FILLED @ ${trade.entry.toFixed(2)}`);
             if (isCurrentUserAdmin()) {
-                sendTelegramAlert("⚡ Mr.Trader AI v1.2 — XAUUSD " + trade.dir + " OTE FILLED @ " + trade.entry.toFixed(2) + "\n\n🔴 SL: " + trade.sl.toFixed(2) + "\n🎯 TP1: " + trade.tp.toFixed(2) + "\n\n#Trade-" + (trade.tradeId || 1));
+                sendTelegramAlert("⚡ Mr.Trader AI v1.2 — XAUUSD " + trade.dir + " FILLED @ " + trade.entry.toFixed(2) + "\n\n🔴 SL: " + trade.sl.toFixed(2) + "\n🎯 TP1: " + trade.tp.toFixed(2) + "\n\n#Trade-" + (trade.tradeId || 1));
             }
             saveState();
         }
@@ -1663,7 +1657,7 @@ function closeTrade(outcome, netDollarPnL) {
     if (outcome === "WIN") {
         state.consecutiveLosses = 0;
         const logStr = "✅ #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")";
-        const tgStr = "✅ Mr.Trader AI v1.2 — #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")\nModel C: Wyckoff OTE";
+        const tgStr = "✅ Mr.Trader AI v1.2 — #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")\nWyckoff Setup Verified";
         logEvent(logStr);
         if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
     } else {
@@ -1710,7 +1704,7 @@ async function runAutopilotCycle(forceFresh = false) {
         state.activeTrade = setup;
         drawTradeLines(setup);
 
-        const tgText = "🚨 Mr.Trader AI v1.2 — XAUUSD " + setup.dir + " OTE LIMIT " + setup.entry.toFixed(2) + "\n\n🔴 SL: " + setup.sl.toFixed(2) + "\n🎯 TP1: " + setup.tp.toFixed(2) + "\n\n#Trade-" + tradeId;
+        const tgText = "🚨 Mr.Trader AI v1.2 — XAUUSD " + setup.dir + " LIMIT " + setup.entry.toFixed(2) + "\n\n🔴 SL: " + setup.sl.toFixed(2) + "\n🎯 TP1: " + setup.tp.toFixed(2) + "\n\n#Trade-" + tradeId;
         logEvent(`🚀 Signal #Trade-${tradeId}: <b>${setup.dir} (${setup.setupName}) @ ${setup.entry.toFixed(2)}</b>`);
         sendTelegramAlert(tgText);
     }
@@ -1744,12 +1738,12 @@ async function hardSyncRefresh() {
 }
 
 async function testTelegramConnection() {
-    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 ENGINE — CONNECTION VERIFIED\nModel C: Wyckoff Spring + CVD + OTE active");
+    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 ENGINE — CONNECTION VERIFIED\nWyckoff Spring + CVD Active");
     if (ok) logEvent("✅ Telegram test message delivered!");
 }
 
 async function testTpHitTelegram() {
-    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 — #Trade-TEST TP1 HIT (+$21.00)\nModel C: Wyckoff OTE verified");
+    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 — #Trade-TEST TP1 HIT (+$21.00)\nWyckoff Verified");
     if (ok) logEvent("🎯 Test TP1 HIT alert sent to Telegram!");
 }
 
@@ -1795,7 +1789,7 @@ function clearChartLines() {
 function drawTradeLines(trade) {
     clearChartLines();
     if (!trade || !candleSeries) return;
-    priceLines.push(candleSeries.createPriceLine({ price: trade.entry, color: '#3b82f6', lineWidth: 2, lineStyle: 0, title: 'ENTRY (OTE)' }));
+    priceLines.push(candleSeries.createPriceLine({ price: trade.entry, color: '#3b82f6', lineWidth: 2, lineStyle: 0, title: 'ENTRY' }));
     priceLines.push(candleSeries.createPriceLine({ price: trade.sl, color: '#ef4444', lineWidth: 2, lineStyle: 2, title: 'SL' }));
     priceLines.push(candleSeries.createPriceLine({ price: trade.tp, color: '#10b981', lineWidth: 2, lineStyle: 0, title: 'TP1 (1:2.1)' }));
 }
@@ -1835,14 +1829,14 @@ function updateDashboardUI() {
     const topSigLevels = document.getElementById('uiTopSignalLevels');
     if (state.activeTrade) {
         const tr = state.activeTrade;
-        const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'OTE LIMIT' : 'ACTIVE';
+        const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
         topSigDir.innerText = `${tr.dir} (${modeLabel})`;
         topSigDir.style.color = tr.dir === 'BUY' ? 'var(--accent-green)' : 'var(--accent-red)';
         topSigLevels.innerText = `E: ${Number(tr.entry).toFixed(2)} | SL: ${Number(tr.sl).toFixed(2)} | TP: ${Number(tr.tp).toFixed(2)}`;
     } else {
         topSigDir.innerText = currentLang === 'ar' ? 'لا توجد صفقة (NONE)' : 'NONE';
         topSigDir.style.color = 'var(--text-secondary)';
-        topSigLevels.innerText = currentLang === 'ar' ? 'بانتظار إشارة وايكوف أو أمر معلق' : 'No active or OTE limit signal';
+        topSigLevels.innerText = currentLang === 'ar' ? 'بانتظار إشارة دخول أو أمر معلق' : 'No active or limit signal';
     }
 
     // Dynamic Win Rate Calculation
@@ -1873,7 +1867,7 @@ function updateDashboardUI() {
 
     if (state.activeTrade) {
         const tr = state.activeTrade, cls = tr.dir.toLowerCase();
-        const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'OTE LIMIT' : 'ACTIVE';
+        const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
         statusTag.innerText = `🟢 ${modeLabel} — #Trade-${tr.tradeId || 1}`;
         const cardHtml = `
             <div class="signal-card ${cls}">
