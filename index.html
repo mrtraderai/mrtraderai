@@ -293,7 +293,9 @@
                 <div id="newsList"><div style="font-size:11px;color:#666">Fetching economic calendar...</div></div>
             </div>
 
+            <!-- NEW M1 BUTTON ADDED HERE -->
             <div class="tf-selector" id="tfSelector">
+                <button class="tf-btn" onclick="selectTF('1min',this)">M1</button>
                 <button class="tf-btn active" onclick="selectTF('5min',this)">M5</button>
                 <button class="tf-btn" onclick="selectTF('1h',this)">H1</button>
             </div>
@@ -324,7 +326,7 @@
             </div>
             
             <!-- TIME FILTERS -->
-            <div class="stats-filter" style="margin-bottom:16px; justify-content:center;">
+            <div class="stats-filter" style="margin-bottom:16px; justify-content:center; display:none;">
                 <button class="filter-btn active" onclick="filterClosed('all', this)">All</button>
                 <button class="filter-btn" onclick="filterClosed('1d', this)">1D</button>
                 <button class="filter-btn" onclick="filterClosed('1w', this)">1W</button>
@@ -906,7 +908,8 @@
         }
 
         async function fetchChartDataFromSource(tf){
-            const intervalMap={'5min':'5min','15min':'15min','30min':'30min','1h':'1h','4h':'4h','1day':'1day'};
+            // ADDED 1MIN TO THE MAP
+            const intervalMap={'1min':'1min','5min':'5min','15min':'15min','30min':'30min','1h':'1h','4h':'4h','1day':'1day'};
             const tdTf=intervalMap[tf]||'5min';
             const symbolMap={'XAU/USD':'XAU/USD'};
             const symbol=symbolMap[currentAsset];
@@ -1113,7 +1116,7 @@
             let recentSwingLow = Infinity;
             
             // DYNAMIC LOOKBACK (EDITED)
-            const lookback = currentTF === '1h' ? 40 : 15; 
+            const lookback = currentTF === '1h' || currentTF === '1min' ? 40 : 15; 
 
             for(let i = bars.length - 3; i >= Math.max(0, bars.length - lookback); i--) {
                 const b = bars[i];
@@ -1378,6 +1381,7 @@
             renderClosedSignalsList();
         }
 
+        // --- UPDATED: SHOW PIPS IN CLOSED SIGNALS ---
         function renderClosedSignalsList(){
             const list=document.getElementById('closedSignalsList');
             if(!list)return;
@@ -1404,24 +1408,33 @@
             let html='';
             for(const t of filteredHistory){
                 const color=t.result==='WIN'?'text-green':t.result==='LOSS'?'text-red':'text-yellow';
+                
+                // --- CALCULATE PIPS FOR CLOSED TRADES ---
+                let pipsText = "";
+                if (t.exitPrice && t.entry) {
+                    const diff = Math.abs(t.exitPrice - t.entry);
+                    const pips = diff / getPipSize(t.asset);
+                    pipsText = ` (${pips.toFixed(1)} pips)`;
+                }
+
                 html+=`
                 <div class="history-item">
                     <div>
                         <div class="history-title">${t.asset} ${t.dir} (${t.tf}) ${t.tradeNumber ? '#'+t.tradeNumber : ''}</div>
-                        <div class="history-date">${new Date(t.date).toLocaleDateString()}</div>
+                        <div class="history-date">${new Date(t.date).toLocaleDateString()}${pipsText}</div>
                     </div>
                     <div class="history-result ${color}">${t.result||'CLOSED'}</div>
                 </div>`;
             }
             list.innerHTML=html;
             
-            // Stats calculation (based on ALL trades or filtered? Usually all for stats, but we can update to filtered)
+            // Stats calculation
             const total=filteredHistory.length;
             const wins=filteredHistory.filter(t=>t.result==='WIN').length;
             const winRate=total>0?Math.round((wins/total)*100):0;
             document.getElementById('statWinRateActive').innerText=winRate+'%';
             document.getElementById('statTotalTradesActive').innerText=total;
-            document.getElementById('homeTotalTrades').innerText=total; // Update home stats too
+            document.getElementById('homeTotalTrades').innerText=total;
             document.getElementById('homeWinRate').innerText=winRate+'%';
         }
         
