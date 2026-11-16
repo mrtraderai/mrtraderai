@@ -110,6 +110,12 @@
         }
         .btn-tg:hover { background: #1d8ec4; }
 
+        .pwa-steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 10px; }
+        .pwa-step-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .pwa-step-num { font-size: 0.72rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; }
+        .pwa-step-title { font-size: 0.85rem; font-weight: 700; color: #fff; }
+        .pwa-step-desc { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.45; }
+
         .modal-backdrop {
             position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000;
             display: none; justify-content: center; align-items: center; padding: 16px;
@@ -442,7 +448,7 @@
             </div>
         </div>
 
-        <!-- Session Filters & Risk Guardrails Control Panel (WITH HIDE / SHOW TOGGLE & SAVE BUTTON) -->
+        <!-- Session Filters & Risk Guardrails Control Panel -->
         <div class="panel-box" style="background:var(--bg-secondary); border:1px solid var(--border-color);">
             <div class="box-header" style="margin-bottom:8px; cursor:pointer;" onclick="toggleSettingsCard()">
                 <span>⚙️ Session Filters, Risk Guardrails & News Blackout (<span id="settingsTzLabel">GMT</span>) <span id="settingsToggleIcon" style="font-size:0.75rem; color:var(--accent-gold);"><span data-i18n="hideShowToggle">[▲ Hide / إخفاء]</span></span></span>
@@ -676,11 +682,43 @@
                 </div>
                 <div class="metric-card">
                     <div class="metric-label" data-i18n="accPlanLbl">Current VIP Bundle</div>
-                    <div class="metric-value" id="accPlanVal" style="color:var(--accent-gold);">FREE BETA</div>
+                    <div class="metric-value" id="accPlanVal" style="color:var(--accent-gold);">🔒 Upgrade Required / اشتراك مطلوب</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label" data-i18n="accExpLbl">Subscription Expires</div>
                     <div class="metric-value" id="accExpVal" style="font-size:0.95rem;">—</div>
+                </div>
+            </div>
+
+            <!-- Push Notification Settings Card -->
+            <div style="margin-top: 14px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; padding:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <div style="font-size:0.9rem; font-weight:700; color:var(--accent-gold);" data-i18n="notifSettingTitle">🔔 Push Notifications & Sound Alerts</div>
+                    <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;" data-i18n="notifSettingDesc">Receive desktop or phone sound alerts instantly when signals trigger.</div>
+                </div>
+                <button type="button" class="auth-btn" style="width:auto; padding:8px 16px; font-size:0.8rem;" onclick="requestPushNotificationPermission()"><span data-i18n="enableNotifBtn">Enable Notifications / تفعيل الإشعارات</span></button>
+            </div>
+
+            <!-- Add to Home Screen Guide -->
+            <div style="margin-top: 14px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
+                <div style="font-size:0.9rem; font-weight:700; color:var(--accent-gold); margin-bottom:8px;" data-i18n="pwaGuideTitle">📱 How to Add Mr.Trader AI to Your Phone Home Screen</div>
+                <div style="font-size:0.76rem; color:var(--text-secondary); margin-bottom:12px;" data-i18n="pwaGuideSub">Transform this terminal into a mobile app on iOS (Safari) or Android (Chrome) for one-tap access and instant alerts:</div>
+                <div class="pwa-steps-grid">
+                    <div class="pwa-step-card">
+                        <div class="pwa-step-num">Step 1 / الخطوة الأولى</div>
+                        <div class="pwa-step-title" data-i18n="pwaStep1Title">Open in Safari or Chrome</div>
+                        <div class="pwa-step-desc" data-i18n="pwaStep1Desc">Open this website link directly in Safari (iPhone) or Google Chrome (Android).</div>
+                    </div>
+                    <div class="pwa-step-card">
+                        <div class="pwa-step-num">Step 2 / الخطوة الثانية</div>
+                        <div class="pwa-step-title" data-i18n="pwaStep2Title">Tap Share or Menu</div>
+                        <div class="pwa-step-desc" data-i18n="pwaStep2Desc">Tap the Share icon 📤 at the bottom of Safari, or the 3-dots menu <b>⋮</b> in Chrome.</div>
+                    </div>
+                    <div class="pwa-step-card">
+                        <div class="pwa-step-num">Step 3 / الخطوة الثالثة</div>
+                        <div class="pwa-step-title" data-i18n="pwaStep3Title">Add to Home Screen</div>
+                        <div class="pwa-step-desc" data-i18n="pwaStep3Desc">Select <b>"Add to Home Screen"</b> (+) and confirm. The app icon will appear on your phone screen!</div>
+                    </div>
                 </div>
             </div>
 
@@ -818,7 +856,18 @@ const I18N = {
         noClosed: 'No closed trades recorded for this period.',
         hideShowToggle: '[▲ Hide / إخفاء]',
         saveSettingsBtn: '💾 Save Settings / حفظ الإعدادات',
-        resetRulesBtn: 'Reset Rules'
+        resetRulesBtn: 'Reset Rules',
+        notifSettingTitle: '🔔 Push Notifications & Sound Alerts',
+        notifSettingDesc: 'Receive desktop or phone sound alerts instantly when signals trigger.',
+        enableNotifBtn: 'Enable Notifications / تفعيل الإشعارات',
+        pwaGuideTitle: '📱 How to Add Mr.Trader AI to Your Phone Home Screen',
+        pwaGuideSub: 'Transform this terminal into a mobile app on iOS (Safari) or Android (Chrome) for one-tap access and instant alerts:',
+        pwaStep1Title: 'Open in Safari or Chrome',
+        pwaStep1Desc: 'Open this website link directly in Safari (iPhone) or Google Chrome (Android).',
+        pwaStep2Title: 'Tap Share or Menu',
+        pwaStep2Desc: 'Tap the Share icon 📤 at the bottom of Safari, or the 3-dots menu <b>⋮</b> in Chrome.',
+        pwaStep3Title: 'Add to Home Screen',
+        pwaStep3Desc: 'Select <b>"Add to Home Screen"</b> (+) and confirm. The app icon will appear on your phone screen!'
     },
     ar: {
         langBtn: 'English',
@@ -884,7 +933,7 @@ const I18N = {
         riskBaseSub: 'بناءً على قاعدة 0.02 لوت لكل 400$',
         statPfLbl: 'معامل الربح (Profit Factor)',
         stratTitle: '📊 نظرة عامة على المحرك الإصدار 1.2',
-        stratDesc: '• <strong>جلسات التداول النشطة:</strong> جلسات السيولة المؤسسية (طوكيو، لندن، نيويورك) محسوبة بتوقيت جرينتش GMT.<br>• <strong>محرك التنفيذ:</strong> تحليل هيكلي متقدم على فريم M5 ومستويات ارتداد دقيقة.<br>• <strong>إدارة المخاطر:</strong> إعدادات مخصصة لوقف الخسارة، الحد الأقصى للصفقات، الخسارة اليومية، وفلتر الأخبار الاقتصادية.',
+        stratDesc: '• <strong>جلسات التداول النشطة:</strong> جلسات السيولة المؤسسية (طوكيو، لندن، نيويورك) محسوبة بتوقيت جرينتش GMT.<br>• <strong>محرك التنفيذ:</strong> تحليل هيكلي متقدم على فريم M5 ومستويات ارتداد دقيقة.<br>• <strong>إدارة المخاطر:</strong> إعدادات مخصصة لوقف الخسارة، الحد الأقص للصفقات، الخسارة اليومية، وفلتر الأخبار الاقتصادية.',
         accProfileTitle: '👤 تفاصيل الحساب وحالة الاشتراك',
         accEmailLbl: 'البريد الإلكتروني المسجل',
         accIdLbl: 'معرف العميل / Client ID',
@@ -905,7 +954,18 @@ const I18N = {
         noClosed: 'لا توجد صفقات مسجلة في هذه الفترة.',
         hideShowToggle: '[▲ إخفاء / Hide]',
         saveSettingsBtn: '💾 حفظ الإعدادات / Save Settings',
-        resetRulesBtn: 'إعادة ضبط القواعد'
+        resetRulesBtn: 'إعادة ضبط القواعد',
+        notifSettingTitle: '🔔 إشعارات الديسكتوب والهاتف والتنبيه الصوتى',
+        notifSettingDesc: 'تلقي تنبيهات فورية مع صوت عند صدور التوصيات الجديدة.',
+        enableNotifBtn: 'تفعيل الإشعارات / Enable',
+        pwaGuideTitle: '📱 طريقة إضافة منصة Mr.Trader AI إلى الشاشة الرئيسية لهاتفك',
+        pwaGuideSub: 'قم بتحويل المنصة إلى تطبيق جوال على نظام أيفون (Safari) أو أندرويد (Chrome) للوصول بنقرة واحدة والتنبيهات الفورية:',
+        pwaStep1Title: 'افتح الرابط في المتصفح',
+        pwaStep1Desc: 'افتح رابط الموقع مباشرة في متصفح Safari (لأجهزة أيفون) أو Google Chrome (لأجهزة أندرويد).',
+        pwaStep2Title: 'اضغط زر المشاركة أو القائمة',
+        pwaStep2Desc: 'اضغط على أيقونة المشاركة 📤 أسفل متصفح Safari، أو قائمة الـ 3 نقاط <b>⋮</b> في Chrome.',
+        pwaStep3Title: 'أضف إلى الشاشة الرئيسية',
+        pwaStep3Desc: 'اختر <b>"إضافة إلى الشاشة الرئيسية"</b> (+) وأكد الإضافية. ستظهر أيقونة المنصة فوراً على شاشة هاتفك!'
     }
 };
 
@@ -936,7 +996,50 @@ function toggleLanguage() {
 }
 
 // ============================================================================
-// 1. SUPABASE AUTH & STATE
+// 1. NOTIFICATIONS & AUDIO ALERTS
+// ============================================================================
+function requestPushNotificationPermission() {
+    if (!("Notification" in window)) {
+        alert(currentLang === 'ar' ? 'متصفحك لا يدعم الإشعارات الفورية.' : 'This browser does not support desktop notifications.');
+        return;
+    }
+    Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+            new Notification("Mr.Trader AI v1.2", { body: currentLang === 'ar' ? '✅ تم تفعيل الإشعارات بنجاح!' : '✅ Notifications successfully enabled!' });
+            playBeepSound();
+        } else {
+            alert(currentLang === 'ar' ? 'تم رفض إذن الإشعارات.' : 'Notification permission was denied.');
+        }
+    });
+}
+
+function playBeepSound() {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 note
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.6);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.6);
+    } catch (e) {}
+}
+
+function triggerClientPushAlert(title, message) {
+    playBeepSound();
+    if ("Notification" in window && Notification.permission === "granted") {
+        try {
+            new Notification(title, { body: message, icon: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=192&q=80' });
+        } catch (e) {}
+    }
+}
+
+// ============================================================================
+// 2. SUPABASE AUTH & STATE
 // ============================================================================
 const SUPABASE_URL = 'https://wdexwfoplycblaxmrfws.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_6U7d-ihEr1ivc362mhkDeQ_2suPM3gy';
@@ -1183,7 +1286,7 @@ async function checkUserSession() {
     } else {
         const autoRole = userEmail === ADMIN_EMAIL ? 'admin' : 'client';
         const autoApproved = userEmail === ADMIN_EMAIL;
-        currentUserProfile = { id: session.user.id, email: session.user.email, role: autoRole, is_approved: autoApproved, vip_plan: autoApproved ? 'MASTER' : 'FREE_BETA' };
+        currentUserProfile = { id: session.user.id, email: session.user.email, role: autoRole, is_approved: autoApproved, vip_plan: autoApproved ? 'MASTER' : 'UPGRADE_REQUIRED' };
         await sb.from('client_profiles').upsert(currentUserProfile);
     }
 
@@ -1216,8 +1319,8 @@ async function checkUserSession() {
     const shortId = '#UID-' + (currentUserProfile.id || '').slice(0, 6).toUpperCase();
     document.getElementById('accEmailVal').innerText = currentUserProfile.email;
     document.getElementById('accClientIdVal').innerText = shortId;
-    document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER OWNER' : (currentUserProfile.is_approved ? (currentUserProfile.vip_plan || 'VIP ACTIVE') : 'FREE BETA');
-    document.getElementById('accExpVal').innerText = isAdmin ? 'UNLIMITED' : (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Beta Access');
+    document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER OWNER' : (currentUserProfile.is_approved ? (currentUserProfile.vip_plan || 'VIP ACTIVE') : '🔒 Upgrade Required / اشتراك مطلوب');
+    document.getElementById('accExpVal').innerText = isAdmin ? 'UNLIMITED' : (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Inactive');
 
     if (isAdmin) {
         document.getElementById('openAdminBtn').style.display = 'inline-block';
@@ -1234,7 +1337,7 @@ async function checkUserSession() {
 }
 
 // ============================================================================
-// 2. ENGINE CONFIG & STATE DEFAULTS
+// 3. ENGINE CONFIG & STATE DEFAULTS
 // ============================================================================
 const DEFAULT_ENGINE_RULES = {
     referenceCapital: 400.00,
@@ -1387,10 +1490,14 @@ function subscribeToRealtimeState() {
                 if (candleSeries && !state.activeTrade) clearChartLines();
 
                 if (state.activeTrade && state.activeTrade.tradeId !== prevTradeId) {
-                    logEvent(`🚨 NEW SIGNAL #Trade-${state.activeTrade.tradeId}: <b>${state.activeTrade.dir} (${state.activeTrade.type}) @ ${state.activeTrade.entry.toFixed(2)}</b>`);
+                    const msg = `🚨 NEW SIGNAL #Trade-${state.activeTrade.tradeId}: ${state.activeTrade.dir} (${state.activeTrade.type}) @ ${state.activeTrade.entry.toFixed(2)}`;
+                    logEvent(msg);
+                    triggerClientPushAlert("Mr.Trader AI — New Signal!", msg);
                 } else if ((state.history || []).length > prevHistoryLen) {
                     const lastClosed = state.history[0];
-                    logEvent(`${lastClosed.outcome === 'WIN' ? '✅' : '❌'} #Trade-${lastClosed.tradeId} ${lastClosed.outcome} (${lastClosed.netPnL >= 0 ? '+' : ''}$${lastClosed.netPnL.toFixed(2)})`);
+                    const msg = `${lastClosed.outcome === 'WIN' ? '✅' : '❌'} #Trade-${lastClosed.tradeId} ${lastClosed.outcome} (${lastClosed.netPnL >= 0 ? '+' : ''}$${lastClosed.netPnL.toFixed(2)})`;
+                    logEvent(msg);
+                    triggerClientPushAlert("Mr.Trader AI — Trade Closed", msg);
                 }
             }
         })
@@ -1414,7 +1521,7 @@ function logEvent(msg) {
 }
 
 // ============================================================================
-// 3. GMT TIMEZONE SESSIONS & NEWS BLACKOUT FILTER
+// 4. GMT TIMEZONE SESSIONS & NEWS BLACKOUT FILTER
 // ============================================================================
 function getGmtTimeParts(dateObj = new Date()) {
     const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
@@ -1643,7 +1750,9 @@ function manageActiveTrade(livePrice) {
         if (Date.now() - trade.createdAt > 45 * 60 * 1000) { state.activeTrade = null; clearChartLines(); saveState(); return; }
         if ((trade.dir === "BUY" && livePrice <= trade.entry) || (trade.dir === "SELL" && livePrice >= trade.entry)) {
             trade.type = "ACTIVE";
-            logEvent(`⚡ #Trade-${trade.tradeId || 1} LIMIT FILLED @ ${trade.entry.toFixed(2)}`);
+            const msg = `⚡ #Trade-${trade.tradeId || 1} LIMIT FILLED @ ${trade.entry.toFixed(2)}`;
+            logEvent(msg);
+            triggerClientPushAlert("Mr.Trader AI — Trade Filled", msg);
             if (isCurrentUserAdmin()) {
                 sendTelegramAlert("⚡ Mr.Trader AI v1.2 — XAUUSD " + trade.dir + " FILLED @ " + trade.entry.toFixed(2) + "\n\n🔴 SL: " + trade.sl.toFixed(2) + "\n🎯 TP1: " + trade.tp.toFixed(2) + "\n\n#Trade-" + (trade.tradeId || 1));
             }
@@ -1691,12 +1800,14 @@ function closeTrade(outcome, netDollarPnL) {
         const logStr = "✅ #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")";
         const tgStr = "✅ Mr.Trader AI v1.2 — #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")\nInstitutional Setup Verified";
         logEvent(logStr);
+        triggerClientPushAlert("Mr.Trader AI — TP1 Hit! 🚀", logStr);
         if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
     } else {
         state.consecutiveLosses += 1;
         const logStr = "❌ #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")";
         const tgStr = "❌ Mr.Trader AI v1.2 — #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")\nStreak: " + state.consecutiveLosses + "/" + maxConsecAllowed;
         logEvent(logStr);
+        triggerClientPushAlert("Mr.Trader AI — Stop Loss Hit", logStr);
         if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
         if (state.consecutiveLosses >= maxConsecAllowed) {
             state.activeTrade = null; clearChartLines(); triggerCircuitBreaker(); return;
@@ -1740,7 +1851,9 @@ async function runAutopilotCycle(forceFresh = false) {
         drawTradeLines(setup);
 
         const tgText = "🚨 Mr.Trader AI v1.2 — XAUUSD " + setup.dir + " LIMIT " + setup.entry.toFixed(2) + "\n\n🔴 SL: " + setup.sl.toFixed(2) + "\n🎯 TP1: " + setup.tp.toFixed(2) + "\n\n#Trade-" + tradeId;
-        logEvent(`🚀 Signal #Trade-${tradeId}: <b>${setup.dir} (${setup.setupName}) @ ${setup.entry.toFixed(2)}</b>`);
+        const alertMsg = `🚀 Signal #Trade-${tradeId}: ${setup.dir} (${setup.setupName}) @ ${setup.entry.toFixed(2)}`;
+        logEvent(alertMsg);
+        triggerClientPushAlert("Mr.Trader AI — New Signal!", alertMsg);
         sendTelegramAlert(tgText);
     }
     await saveState();
@@ -1841,7 +1954,7 @@ async function sendTelegramAlert(text) {
 }
 
 // ============================================================================
-// 4. UI RENDERING & MANAGEMENT
+// 5. UI RENDERING & MANAGEMENT
 // ============================================================================
 function updateDashboardUI() {
     if (state.lastPrice) document.getElementById('uiLivePrice').innerText = Number(state.lastPrice).toFixed(2);
@@ -2087,13 +2200,13 @@ function renderClientTable() {
                 ? '<span class="badge-expired">EXPIRED / منتهي</span>'
                 : u.is_approved
                     ? '<span class="badge-approved">VIP ACTIVE / نشط</span>'
-                    : '<span class="badge-pending">FREE BETA / تجريبي</span>';
+                    : '<span class="badge-pending">UPGRADE REQ / مطلوب اشتراك</span>';
 
         return `
         <tr>
             <td><strong style="color:var(--accent-gold);">${shortId}</strong></td>
             <td><strong>${u.email}</strong></td>
-            <td>${u.role === 'admin' ? 'OWNER' : (u.vip_plan || 'FREE_BETA')}</td>
+            <td>${u.role === 'admin' ? 'OWNER' : (u.vip_plan || 'UPGRADE_REQUIRED')}</td>
             <td>${formatDateShort(u.vip_started_at)}</td>
             <td>${formatDateShort(u.vip_expires_at)}</td>
             <td>${statusBadge}</td>
@@ -2139,7 +2252,7 @@ async function grantVipBundle(userId) {
 
 async function revokeVipBundle(userId) {
     const { error } = await sb.from('client_profiles').update({
-        is_approved: false, vip_plan: 'FREE_BETA', vip_started_at: null, vip_expires_at: null
+        is_approved: false, vip_plan: 'UPGRADE_REQUIRED', vip_started_at: null, vip_expires_at: null
     }).eq('id', userId);
     if (!error) {
         const msgEl = document.getElementById('adminUserActionMsg');
