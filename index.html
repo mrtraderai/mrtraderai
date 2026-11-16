@@ -508,21 +508,13 @@
             }
         }
 
-        // --- TELEGRAM WITH REPLY THREADING ---
-        async function sendToTelegram(message, replyToId = null){
+        function sendToTelegram(message){
             try{
                 const cleanMsg=message.replace(/<[^>]*>?/gm,'');
-                let url = `https://api.telegram.org/bot9176956197:AAEt0JRB2B6FZstzUpAl4AL-viDKS4Jo1X4/sendMessage?chat_id=-1004321406060&text=${encodeURIComponent(cleanMsg)}`;
-                if (replyToId) {
-                    url += `&reply_to_message_id=${replyToId}`;
-                }
-                const res = await fetch(url);
-                const data = await res.json();
-                if(data.ok){
-                    return data.result.message_id; // Return the message ID for threading
-                }
+                const url=`https://api.telegram.org/bot9176956197:AAEt0JRB2B6FZstzUpAl4AL-viDKS4Jo1X4/sendMessage?chat_id=-1004321406060&text=${encodeURIComponent(cleanMsg)}`;
+                const img=new Image();
+                img.src=url
             }catch(e){console.error('Telegram send error:',e)}
-            return null;
         }
 
         function getSessionData(){
@@ -1282,18 +1274,10 @@
             
             if (trade.status === 'ACTIVE') {
                 sendPushNotification('New Signal',`${currentAsset} ${trade.dir} at ${trade.entry.toFixed(2)}`);
-                const msgId = await sendToTelegram(`🚀 NEW SIGNAL: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)} | TP2: ${trade.tp2.toFixed(2)}`);
-                if(msgId) {
-                    trade.telegramId = msgId; // Save the ID
-                    localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
-                }
+                sendToTelegram(`New Signal: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)}`);
             } else {
                 sendPushNotification('Pending Setup',`${currentAsset} ${trade.dir} limit at ${trade.entry.toFixed(2)}`);
-                const msgId = await sendToTelegram(`⏳ PENDING: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)} | TP2: ${trade.tp2.toFixed(2)}`);
-                if(msgId) {
-                    trade.telegramId = msgId; // Save the ID
-                    localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
-                }
+                sendToTelegram(`Pending Setup: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)}`);
             }
         }
 
@@ -1431,37 +1415,18 @@
             if(autopilotInterval)clearInterval(autopilotInterval);
             autopilotInterval=setInterval(async()=>{
                 if(document.hidden)return;
-                
-                // --- THE 2 AM TO 8 PM RULE ---
-                const now = new Date();
-                const utcHour = now.getUTCHours();
-                if (utcHour < 2 || utcHour >= 20) {
-                    if(autoLogs.length === 0 || !autoLogs[autoLogs.length-1].msg.includes('Outside hours')){
-                        logAuto("Outside 2AM-8PM UTC window. Autopilot pausing.");
-                    }
-                    return; 
-                }
-
-                // --- STOP IF ACTIVE TRADE ---
+                const sessions=getActiveSessions();
+                const enabled=enabledSessions;
+                const anyActive=Object.keys(enabled).some(k=>enabled[k]&&sessions[k]);
+                if(!anyActive)return;
                 const key=getTradeKey(currentAsset,currentTF);
                 if(activeTrades[key])return;
-                
-                // --- CHECK NEWS ---
                 const blocked=await getBlockingNews(30,30);
-                if(blocked){
-                    logAuto(`Blocked by news: ${blocked.title}`);
-                    return;
-                }
-                
-                // --- FETCH CHART ---
+                if(blocked)return;
                 const bars=await loadChartData(currentTF);
                 if(!bars)return;
-                
-                // --- FIND SETUP ---
                 const setup=findSMCSetup(bars);
-                
                 if(setup){
-                    logAuto(`Valid setup found: ${setup.dir} at ${setup.entry}`);
                     const trade={
                         asset:currentAsset,
                         dir:setup.dir,
@@ -1470,7 +1435,7 @@
                         tp1:setup.tp1,
                         tp2:setup.tp2,
                         tf:setup.tf,
-                        status:setup.status, 
+                        status:setup.status, // Handles PENDING or ACTIVE
                         date:new Date().toISOString(),
                         tp1Hit:false
                     };
@@ -1481,43 +1446,116 @@
                     
                     if (trade.status === 'ACTIVE') {
                         sendPushNotification('Auto Signal',`${currentAsset} ${trade.dir} at ${trade.entry.toFixed(2)}`);
-                        const msgId = await sendToTelegram(`🤖 AUTO SIGNAL: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)} | TP2: ${trade.tp2.toFixed(2)}`);
-                        if(msgId) {
-                            trade.telegramId = msgId; 
-                            localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
-                        }
+                        sendToTelegram(`Auto Signal: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)}`);
                     } else {
                         sendPushNotification('Auto Pending',`${currentAsset} ${trade.dir} limit at ${trade.entry.toFixed(2)}`);
-                        const msgId = await sendToTelegram(`🤖 AUTO PENDING: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)} | TP2: ${trade.tp2.toFixed(2)}`);
-                        if(msgId) {
-                            trade.telegramId = msgId; 
-                            localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
-                        }
+                        sendToTelegram(`Auto Pending: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)}`);
                     }
-                } else {
-                    logAuto("Auto-scan checked, but no valid setup found.");
                 }
             },5*60*1000)
         }
+        
+        function startLiveTracking(){
+            if(liveInterval)clearInterval(liveInterval);
+            liveInterval=setInterval(async()=>{
+                const key=getTradeKey(currentAsset,currentTF);
+                const trade=activeTrades[key];
+                if(!trade)return;
+                
+                const bars=await fetchChartDataFromSource(currentTF);
+                if(!bars||bars.length===0)return;
+                const currentPrice=bars[bars.length-1].close;
+                
+                // --- HANDLE PENDING ACTIVATION ---
+                if (trade.status === 'PENDING') {
+                    let activated = false;
+                    if (trade.dir === 'BUY' && currentPrice <= trade.entry) activated = true;
+                    if (trade.dir === 'SELL' && currentPrice >= trade.entry) activated = true;
+                    
+                    if (activated) {
+                        trade.status = 'ACTIVE';
+                        localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+                        await saveActiveTradeToCloud(trade);
+                        renderActiveSignalsList();
+                        sendPushNotification('Pending Triggered',`${currentAsset} ${trade.dir} is now active!`);
+                        sendToTelegram(`Pending Triggered: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)}`);
+                    }
+                    return; // Wait for next tick to track ACTIVE
+                }
 
-        // Helper for Auto Logs
-        function logAuto(msg){
-            const newLog = { time: new Date().toISOString(), msg: msg };
-            autoLogs.push(newLog);
-            if(autoLogs.length > 50) autoLogs.shift(); // Keep last 50
-            localStorage.setItem('autoLogs', JSON.stringify(autoLogs));
-            renderAutoLogs();
+                // --- TRACK ACTIVE TRADE ---
+                if(trade.dir==='BUY'){
+                    if(currentPrice<=trade.sl){
+                        await closeTrade(key,'LOSS',currentPrice);
+                        return
+                    }
+                    if(currentPrice>=trade.tp1&&!trade.tp1Hit){
+                        trade.tp1Hit=true;
+                        localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+                        await saveActiveTradeToCloud(trade);
+                        sendPushNotification('TP1 Hit!',`${trade.asset} reached TP1 at ${trade.tp1.toFixed(2)}`);
+                        renderActiveSignalsList()
+                    }
+                    if(currentPrice>=trade.tp2){
+                        await closeTrade(key,'WIN',currentPrice);
+                        return
+                    }
+                }else{
+                    if(currentPrice>=trade.sl){
+                        await closeTrade(key,'LOSS',currentPrice);
+                        return
+                    }
+                    if(currentPrice<=trade.tp1&&!trade.tp1Hit){
+                        trade.tp1Hit=true;
+                        localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+                        await saveActiveTradeToCloud(trade);
+                        sendPushNotification('TP1 Hit!',`${trade.asset} reached TP1 at ${trade.tp1.toFixed(2)}`);
+                        renderActiveSignalsList()
+                    }
+                    if(currentPrice<=trade.tp2){
+                        await closeTrade(key,'WIN',currentPrice);
+                        return
+                    }
+                }
+            },5*1000) // Checks every 5 seconds
         }
-
+        
+        async function closeTrade(key,result,exitPrice){
+            const trade=activeTrades[key];
+            if(!trade)return;
+            const record={
+                ...trade,
+                result:result,
+                exitPrice:exitPrice,
+                date:new Date().toISOString()
+            };
+            tradeHistory.unshift(record);
+            localStorage.setItem('tradeHistory',JSON.stringify(tradeHistory));
+            delete activeTrades[key];
+            localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+            
+            // Clear Chart Lines
+            priceLines.forEach(l=>candleSeries.removePriceLine(l));
+            priceLines=[];
+            document.getElementById('signalBox').innerHTML=`<div class="loading">${dict[currentLang].loading}</div>`;
+            
+            await deleteActiveTradeFromCloud(key);
+            await saveHistoryToCloud(record);
+            renderActiveSignalsList();
+            renderClosedSignalsList();
+            sendPushNotification(result==='WIN'?'Trade Won! 🎉':'Trade Lost',`${trade.asset} ${trade.dir} closed at ${exitPrice.toFixed(2)}`)
+        }
+        
         function renderAutoLogs(){
             const box=document.getElementById('autoLogBox');
             if(!box)return;
             if(autoLogs.length===0){
-                box.innerHTML='<div class="log-item"><div class="log-time">System</div><div>Autopilot initialized. Waiting...</div></div>';
+                box.innerHTML='<div class="log-item"><div class="log-time">System</div><div>Autopilot initialized. Waiting for session...</div></div>';
                 return
             }
             let html='';
             for(const log of autoLogs.slice(-20).reverse()){
+                // Added safety fallback for missing data
                 const logTime = log.time ? new Date(log.time).toLocaleTimeString() : "System";
                 const logMsg = log.msg ? log.msg : "No message";
                 html+=`<div class="log-item"><div class="log-time">${logTime}</div><div>${logMsg}</div></div>`
