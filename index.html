@@ -232,7 +232,7 @@
                 </p>
                 <div class="showcase-stats">
                     <div class="sc-stat-box"><div class="sc-stat-val">75.0%</div><div class="sc-stat-lbl" data-i18n="scWinRateLbl">Verified Win Rate</div></div>
-                    <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-gold);">1 : 2.1</div><div class="sc-stat-lbl" data-i18n="scRrLbl">Fixed Risk/Reward</div></div>
+                    <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-gold);">1 : 2.0</div><div class="sc-stat-lbl" data-i18n="scRrLbl">Fixed Risk/Reward</div></div>
                     <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-blue);">25/mo</div><div class="sc-stat-lbl" data-i18n="scAutoLbl">A+ Setups</div></div>
                 </div>
                 <div class="showcase-gallery">
@@ -390,7 +390,7 @@
             <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
             <div class="title-group">
                 <h1>Mr.Trader AI v1.2</h1>
-                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals | Single 1:2.1 R:R Target (Beirut Time)</p>
+                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals | Single 1:2.0 R:R Target (Beirut Time)</p>
             </div>
         </div>
 
@@ -490,7 +490,7 @@
                             <span>🛡️ Max Stop Loss (Pts)</span>
                             <input type="checkbox" id="riskMaxSlEn" onchange="saveRiskAndSessionSettings()">
                         </div>
-                        <input type="number" id="riskMaxSlVal" class="setting-input" value="130" min="20" max="300" onchange="saveRiskAndSessionSettings()">
+                        <input type="number" id="riskMaxSlVal" class="setting-input" value="70" min="20" max="300" onchange="saveRiskAndSessionSettings()">
                     </div>
                     <!-- Max Trades / Day -->
                     <div class="setting-card">
@@ -537,7 +537,7 @@
             <div class="panel-box">
                 <div class="box-header">
                     <span data-i18n="latestSigTitle">Latest Signal Detected</span>
-                    <span style="color: var(--accent-green); font-size: 0.75rem;">1:2.1 Single TP</span>
+                    <span style="color: var(--accent-green); font-size: 0.75rem;">1:2.0 Single TP</span>
                 </div>
                 <div id="homeSignalContainer"></div>
 
@@ -587,7 +587,7 @@
                             <th data-i18n="thSetup">Model</th>
                             <th data-i18n="thEntry">Entry</th>
                             <th>SL</th>
-                            <th>TP1 (1:2.1)</th>
+                            <th>TP1 (1:2.0)</th>
                             <th data-i18n="thLot">Lot</th>
                             <th data-i18n="thOutcome">Outcome</th>
                             <th data-i18n="thPnl">Net P&L</th>
@@ -608,7 +608,7 @@
             <div class="metric-card">
                 <div class="metric-label" data-i18n="statWinRateLbl">Live Verified Win Rate</div>
                 <div class="metric-value" id="statWinRate" style="color: var(--accent-green);">0.0%</div>
-                <div class="metric-sub">Target R:R = 1:2.1</div>
+                <div class="metric-sub">Target R:R = 1:2.0</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label" data-i18n="statWLLbl">Total Wins / Losses</div>
@@ -648,9 +648,22 @@
                 <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="logoutClient()" data-i18n="logoutBtn">Logout</button>
             </div>
             <div class="metrics-grid">
-                <div class="metric-card"><div class="metric-label" data-i18n="accEmailLbl">Registered Email</div><div class="metric-value" id="accEmailVal" style="font-size:0.95rem;">---</div></div>
-                <div class="metric-card"><div class="metric-label" data-i18n="accPlanLbl">Current VIP Bundle</div><div class="metric-value" id="accPlanVal" style="color:var(--accent-gold);">FREE BETA</div></div>
-                <div class="metric-card"><div class="metric-label" data-i18n="accExpLbl">Subscription Expires</div><div class="metric-value" id="accExpVal" style="font-size:0.95rem;">—</div></div>
+                <div class="metric-card">
+                    <div class="metric-label" data-i18n="accEmailLbl">Registered Email</div>
+                    <div class="metric-value" id="accEmailVal" style="font-size:0.95rem;">---</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label" data-i18n="accIdLbl">Client ID / المعرف</div>
+                    <div class="metric-value" id="accClientIdVal" style="font-size:0.95rem; color:var(--accent-gold);">---</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label" data-i18n="accPlanLbl">Current VIP Bundle</div>
+                    <div class="metric-value" id="accPlanVal" style="color:var(--accent-gold);">FREE BETA</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label" data-i18n="accExpLbl">Subscription Expires</div>
+                    <div class="metric-value" id="accExpVal" style="font-size:0.95rem;">—</div>
+                </div>
             </div>
 
             <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
@@ -726,7 +739,7 @@ const I18N = {
         setNewPassDesc: 'Enter your new password below to regain access to Mr.Trader AI.',
         updatePassBtn: 'Update Password & Login',
         signOut: 'Sign Out',
-        headerSub: 'Autonomous XAU/USD Signals | Single 1:2.1 R:R Target (Beirut Time)',
+        headerSub: 'Autonomous XAU/USD Signals | Single 1:2.0 R:R Target (Beirut Time)',
         liveStream: 'LIVE STREAM ACTIVE',
         syncBtn: 'Sync',
         logoutBtn: 'Logout',
@@ -769,6 +782,7 @@ const I18N = {
         stratDesc: '• <strong>Active Trading Sessions:</strong> Configurable institutional liquidity windows (Tokyo, London, New York) set to Beirut local time.<br>• <strong>Execution Engine:</strong> Advanced M5 institutional multi-timeframe structural analysis and retracement entries.<br>• <strong>Risk Management:</strong> Customizable Max SL, Max Trades, Daily Loss limits, and USD high-impact news blackout protection.',
         accProfileTitle: '👤 Account Details & Subscription Status',
         accEmailLbl: 'Registered Email',
+        accIdLbl: 'Client ID / المعرف',
         accPlanLbl: 'Current VIP Bundle',
         accExpLbl: 'Subscription Expires',
         logoutAccountBtn: 'Sign Out of Mr.Trader AI',
@@ -809,7 +823,7 @@ const I18N = {
         setNewPassDesc: 'أدخل كلمة المرور الجديدة أدناه لاستعادة الدخول إلى Mr.Trader AI.',
         updatePassBtn: 'تحديث كلمة المرور والدخول',
         signOut: 'تسجيل الخروج',
-        headerSub: 'توصيات الذهب الذكية | هدف واحد 1:2.1 (بتوقيت بيروت)',
+        headerSub: 'توصيات الذهب الذكية | هدف واحد 1:2.0 (بتوقيت بيروت)',
         liveStream: 'البث المباشر نشط',
         syncBtn: 'تحديث',
         logoutBtn: 'خروج',
@@ -852,6 +866,7 @@ const I18N = {
         stratDesc: '• <strong>جلسات التداول النشطة:</strong> جلسات السيولة المؤسسية (طوكيو، لندن، نيويورك) محسوبة بتوقيت بيروت المحلي.<br>• <strong>محرك التنفيذ:</strong> تحليل هيكلي متقدم على فريم M5 ومستويات ارتداد دقيقة.<br>• <strong>إدارة المخاطر:</strong> إعدادات مخصصة لوقف الخسارة، الحد الأقصى للصفقات، الخسارة اليومية، وفلتر الأخبار الاقتصادية.',
         accProfileTitle: '👤 تفاصيل الحساب وحالة الاشتراك',
         accEmailLbl: 'البريد الإلكتروني المسجل',
+        accIdLbl: 'معرف العميل / Client ID',
         accPlanLbl: 'باقة VIP الحالية',
         accExpLbl: 'تاريخ انتهاء الاشتراك',
         logoutAccountBtn: 'تسجيل الخروج من Mr.Trader AI',
@@ -1174,7 +1189,9 @@ async function checkUserSession() {
     document.getElementById('authOverlay').style.display = 'none';
     document.getElementById('terminalApp').style.display = 'flex';
 
+    const shortId = '#UID-' + (currentUserProfile.id || '').slice(0, 6).toUpperCase();
     document.getElementById('accEmailVal').innerText = currentUserProfile.email;
+    document.getElementById('accClientIdVal').innerText = shortId;
     document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER OWNER' : (currentUserProfile.is_approved ? (currentUserProfile.vip_plan || 'VIP ACTIVE') : 'FREE BETA');
     document.getElementById('accExpVal').innerText = isAdmin ? 'UNLIMITED' : (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Beta Access');
 
@@ -1199,14 +1216,14 @@ const DEFAULT_ENGINE_RULES = {
     referenceCapital: 400.00,
     baseLotPer400: 0.02,
     spreadPoints: 60,
-    singleTpRR: 2.1,
+    singleTpRR: 2.0,
     lockoutHours: 24,
     scanIntervalMs: 60000,
     priceTickMs: 15000,
     sessions: { tokyo: true, london: true, newYork: true },
     newsFilter: { enabled: true },
     riskLimits: {
-        maxSlEnabled: true, maxSlValue: 130,
+        maxSlEnabled: true, maxSlValue: 70,
         maxTradesEnabled: true, maxTradesValue: 10,
         maxDailyLossEnabled: true, maxDailyLossValue: 250,
         maxConsecutiveEnabled: true, maxConsecutiveValue: 3
@@ -1272,7 +1289,7 @@ function syncSettingsToUI() {
         document.getElementById('newsFilterEn').checked = n.enabled !== false;
 
         document.getElementById('riskMaxSlEn').checked = r.maxSlEnabled !== false;
-        document.getElementById('riskMaxSlVal').value = r.maxSlValue || 130;
+        document.getElementById('riskMaxSlVal').value = r.maxSlValue || 70;
 
         document.getElementById('riskMaxTradesEn').checked = r.maxTradesEnabled !== false;
         document.getElementById('riskMaxTradesVal').value = r.maxTradesValue || 10;
@@ -1297,7 +1314,7 @@ async function saveRiskAndSessionSettings() {
     };
     state.riskLimits = {
         maxSlEnabled: document.getElementById('riskMaxSlEn').checked,
-        maxSlValue: parseFloat(document.getElementById('riskMaxSlVal').value) || 130,
+        maxSlValue: parseFloat(document.getElementById('riskMaxSlVal').value) || 70,
         maxTradesEnabled: document.getElementById('riskMaxTradesEn').checked,
         maxTradesValue: parseInt(document.getElementById('riskMaxTradesVal').value) || 10,
         maxDailyLossEnabled: document.getElementById('riskMaxLossEn').checked,
@@ -1496,11 +1513,11 @@ function evaluateInstitutionalSetup(m5Bars) {
 
     const pipSize = 0.10, spreadPrice = DEFAULT_ENGINE_RULES.spreadPoints * 0.01;
     const r = state.riskLimits || DEFAULT_ENGINE_RULES.riskLimits;
-    const maxAllowedSL = r.maxSlEnabled ? (r.maxSlValue * pipSize) : 130 * pipSize;
+    const maxAllowedSL = r.maxSlEnabled ? (r.maxSlValue * pipSize) : 70 * pipSize;
 
-    const minSL = Math.max(45 * pipSize, atr * 1.10);
-    const maxSL = Math.min(130 * pipSize, maxAllowedSL);
-    const slBuffer = Math.max(6 * pipSize, atr * 0.45) + spreadPrice;
+    const minSL = Math.max(30 * pipSize, atr * 0.90);
+    const maxSL = Math.min(70 * pipSize, maxAllowedSL);
+    const slBuffer = Math.max(5 * pipSize, atr * 0.40) + spreadPrice;
 
     const allowBuy = (htfBias === "BULLISH" || htfBias === "NEUTRAL");
     const allowSell = (htfBias === "BEARISH" || htfBias === "NEUTRAL");
@@ -1769,7 +1786,7 @@ function drawTradeLines(trade) {
     if (!trade || !candleSeries) return;
     priceLines.push(candleSeries.createPriceLine({ price: trade.entry, color: '#3b82f6', lineWidth: 2, lineStyle: 0, title: 'ENTRY' }));
     priceLines.push(candleSeries.createPriceLine({ price: trade.sl, color: '#ef4444', lineWidth: 2, lineStyle: 2, title: 'SL' }));
-    priceLines.push(candleSeries.createPriceLine({ price: trade.tp, color: '#10b981', lineWidth: 2, lineStyle: 0, title: 'TP1 (1:2.1)' }));
+    priceLines.push(candleSeries.createPriceLine({ price: trade.tp, color: '#10b981', lineWidth: 2, lineStyle: 0, title: 'TP1 (1:2.0)' }));
 }
 
 async function sendTelegramAlert(text) {
@@ -1856,7 +1873,7 @@ function updateDashboardUI() {
                 <div class="sig-row"><strong>#Trade-${tr.tradeId || 1} — ${tr.setupName}</strong><span class="sig-badge ${cls}">${tr.dir} (${modeLabel})</span></div>
                 <div class="sig-row"><span>${t('thEntry')}:</span><strong>${Number(tr.entry).toFixed(2)}</strong></div>
                 <div class="sig-row"><span>Stop Loss (SL):</span><strong style="color:var(--accent-red);">${Number(tr.sl).toFixed(2)}</strong></div>
-                <div class="sig-row"><span>Take Profit (TP1 1:2.1):</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
+                <div class="sig-row"><span>Take Profit (TP1 1:2.0):</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
                 <div class="sig-row"><span>${t('thLot')}:</span><strong>0.02 lot / $400</strong></div>
             </div>`;
         homeSigBox.innerHTML = cardHtml;
