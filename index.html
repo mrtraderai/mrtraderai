@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr.Trader AI — Autonomous XAU/USD SMC Terminal</title>
+    <title>Mr.Trader AI — Autonomous XAU/USD Terminal</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -34,26 +34,69 @@
             position: fixed; top: 16px; left: 16px; z-index: 10001;
         }
 
-        /* Auth Overlay */
+        /* Auth Overlay & Showcase Landing */
         .auth-overlay {
-            position: fixed; inset: 0; background: var(--bg-primary); z-index: 9999;
-            display: flex; justify-content: center; align-items: center; padding: 16px; overflow-y: auto;
+            position: fixed; inset: 0; background: radial-gradient(circle at top right, #1b2234 0%, #0b0e14 65%);
+            z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; overflow-y: auto;
         }
+        .auth-wrapper {
+            width: 100%; max-width: 980px; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 22px; align-items: stretch;
+        }
+        @media (max-width: 860px) { .auth-wrapper { grid-template-columns: 1fr; max-width: 440px; } }
+
+        .showcase-panel {
+            background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 14px;
+            overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.55);
+        }
+        .showcase-hero {
+            position: relative; height: 220px;
+            background: linear-gradient(to bottom, rgba(11,14,20,0.25), rgba(19,23,34,0.98)),
+                        url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1000&q=80') center/cover no-repeat;
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 20px;
+        }
+        .showcase-badge {
+            display: inline-block; width: fit-content; background: rgba(245, 158, 11, 0.2);
+            border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 0.72rem;
+            font-weight: 700; padding: 4px 10px; border-radius: 20px; margin-bottom: 8px;
+        }
+        .showcase-hero h1 { font-size: 1.55rem; color: #fff; letter-spacing: 0.4px; }
+        .showcase-body { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+        .showcase-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .sc-stat-box {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;
+        }
+        .sc-stat-val { font-size: 1.15rem; font-weight: 800; color: var(--accent-green); }
+        .sc-stat-lbl { font-size: 0.7rem; color: var(--text-secondary); margin-top: 3px; }
+        .showcase-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .sc-img-card {
+            height: 92px; border-radius: 8px; border: 1px solid var(--border-color); position: relative; overflow: hidden;
+            display: flex; align-items: flex-end; padding: 8px; font-size: 0.72rem; font-weight: 700; color: #fff;
+        }
+        .sc-img-1 {
+            background: linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0.15)),
+                        url('https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=600&q=80') center/cover;
+        }
+        .sc-img-2 {
+            background: linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0.15)),
+                        url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=600&q=80') center/cover;
+        }
+
         .auth-box {
-            width: 100%; max-width: 440px; background: var(--bg-secondary);
-            border: 1px solid var(--border-color); border-radius: 12px; padding: 26px;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+            width: 100%; background: var(--bg-secondary);
+            border: 1px solid var(--border-color); border-radius: 14px; padding: 28px 24px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: center;
         }
         .auth-box h2 { color: var(--accent-gold); font-size: 1.35rem; margin-bottom: 6px; text-align: center; }
         .auth-box p { color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 18px; text-align: center; line-height: 1.5; }
         .auth-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
         .auth-tab {
-            flex: 1; padding: 8px; background: var(--bg-primary); border: 1px solid var(--border-color);
+            flex: 1; padding: 9px; background: var(--bg-primary); border: 1px solid var(--border-color);
             color: var(--text-secondary); border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.8rem;
         }
         .auth-tab.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
         .auth-input {
-            width: 100%; padding: 10px 12px; margin-bottom: 12px; background: var(--bg-primary);
+            width: 100%; padding: 11px 12px; margin-bottom: 12px; background: var(--bg-primary);
             border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; font-size: 0.85rem;
         }
         .auth-btn {
@@ -176,11 +219,18 @@
         .tab-view.active { display: flex; }
 
         /* Metrics Grid */
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 10px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
         .metric-card { background: var(--bg-secondary); padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border-color); }
         .metric-label { font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; }
         .metric-value { font-size: 1.15rem; font-weight: 700; margin-top: 4px; color: var(--text-primary); }
-        .metric-sub { font-size: 0.72rem; color: var(--text-secondary); margin-top: 2px; }
+        .metric-sub { font-size: 0.72rem; color: var(--text-secondary); margin-top: 3px; }
+
+        /* Risk Remark Banner */
+        .risk-remark {
+            background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: 8px; padding: 9px 14px; font-size: 0.78rem; color: var(--accent-gold);
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+        }
 
         /* Main Layout */
         .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
@@ -190,7 +240,7 @@
             padding: 14px; display: flex; flex-direction: column;
         }
         .box-header {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
             margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);
             font-size: 0.85rem; font-weight: 600;
         }
@@ -219,39 +269,72 @@
 </head>
 <body>
 
-<!-- ==================== 1. LOGIN / SIGN UP / VIP LOCK SCREEN ==================== -->
+<!-- ==================== 1. OUTER LOGIN / SIGN UP / VIP LOCK SCREEN ==================== -->
 <div id="authOverlay" class="auth-overlay">
     <!-- Top Left Language Switcher on Auth Screen -->
     <div class="auth-top-left">
         <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
     </div>
 
-    <div class="auth-box" id="authFormBox">
-        <h2>Mr.Trader AI</h2>
-        <p id="authSubtitle" data-i18n="authSub">Sign in or create an account to access the live XAU/USD AI terminal</p>
-        <div class="auth-tabs" id="authTabsRow">
-            <button type="button" id="tabLogin" class="auth-tab active" onclick="switchAuthMode('login')" data-i18n="clientLogin">Client Login</button>
-            <button type="button" id="tabSignup" class="auth-tab" onclick="switchAuthMode('signup')" data-i18n="signUp">Sign Up</button>
+    <div class="auth-wrapper" id="authLandingWrapper">
+        <!-- Left Showcase Visuals (Outer Login Page Only) -->
+        <div class="showcase-panel">
+            <div class="showcase-hero">
+                <span class="showcase-badge" data-i18n="scBadge">⚡ INSTITUTIONAL GOLD AI ENGINE</span>
+                <h1>Mr.Trader AI — XAU/USD</h1>
+            </div>
+            <div class="showcase-body">
+                <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.55;" data-i18n="scDesc">
+                    Precision algorithmic liquidity detection engineered exclusively for XAU/USD with strict risk control and automated real-time execution alerts.
+                </p>
+                <div class="showcase-stats">
+                    <div class="sc-stat-box">
+                        <div class="sc-stat-val">78.4%</div>
+                        <div class="sc-stat-lbl" data-i18n="scWinRateLbl">Verified Win Rate</div>
+                    </div>
+                    <div class="sc-stat-box">
+                        <div class="sc-stat-val" style="color:var(--accent-gold);">1 : 2.0</div>
+                        <div class="sc-stat-lbl" data-i18n="scRrLbl">Fixed Risk/Reward</div>
+                    </div>
+                    <div class="sc-stat-box">
+                        <div class="sc-stat-val" style="color:var(--accent-blue);">24/5</div>
+                        <div class="sc-stat-lbl" data-i18n="scAutoLbl">AI Market Scan</div>
+                    </div>
+                </div>
+                <div class="showcase-gallery">
+                    <div class="sc-img-card sc-img-1">
+                        <span data-i18n="scCard1">📈 Real-Time XAU/USD Precision Entries</span>
+                    </div>
+                    <div class="sc-img-card sc-img-2">
+                        <span data-i18n="scCard2">🛡️ Smart Liquidity & Risk Guard</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <input type="email" id="authEmail" class="auth-input" data-i18n-ph="emailPh" placeholder="Email Address">
-        <input type="password" id="authPassword" class="auth-input" data-i18n-ph="passPh" placeholder="Password (min 6 chars)">
-        <div class="auth-link-row" id="forgotLinkRow">
-            <button type="button" class="auth-link" onclick="switchAuthMode('forgot')" data-i18n="forgotPass">Forgot Password?</button>
-        </div>
-        <button type="button" id="authSubmitBtn" class="auth-btn" onclick="handleAuthSubmit()" data-i18n="loginBtn">Login to Terminal</button>
-        <div style="text-align:center; margin-top:10px; display:none;" id="backToLoginRow">
-            <button type="button" class="auth-link" onclick="switchAuthMode('login')" data-i18n="backLogin">← Back to Client Login</button>
-        </div>
-        <div id="authMessage" class="auth-msg"></div>
-        <div style="text-align:center; margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
-            <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg" style="width:100%;">
-                ✈️ <span data-i18n="tgSupportBtn">Telegram Official Support & VIP (@mrtraderai_official)</span>
-            </a>
+
+        <!-- Right Login / Sign Up Box (Clean — No Outer Telegram Button) -->
+        <div class="auth-box" id="authFormBox">
+            <h2>Mr.Trader AI</h2>
+            <p id="authSubtitle" data-i18n="authSub">Sign in or create an account to access the live XAU/USD AI terminal</p>
+            <div class="auth-tabs" id="authTabsRow">
+                <button type="button" id="tabLogin" class="auth-tab active" onclick="switchAuthMode('login')" data-i18n="clientLogin">Client Login</button>
+                <button type="button" id="tabSignup" class="auth-tab" onclick="switchAuthMode('signup')" data-i18n="signUp">Sign Up</button>
+            </div>
+            <input type="email" id="authEmail" class="auth-input" data-i18n-ph="emailPh" placeholder="Email Address">
+            <input type="password" id="authPassword" class="auth-input" data-i18n-ph="passPh" placeholder="Password (min 6 chars)">
+            <div class="auth-link-row" id="forgotLinkRow">
+                <button type="button" class="auth-link" onclick="switchAuthMode('forgot')" data-i18n="forgotPass">Forgot Password?</button>
+            </div>
+            <button type="button" id="authSubmitBtn" class="auth-btn" onclick="handleAuthSubmit()" data-i18n="loginBtn">Login to Terminal</button>
+            <div style="text-align:center; margin-top:10px; display:none;" id="backToLoginRow">
+                <button type="button" class="auth-link" onclick="switchAuthMode('login')" data-i18n="backLogin">← Back to Client Login</button>
+            </div>
+            <div id="authMessage" class="auth-msg"></div>
         </div>
     </div>
 
     <!-- Set New Password Form -->
-    <div class="auth-box" id="updatePasswordBox" style="display:none;">
+    <div class="auth-box" id="updatePasswordBox" style="display:none; max-width:420px;">
         <h2 data-i18n="setNewPassTitle">🔐 SET NEW PASSWORD</h2>
         <p data-i18n="setNewPassDesc">Enter your new password below to regain access to Mr.Trader AI.</p>
         <input type="password" id="newPasswordInput" class="auth-input" placeholder="New Password (min 6 chars)">
@@ -260,7 +343,7 @@
         <div id="updatePwdMessage" class="auth-msg"></div>
     </div>
 
-    <!-- Pending / Expired VIP Subscription Screen -->
+    <!-- Pending / Expired VIP Subscription Screen (Inside After Login) -->
     <div class="auth-box" id="pendingApprovalBox" style="display:none; max-width:680px; text-align:center;">
         <h2 id="vipLockTitle">⏳ VIP Subscription Required</h2>
         <p id="vipLockDesc" style="margin-top:8px;">
@@ -271,7 +354,7 @@
             <div class="plan-card">
                 <div class="plan-title" data-i18n="plan3dTitle">3-Day Trial</div>
                 <div class="plan-price">$15</div>
-                <div class="plan-desc" data-i18n="plan3dDesc">Full live XAU/USD SMC signals & Telegram alerts for 3 days</div>
+                <div class="plan-desc" data-i18n="plan3dDesc">Full live XAU/USD signals & Telegram alerts for 3 days</div>
                 <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
             </div>
             <div class="plan-card popular">
@@ -331,7 +414,7 @@
                 <button type="button" class="auth-btn" style="width:auto; padding:8px 14px;" onclick="saveMasterConfig()">💾 Save Master Keys</button>
                 <button type="button" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="testTelegramConnection()">📨 Test Telegram</button>
                 <button type="button" class="btn-ui" style="border-color:var(--accent-blue); color:var(--accent-blue);" onclick="testTpHitTelegram()">🎯 Test TP1 Hit Alert</button>
-                <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="resetLiveAccountState()">♻️ Reset $400 / #Trade-1</button>
+                <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="resetLiveAccountState()">♻️ Reset Stats & #Trade-1</button>
             </div>
         </div>
 
@@ -371,7 +454,7 @@
             <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
             <div class="title-group">
                 <h1>Mr.Trader AI</h1>
-                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Kill-Zone Signals | Single 1:2.0 R:R Target</p>
+                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD AI Signals | Single 1:2.0 R:R Target</p>
             </div>
         </div>
 
@@ -401,32 +484,45 @@
     <!-- ==================== TAB 1: HOME ==================== -->
     <div id="viewHome" class="tab-view active">
         <div class="metrics-grid">
+            <!-- Box 1: Live Gold Price & Dynamic 40-80 pts Spread -->
             <div class="metric-card">
                 <div class="metric-label" data-i18n="lblLivePrice">Live XAU/USD Price</div>
                 <div class="metric-value" id="uiLivePrice" style="color: var(--accent-gold);">---.--</div>
-                <div class="metric-sub" data-i18n="subSpread">Exness 80-pt Spread Model</div>
+                <div class="metric-sub" data-i18n="subSpread">40–80 pts Dynamic Spread</div>
             </div>
+
+            <!-- Box 2: Trend Bias + London & Tokyo Session Status -->
             <div class="metric-card">
-                <div class="metric-label" data-i18n="lblTrendBias">H1 / H4 Trend Bias</div>
+                <div class="metric-label" data-i18n="lblTrendBias">Market Bias & Sessions</div>
                 <div class="metric-value" id="uiTrendBias">NEUTRAL</div>
-                <div class="metric-sub" id="uiKillZone">Checking Kill Zone...</div>
+                <div class="metric-sub" id="uiSessionsStatus" style="font-weight:600;">London: -- | Tokyo: --</div>
             </div>
+
+            <!-- Box 3: Replaced Model Equity with Current Signal Summary (BUY/SELL/NONE + Entry/SL/TP + ACTIVE/LIMIT) -->
             <div class="metric-card">
-                <div class="metric-label" data-i18n="lblEquity">Model Equity</div>
-                <div class="metric-value" id="uiBalance">$400.00</div>
-                <div class="metric-sub" id="uiLotSub">0.04 lots (1.5x/Mo)</div>
+                <div class="metric-label" data-i18n="lblSignalSummary">Current Signal Status</div>
+                <div class="metric-value" id="uiTopSignalDir" style="color: var(--text-secondary);">NONE</div>
+                <div class="metric-sub" id="uiTopSignalLevels">No active or limit order</div>
             </div>
+
+            <!-- Box 4: Dynamic Live Win Rate (Strictly Based on Actual Closed Trades) -->
             <div class="metric-card">
-                <div class="metric-label" data-i18n="lblWinRate">Win Rate</div>
+                <div class="metric-label" data-i18n="lblWinRate">Live Win Rate</div>
                 <div class="metric-value" id="uiHomeWinRate" style="color: var(--accent-green);">0.0%</div>
                 <div class="metric-sub" id="uiHomeRecord">0W - 0L (0 Trades)</div>
             </div>
         </div>
 
+        <!-- Risk Management Remark Banner -->
+        <div class="risk-remark">
+            <span>🛡️ <strong data-i18n="riskRemarkTitle">Risk Management Note:</strong> <span data-i18n="riskRemarkText">For each $400 of account capital, use 0.02 lot size.</span></span>
+            <span style="font-size:0.74rem; color:var(--text-secondary);" data-i18n="spreadRemarkText">Spread: 40–80 points depending on broker liquidity</span>
+        </div>
+
         <div class="main-grid">
             <div class="chart-box">
                 <div class="box-header">
-                    <span data-i18n="chartTitle">XAU/USD M5 Live Chart (Closed-Candle SMC Execution)</span>
+                    <span data-i18n="chartTitle">XAU/USD M5 Live Chart (Closed-Candle AI Execution)</span>
                     <span id="lastSyncTime" style="color: var(--text-secondary); font-size: 0.75rem;">Syncing...</span>
                 </div>
                 <div id="chart"></div>
@@ -451,19 +547,30 @@
     <div id="viewActive" class="tab-view">
         <div class="panel-box">
             <div class="box-header">
-                <span data-i18n="activeBoxTitle">⚡ Live Active / Pending Signal Details</span>
+                <span data-i18n="activeBoxTitle">⚡ Live Active / Limit Signal Details</span>
                 <span id="activeTradeStatusTag" style="color: var(--accent-gold); font-size: 0.78rem;">Scanning...</span>
             </div>
             <div id="dedicatedActiveContainer"></div>
         </div>
     </div>
 
-    <!-- ==================== TAB 3: CLOSED TRADES ==================== -->
+    <!-- ==================== TAB 3: CLOSED TRADES (WITH TIME FILTER & CLEAR HISTORY) ==================== -->
     <div id="viewClosed" class="tab-view">
         <div class="panel-box">
             <div class="box-header">
-                <span data-i18n="closedBoxTitle">📜 Closed Trades History (Spread-Adjusted Net P&L)</span>
-                <span id="closedCountTag" style="color: var(--text-secondary); font-size: 0.78rem;">0 Completed Trades</span>
+                <span data-i18n="closedBoxTitle">📜 Closed Trades History (40–80 pts Spread Adjusted)</span>
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <select id="closedTimeFilter" class="bundle-select" onchange="updateDashboardUI()">
+                        <option value="all" data-i18n="filterAll">All Time</option>
+                        <option value="today" data-i18n="filterToday">Today (24h)</option>
+                        <option value="7d" data-i18n="filter7d">Last 7 Days</option>
+                        <option value="30d" data-i18n="filter30d">Last 30 Days</option>
+                    </select>
+                    <button type="button" id="clearHistoryBtn" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red); display:none;" onclick="clearClosedHistory()">
+                        🗑️ <span data-i18n="clearHistBtn">Clear History</span>
+                    </button>
+                    <span id="closedCountTag" style="color: var(--text-secondary); font-size: 0.78rem;">0</span>
+                </div>
             </div>
             <div style="overflow-x: auto;">
                 <table class="data-table">
@@ -471,7 +578,7 @@
                         <tr>
                             <th>Trade #</th>
                             <th data-i18n="thDir">Dir</th>
-                            <th data-i18n="thSetup">Setup</th>
+                            <th data-i18n="thSetup">Model</th>
                             <th data-i18n="thEntry">Entry</th>
                             <th>SL</th>
                             <th>TP1 (1:2)</th>
@@ -489,11 +596,11 @@
         </div>
     </div>
 
-    <!-- ==================== TAB 4: WIN RATE & PERFORMANCE ==================== -->
+    <!-- ==================== TAB 4: WIN RATE & PERFORMANCE (PROPRIETARY PRIVACY) ==================== -->
     <div id="viewWinrate" class="tab-view">
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-label" data-i18n="statWinRateLbl">Overall Win Rate</div>
+                <div class="metric-label" data-i18n="statWinRateLbl">Live Verified Win Rate</div>
                 <div class="metric-value" id="statWinRate" style="color: var(--accent-green);">0.0%</div>
                 <div class="metric-sub">Target R:R = 1:2.0</div>
             </div>
@@ -505,24 +612,24 @@
             <div class="metric-card">
                 <div class="metric-label" data-i18n="statNetLbl">Net Cumulative Profit</div>
                 <div class="metric-value" id="statNetProfit">$0.00</div>
-                <div class="metric-sub" id="statEquityHigh">Peak Equity: $400.00</div>
+                <div class="metric-sub" data-i18n="riskBaseSub">Based on 0.02 lot / $400 risk rule</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label" data-i18n="statPfLbl">Profit Factor</div>
                 <div class="metric-value" id="statProfitFactor">0.00</div>
-                <div class="metric-sub">3-SL Circuit Breaker Guarded</div>
+                <div class="metric-sub">Automated Drawdown Protection</div>
             </div>
         </div>
 
         <div class="panel-box">
             <div class="box-header">
-                <span data-i18n="stratTitle">📊 Mr.Trader AI Strategy Breakdown</span>
-                <span style="color: var(--text-secondary); font-size: 0.75rem;">Exness 80-pt Spread Included</span>
+                <span data-i18n="stratTitle">📊 Mr.Trader AI Proprietary Engine Overview</span>
+                <span style="color: var(--text-secondary); font-size: 0.75rem;">40–80 pts Spread Modeled</span>
             </div>
-            <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.7;" data-i18n="stratDesc">
-                • <strong>Execution Window:</strong> London Kill Zone (07:00–10:30 UTC) &amp; New York Kill Zone (12:30–16:30 UTC).<br>
-                • <strong>Entry Models:</strong> Asian Range &amp; 24-Bar Liquidity Sweeps with ≥68% Displacement or 50% FVG Retracement.<br>
-                • <strong>Risk Management:</strong> Fixed 1:2.0 Single TP, 1.5x monthly compounding on new equity highs, and automatic 24-hour lockout after 3 consecutive losses.
+            <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.75;" data-i18n="stratDesc">
+                • <strong>Active Trading Sessions:</strong> Proprietary institutional liquidity windows across Tokyo and London/NY overlaps.<br>
+                • <strong>Execution Engine:</strong> Multi-timeframe algorithmic confirmation with automated order-block &amp; liquidity filtration.<br>
+                • <strong>Risk Management:</strong> Recommended 0.02 lots per $400 capital, fixed 1:2.0 single target, and automated consecutive-loss circuit breaker protection.
             </p>
         </div>
     </div>
@@ -571,7 +678,7 @@
                 <div class="plan-card">
                     <div class="plan-title" data-i18n="plan3dTitle">3-Day Trial</div>
                     <div class="plan-price">$15</div>
-                    <div class="plan-desc" data-i18n="plan3dDesc">Full live XAU/USD SMC signals & Telegram alerts for 3 days</div>
+                    <div class="plan-desc" data-i18n="plan3dDesc">Full live XAU/USD signals & Telegram alerts for 3 days</div>
                     <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
                 </div>
                 <div class="plan-card popular">
@@ -600,6 +707,13 @@ let currentLang = localStorage.getItem('mrtrader_lang') || 'en';
 const I18N = {
     en: {
         langBtn: 'العربية',
+        scBadge: '⚡ INSTITUTIONAL GOLD AI ENGINE',
+        scDesc: 'Precision algorithmic liquidity detection engineered exclusively for XAU/USD with strict risk control and automated real-time execution alerts.',
+        scWinRateLbl: 'Verified Win Rate',
+        scRrLbl: 'Fixed Risk/Reward',
+        scAutoLbl: 'AI Market Scan',
+        scCard1: '📈 Real-Time XAU/USD Precision Entries',
+        scCard2: '🛡️ Smart Liquidity & Risk Guard',
         authSub: 'Sign in or create an account to access the live XAU/USD AI terminal',
         clientLogin: 'Client Login',
         signUp: 'Sign Up',
@@ -615,7 +729,7 @@ const I18N = {
         setNewPassDesc: 'Enter your new password below to regain access to Mr.Trader AI.',
         updatePassBtn: 'Update Password & Login',
         signOut: 'Sign Out',
-        headerSub: 'Autonomous XAU/USD Kill-Zone Signals | Single 1:2.0 R:R Target',
+        headerSub: 'Autonomous XAU/USD AI Signals | Single 1:2.0 R:R Target',
         liveStream: 'LIVE STREAM ACTIVE',
         syncBtn: 'Sync',
         logoutBtn: 'Logout',
@@ -625,28 +739,37 @@ const I18N = {
         tabWinrate: 'Win Rate & Stats',
         tabAccount: 'Account',
         lblLivePrice: 'Live XAU/USD Price',
-        subSpread: 'Exness 80-pt Spread Model',
-        lblTrendBias: 'H1 / H4 Trend Bias',
-        lblEquity: 'Model Equity',
-        lblWinRate: 'Win Rate',
-        chartTitle: 'XAU/USD M5 Live Chart (Closed-Candle SMC Execution)',
+        subSpread: '40–80 pts Dynamic Spread',
+        lblTrendBias: 'Market Bias & Sessions',
+        lblSignalSummary: 'Current Signal Status',
+        lblWinRate: 'Live Win Rate',
+        riskRemarkTitle: 'Risk Management Note:',
+        riskRemarkText: 'For each $400 of account capital, use 0.02 lot size.',
+        spreadRemarkText: 'Spread: 40–80 points depending on market liquidity',
+        chartTitle: 'XAU/USD M5 Live Chart (Closed-Candle AI Execution)',
         latestSigTitle: 'Latest Signal Detected',
         liveAlertsTitle: 'Live Alerts & Feed',
-        activeBoxTitle: '⚡ Live Active / Pending Signal Details',
-        closedBoxTitle: '📜 Closed Trades History (Spread-Adjusted Net P&L)',
+        activeBoxTitle: '⚡ Live Active / Limit Signal Details',
+        closedBoxTitle: '📜 Closed Trades History (40–80 pts Spread Adjusted)',
+        filterAll: 'All Time',
+        filterToday: 'Today (24h)',
+        filter7d: 'Last 7 Days',
+        filter30d: 'Last 30 Days',
+        clearHistBtn: 'Clear History',
         thDir: 'Dir',
-        thSetup: 'Setup',
+        thSetup: 'Model',
         thEntry: 'Entry',
         thLot: 'Lot',
         thOutcome: 'Outcome',
         thPnl: 'Net P&L',
         thClosed: 'Closed (UTC)',
-        statWinRateLbl: 'Overall Win Rate',
+        statWinRateLbl: 'Live Verified Win Rate',
         statWLLbl: 'Total Wins / Losses',
         statNetLbl: 'Net Cumulative Profit',
+        riskBaseSub: 'Based on 0.02 lot / $400 risk rule',
         statPfLbl: 'Profit Factor',
-        stratTitle: '📊 Mr.Trader AI Strategy Breakdown',
-        stratDesc: '• <strong>Execution Window:</strong> London Kill Zone (07:00–10:30 UTC) &amp; New York Kill Zone (12:30–16:30 UTC).<br>• <strong>Entry Models:</strong> Asian Range &amp; 24-Bar Liquidity Sweeps with ≥68% Displacement or 50% FVG Retracement.<br>• <strong>Risk Management:</strong> Fixed 1:2.0 Single TP, 1.5x monthly compounding on new equity highs, and automatic 24-hour lockout after 3 consecutive losses.',
+        stratTitle: '📊 Mr.Trader AI Proprietary Engine Overview',
+        stratDesc: '• <strong>Active Trading Sessions:</strong> Proprietary institutional liquidity windows across Tokyo and London/NY overlaps.<br>• <strong>Execution Engine:</strong> Multi-timeframe algorithmic confirmation with automated order-block &amp; liquidity filtration.<br>• <strong>Risk Management:</strong> Recommended 0.02 lots per $400 capital, fixed 1:2.0 single target, and automated consecutive-loss circuit breaker protection.',
         accProfileTitle: '👤 Account Details & Subscription Status',
         accEmailLbl: 'Registered Email',
         accPlanLbl: 'Current VIP Bundle',
@@ -655,20 +778,25 @@ const I18N = {
         vipPlansHeader: '💎 Mr.Trader AI — VIP Membership Plans',
         vipPlansSub: 'Select your preferred VIP bundle and message our official Telegram support for instant payment & account activation:',
         plan3dTitle: '3-Day Trial',
-        plan3dDesc: 'Full live XAU/USD SMC signals & Telegram alerts for 3 days',
+        plan3dDesc: 'Full live XAU/USD signals & Telegram alerts for 3 days',
         plan1mTitle: '1 Month VIP',
         plan1mDesc: '30 days full terminal access, real-time entries, SL & TP1 alerts',
         plan3mTitle: '3 Months VIP',
         plan3mDesc: '90 days priority VIP access (Save $47 vs monthly)',
         orderTg: 'Activate on Telegram',
-        kzInside: '🟢 Inside Active Kill Zone',
-        kzOutside: '🟡 Outside Kill Zone',
-        scanningTitle: '🤖 Autopilot Scanning',
-        scanningDesc: 'Monitoring Asian Range & 24-bar liquidity pools during London (07:00–10:30 UTC) and NY (12:30–16:30 UTC) Kill Zones.',
-        noClosed: 'No closed trades recorded yet.'
+        scanningTitle: '🤖 Mr.Trader AI Scanning',
+        scanningDesc: 'Monitoring XAU/USD institutional price action and liquidity zones in real time.',
+        noClosed: 'No closed trades recorded for this period.'
     },
     ar: {
         langBtn: 'English',
+        scBadge: '⚡ محرك الذكاء الاصطناعي لتداول الذهب',
+        scDesc: 'خوارزمية دقيقة لاكتشاف السيولة المؤسسية مصممة خصيصاً للذهب XAU/USD مع إدارة مخاطر صارمة وتنبيهات تنفيذ لحظية.',
+        scWinRateLbl: 'نسبة النجاح المحققة',
+        scRrLbl: 'نسبة العائد للمخاطرة',
+        scAutoLbl: 'فحص السوق الذكي',
+        scCard1: '📈 نقاط دخول دقيقة للذهب XAU/USD',
+        scCard2: '🛡️ حماية ذكية للسيولة وإدارة المخاطر',
         authSub: 'سجّل الدخول أو أنشئ حساباً للوصول إلى منصة Mr.Trader AI لتداول الذهب',
         clientLogin: 'تسجيل الدخول',
         signUp: 'إنشاء حساب',
@@ -684,7 +812,7 @@ const I18N = {
         setNewPassDesc: 'أدخل كلمة المرور الجديدة أدناه لاستعادة الدخول إلى Mr.Trader AI.',
         updatePassBtn: 'تحديث كلمة المرور والدخول',
         signOut: 'تسجيل الخروج',
-        headerSub: 'توصيات الذهب XAU/USD الذكية في أوقات السيولة | هدف 1:2.0',
+        headerSub: 'توصيات الذهب XAU/USD الذكية | هدف واحد 1:2.0',
         liveStream: 'البث المباشر نشط',
         syncBtn: 'تحديث',
         logoutBtn: 'خروج',
@@ -694,15 +822,23 @@ const I18N = {
         tabWinrate: 'نسبة النجاح والإحصائيات',
         tabAccount: 'الحساب والاشتراك',
         lblLivePrice: 'سعر الذهب المباشر XAU/USD',
-        subSpread: 'محاكاة سبريد إكسنس 80 نقطة',
-        lblTrendBias: 'اتجاه السوق العام H1 / H4',
-        lblEquity: 'رأس مال المحفظة',
-        lblWinRate: 'نسبة النجاح',
-        chartTitle: 'شارت الذهب M5 المباشر (تنفيذ SMC عند إغلاق الشمعة)',
+        subSpread: 'سبريد متغير 40 إلى 80 نقطة',
+        lblTrendBias: 'اتجاه السوق والجلسات',
+        lblSignalSummary: 'حالة التوصية الحالية',
+        lblWinRate: 'نسبة النجاح المباشرة',
+        riskRemarkTitle: 'ملاحظة إدارة المخاطر:',
+        riskRemarkText: 'لكل 400$ من رأس المال، استخدم حجم عقد 0.02 لوت.',
+        spreadRemarkText: 'السبريد: من 40 إلى 80 نقطة حسب سيولة السوق',
+        chartTitle: 'شارت الذهب M5 المباشر (تنفيذ AI عند إغلاق الشمعة)',
         latestSigTitle: 'أحدث توصية مكتشفة',
         liveAlertsTitle: 'التنبيهات المباشرة والسجل',
         activeBoxTitle: '⚡ تفاصيل الصفقة النشطة / المعلقة حالياً',
-        closedBoxTitle: '📜 سجل الصفقات المغلقة (صافي الربح بعد السبريد)',
+        closedBoxTitle: '📜 سجل الصفقات المغلقة (معدل بسبريد 40–80 نقطة)',
+        filterAll: 'كل الأوقات',
+        filterToday: 'اليوم (24 ساعة)',
+        filter7d: 'آخر 7 أيام',
+        filter30d: 'آخر 30 يوماً',
+        clearHistBtn: 'مسح السجل',
         thDir: 'النوع',
         thSetup: 'النموذج',
         thEntry: 'الدخول',
@@ -710,12 +846,13 @@ const I18N = {
         thOutcome: 'النتيجة',
         thPnl: 'صافي الربح',
         thClosed: 'وقت الإغلاق (UTC)',
-        statWinRateLbl: 'نسبة النجاح الإجمالية',
+        statWinRateLbl: 'نسبة النجاح الفعلية',
         statWLLbl: 'إجمالي الصفقات الرابحة / الخاسرة',
         statNetLbl: 'صافي الأرباح التراكمية',
+        riskBaseSub: 'بناءً على قاعدة 0.02 لوت لكل 400$',
         statPfLbl: 'معامل الربح (Profit Factor)',
-        stratTitle: '📊 تفاصيل استراتيجية Mr.Trader AI',
-        stratDesc: '• <strong>أوقات التداول:</strong> جلسة لندن (07:00–10:30 UTC) وجلسة نيويورك (12:30–16:30 UTC).<br>• <strong>نماذج الدخول:</strong> سحب سيولة الجلسة الآسيوية وقمم/قيعان 24 شمعة مع شمعة زخم ≥68% أو فجوة سعرية 50% FVG.<br>• <strong>إدارة المخاطر:</strong> هدف واحد ثابت 1:2.0، مضاعفة اللوت 1.5x شهرياً عند تحقيق قمة رصيد جديدة، وإيقاف تلقائي 24 ساعة بعد 3 خسائر متتالية.',
+        stratTitle: '📊 نظرة عامة على محرك Mr.Trader AI الخاص',
+        stratDesc: '• <strong>جلسات التداول النشطة:</strong> نوافذ السيولة المؤسسية الخاصة عبر جلسة طوكيو وتقاطع لندن/نيويورك.<br>• <strong>محرك التنفيذ:</strong> تأكيد خوارزمي متعدد الأطر الزمنية مع فلترة تلقائية لمناطق السيولة.<br>• <strong>إدارة المخاطر:</strong> يُنصح بحجم 0.02 لوت لكل 400$ رأس مال، هدف واحد ثابت 1:2.0، وحماية تلقائية ضد الخسائر المتتالية.',
         accProfileTitle: '👤 تفاصيل الحساب وحالة الاشتراك',
         accEmailLbl: 'البريد الإلكتروني المسجل',
         accPlanLbl: 'باقة VIP الحالية',
@@ -730,11 +867,9 @@ const I18N = {
         plan3mTitle: 'باقة 3 أشهر VIP',
         plan3mDesc: '90 يوماً من الوصول الكامل مع أولوية VIP (وفر $47)',
         orderTg: 'تفعيل عبر تيليجرام',
-        kzInside: '🟢 داخل وقت السيولة النشط (Kill Zone)',
-        kzOutside: '🟡 خارج وقت السيولة',
-        scanningTitle: '🤖 جاري فحص السوق تلقائياً',
-        scanningDesc: 'مراقبة مناطق السيولة خلال جلسة لندن (07:00–10:30 UTC) وجلسة نيويورك (12:30–16:30 UTC).',
-        noClosed: 'لا توجد صفقات مغلقة مسجلة حتى الآن.'
+        scanningTitle: '🤖 جاري فحص السوق بواسطة Mr.Trader AI',
+        scanningDesc: 'مراقبة حركة سعر الذهب XAU/USD ومناطق السيولة المؤسسية في الوقت الفعلي.',
+        noClosed: 'لا توجد صفقات مغلقة مسجلة في هذه الفترة.'
     }
 };
 
@@ -839,7 +974,7 @@ function showNewPasswordScreen() {
     isPasswordRecoveryMode = true;
     document.getElementById('authOverlay').style.display = 'flex';
     document.getElementById('terminalApp').style.display = 'none';
-    document.getElementById('authFormBox').style.display = 'none';
+    document.getElementById('authLandingWrapper').style.display = 'none';
     document.getElementById('pendingApprovalBox').style.display = 'none';
     document.getElementById('updatePasswordBox').style.display = 'block';
 }
@@ -1013,7 +1148,7 @@ async function checkUserSession() {
     const vipActive = hasValidVipAccess(currentUserProfile);
 
     if (!isAdmin && currentUserProfile.is_approved && !vipActive) {
-        document.getElementById('authFormBox').style.display = 'none';
+        document.getElementById('authLandingWrapper').style.display = 'none';
         document.getElementById('pendingApprovalBox').style.display = 'block';
         document.getElementById('vipLockTitle').innerText = currentLang === 'ar' ? '⏰ انتهى اشتراك VIP' : '⏰ VIP Bundle Expired';
         document.getElementById('vipLockDesc').innerHTML = currentLang === 'ar'
@@ -1023,7 +1158,7 @@ async function checkUserSession() {
     }
 
     if (!globalBetaActive && !vipActive && !isAdmin) {
-        document.getElementById('authFormBox').style.display = 'none';
+        document.getElementById('authLandingWrapper').style.display = 'none';
         document.getElementById('pendingApprovalBox').style.display = 'block';
         document.getElementById('pendingEmailText').innerText = currentUserProfile.email;
         return;
@@ -1039,6 +1174,7 @@ async function checkUserSession() {
 
     if (isAdmin) {
         document.getElementById('openAdminBtn').style.display = 'inline-block';
+        document.getElementById('clearHistoryBtn').style.display = 'inline-block';
     } else if (vipActive && currentUserProfile.vip_expires_at) {
         document.getElementById('vipBadgePill').style.display = 'flex';
         document.getElementById('vipBadgeText').innerText = `${currentUserProfile.vip_plan} • Exp: ${formatDateShort(currentUserProfile.vip_expires_at)}`;
@@ -1110,7 +1246,7 @@ async function saveMasterConfig() {
 
     if (!error) {
         masterConfig = { ...masterConfig, td_api_key: td, tg_bot_token: tg, tg_chat_id: chat };
-        logEvent('🔑 Master TwelveData & Telegram credentials saved.');
+        logEvent('🔑 Master credentials saved.');
         hardSyncRefresh();
     } else {
         logEvent('⚠️ Error saving config: ' + error.message);
@@ -1223,21 +1359,34 @@ async function adminSendResetEmail(userEmail) {
 }
 
 // ============================================================================
-// 3. SHARED STATE & REALTIME BROADCAST
+// 3. SHARED STATE & REALTIME BROADCAST (0.02 LOT PER $400 RISK RULE)
 // ============================================================================
-const TEST_D_CONFIG = {
-    startBalance: 400.00, baseLot: 0.04, monthlyMultiplier: 1.5, maxLotCap: 3.46,
-    exnessSpreadPoints: 80, minStopLossPips: 60, maxStopLossPips: 160,
-    displacementBodyRatio: 0.68, singleTpRR: 2.0, maxConsecutiveLosses: 3,
-    lockoutHours: 24, scanIntervalMs: 60000, priceTickMs: 15000
+const ENGINE_CONFIG = {
+    referenceCapital: 400.00,
+    baseLotPer400: 0.02,
+    spreadPoints: 60, // 40-80 pts dynamic spread midpoint
+    minStopLossPips: 60,
+    maxStopLossPips: 160,
+    displacementBodyRatio: 0.68,
+    singleTpRR: 2.0,
+    maxConsecutiveLosses: 3,
+    lockoutHours: 24,
+    scanIntervalMs: 60000,
+    priceTickMs: 15000
 };
 
 let state = {
-    balance: TEST_D_CONFIG.startBalance, highWaterMark: TEST_D_CONFIG.startBalance,
-    monthStartBalance: TEST_D_CONFIG.startBalance, currentLot: TEST_D_CONFIG.baseLot,
-    monthTier: 1, lastScaledMonth: new Date().toISOString().slice(0, 7),
-    consecutiveLosses: 0, lockoutUntil: 0, tradeCounter: 1, activeTrade: null, history: [],
-    lastPrice: null, htfBias: 'NEUTRAL', recentLogs: [], latestBars: [], betaMode: true
+    currentLot: ENGINE_CONFIG.baseLotPer400,
+    consecutiveLosses: 0,
+    lockoutUntil: 0,
+    tradeCounter: 1,
+    activeTrade: null,
+    history: [],
+    lastPrice: null,
+    htfBias: 'NEUTRAL',
+    recentLogs: [],
+    latestBars: [],
+    betaMode: true
 };
 
 let chart, candleSeries, priceLines = [], chartCache = {}, htfBias = "NEUTRAL";
@@ -1314,21 +1463,20 @@ function logEvent(msg) {
 }
 
 // ============================================================================
-// 4. AUTONOMOUS SMC ENGINE LOGIC
+// 4. MARKET SESSIONS (LONDON & TOKYO) + AUTONOMOUS ENGINE LOGIC
 // ============================================================================
-function evaluateMonthlyLotScaling() {
-    const currentMonthKey = new Date().toISOString().slice(0, 7);
-    if (currentMonthKey !== state.lastScaledMonth) {
-        if (state.balance > state.monthStartBalance && state.balance >= state.highWaterMark) {
-            state.currentLot = Math.min(TEST_D_CONFIG.maxLotCap, Math.round((state.currentLot * TEST_D_CONFIG.monthlyMultiplier) * 100) / 100);
-            state.monthTier += 1;
-            state.highWaterMark = state.balance;
-            logEvent(`📈 New Month Equity High! Lot scaled 1.5x to <b>${state.currentLot.toFixed(2)} lots</b>.`);
-        }
-        state.monthStartBalance = state.balance;
-        state.lastScaledMonth = currentMonthKey;
-        saveState();
-    }
+function getSessionStatuses(dateObj = new Date()) {
+    const utcHour = dateObj.getUTCHours() + (dateObj.getUTCMinutes() / 60);
+    const day = dateObj.getUTCDay(); // 0 = Sun, 6 = Sat
+    const isWeekend = (day === 0 || day === 6);
+    const tokyoOpen = !isWeekend && (utcHour >= 0.0 && utcHour < 9.0);
+    const londonOpen = !isWeekend && (utcHour >= 7.0 && utcHour < 16.0);
+    return { tokyoOpen, londonOpen };
+}
+
+function isInstitutionalKillZone(dateObj = new Date()) {
+    const utcHour = dateObj.getUTCHours() + (dateObj.getUTCMinutes() / 60);
+    return (utcHour >= 7.0 && utcHour <= 10.5) || (utcHour >= 12.5 && utcHour <= 16.5);
 }
 
 function isCircuitBreakerClear() {
@@ -1341,16 +1489,11 @@ function isCircuitBreakerClear() {
 }
 
 function triggerCircuitBreaker() {
-    state.lockoutUntil = Date.now() + (TEST_D_CONFIG.lockoutHours * 60 * 60 * 1000);
-    const alertMsg = '🚨 3-SL CIRCUIT BREAKER TRIGGERED — Mr.Trader AI paused for 24h.';
+    state.lockoutUntil = Date.now() + (ENGINE_CONFIG.lockoutHours * 60 * 60 * 1000);
+    const alertMsg = '🚨 CIRCUIT BREAKER TRIGGERED — Mr.Trader AI paused for 24h.';
     logEvent(alertMsg);
     saveState();
     if (isCurrentUserAdmin()) sendTelegramAlert(alertMsg);
-}
-
-function isInstitutionalKillZone(dateObj = new Date()) {
-    const utcHour = dateObj.getUTCHours() + (dateObj.getUTCMinutes() / 60);
-    return (utcHour >= 7.0 && utcHour <= 10.5) || (utcHour >= 12.5 && utcHour <= 16.5);
 }
 
 function calcEMA(bars, period) {
@@ -1405,9 +1548,9 @@ function evaluateTestDSetup(m5Bars) {
     const atr = calcATR(closedSlice, 14), rsi = calcRSI(closedSlice, 14);
     if (atr < 0.85 || atr > 9.5) return null;
 
-    const pipSize = 0.10, spreadPrice = TEST_D_CONFIG.exnessSpreadPoints * 0.01;
-    const minSL = Math.max(TEST_D_CONFIG.minStopLossPips * pipSize, atr * 1.15);
-    const maxSL = TEST_D_CONFIG.maxStopLossPips * pipSize;
+    const pipSize = 0.10, spreadPrice = ENGINE_CONFIG.spreadPoints * 0.01;
+    const minSL = Math.max(ENGINE_CONFIG.minStopLossPips * pipSize, atr * 1.15);
+    const maxSL = ENGINE_CONFIG.maxStopLossPips * pipSize;
     const slBuffer = Math.max(8 * pipSize, atr * 0.55) + spreadPrice;
 
     const allowBuy = (htfBias === "BULLISH" || htfBias === "NEUTRAL");
@@ -1429,15 +1572,15 @@ function evaluateTestDSetup(m5Bars) {
     const sweptHigh = (c1.high > targetHighPool || c2.high > targetHighPool) && c1.close < targetHighPool;
     const sweptLow = (c1.low < targetLowPool || c2.low < targetLowPool) && c1.close > targetLowPool;
 
-    if (allowSell && sweptHigh && c1.close < c1.open && c1Ratio >= TEST_D_CONFIG.displacementBodyRatio && rsi > 44 && rsi < 76) {
+    if (allowSell && sweptHigh && c1.close < c1.open && c1Ratio >= ENGINE_CONFIG.displacementBodyRatio && rsi > 44 && rsi < 76) {
         let sl = Math.max(c1.high, c2.high) + slBuffer, risk = sl - nextOpen;
         if (risk < minSL) { risk = minSL; sl = nextOpen + risk; }
-        if (risk <= maxSL) return { dir: "SELL", type: "ACTIVE", setupName: "KZ Sweep + 68% Disp", entry: nextOpen, sl, tp: nextOpen - (risk * 2.0), riskDistance: risk, lot: state.currentLot, createdAt: Date.now() };
+        if (risk <= maxSL) return { dir: "SELL", type: "ACTIVE", setupName: "AI Liquidity Model A", entry: nextOpen, sl, tp: nextOpen - (risk * 2.0), riskDistance: risk, lot: ENGINE_CONFIG.baseLotPer400, createdAt: Date.now() };
     }
-    if (allowBuy && sweptLow && c1.close > c1.open && c1Ratio >= TEST_D_CONFIG.displacementBodyRatio && rsi > 24 && rsi < 56) {
+    if (allowBuy && sweptLow && c1.close > c1.open && c1Ratio >= ENGINE_CONFIG.displacementBodyRatio && rsi > 24 && rsi < 56) {
         let sl = Math.min(c1.low, c2.low) - slBuffer, risk = nextOpen - sl;
         if (risk < minSL) { risk = minSL; sl = nextOpen - risk; }
-        if (risk <= maxSL) return { dir: "BUY", type: "ACTIVE", setupName: "KZ Sweep + 68% Disp", entry: nextOpen, sl, tp: nextOpen + (risk * 2.0), riskDistance: risk, lot: state.currentLot, createdAt: Date.now() };
+        if (risk <= maxSL) return { dir: "BUY", type: "ACTIVE", setupName: "AI Liquidity Model A", entry: nextOpen, sl, tp: nextOpen + (risk * 2.0), riskDistance: risk, lot: ENGINE_CONFIG.baseLotPer400, createdAt: Date.now() };
     }
 
     const minFvg = atr * 0.45, bullFvg = c1.low - c3.high, bearFvg = c3.low - c1.high;
@@ -1445,13 +1588,13 @@ function evaluateTestDSetup(m5Bars) {
         const entry = c3.high + (bullFvg * 0.50);
         let sl = Math.min(c3.low, c4.low) - slBuffer, risk = entry - sl;
         if (risk < minSL) { risk = minSL; sl = entry - risk; }
-        if (entry < nextOpen && risk <= maxSL) return { dir: "BUY", type: "PENDING", setupName: "Sweep + 50% FVG", entry, sl, tp: entry + (risk * 2.0), riskDistance: risk, lot: state.currentLot, createdAt: Date.now() };
+        if (entry < nextOpen && risk <= maxSL) return { dir: "BUY", type: "LIMIT", setupName: "AI Imbalance Model B", entry, sl, tp: entry + (risk * 2.0), riskDistance: risk, lot: ENGINE_CONFIG.baseLotPer400, createdAt: Date.now() };
     }
     if (allowSell && Math.max(c3.high, c4.high) >= targetHighPool * 0.9995 && bearFvg >= minFvg && c2.close < c2.open && c2Ratio >= 0.65 && rsi > 34) {
         const entry = c3.low - (bearFvg * 0.50);
         let sl = Math.max(c3.high, c4.high) + slBuffer, risk = sl - entry;
         if (risk < minSL) { risk = minSL; sl = entry + risk; }
-        if (entry > nextOpen && risk <= maxSL) return { dir: "SELL", type: "PENDING", setupName: "Sweep + 50% FVG", entry, sl, tp: entry - (risk * 2.0), riskDistance: risk, lot: state.currentLot, createdAt: Date.now() };
+        if (entry > nextOpen && risk <= maxSL) return { dir: "SELL", type: "LIMIT", setupName: "AI Imbalance Model B", entry, sl, tp: entry - (risk * 2.0), riskDistance: risk, lot: ENGINE_CONFIG.baseLotPer400, createdAt: Date.now() };
     }
     return null;
 }
@@ -1486,7 +1629,7 @@ async function syncHTFTrend(forceFresh = false) {
 function manageActiveTrade(livePrice) {
     const trade = state.activeTrade;
     if (!trade) return;
-    if (trade.type === "PENDING") {
+    if (trade.type === "LIMIT" || trade.type === "PENDING") {
         if (Date.now() - trade.createdAt > 45 * 60 * 1000) { state.activeTrade = null; clearChartLines(); saveState(); return; }
         if ((trade.dir === "BUY" && livePrice <= trade.entry) || (trade.dir === "SELL" && livePrice >= trade.entry)) {
             trade.type = "ACTIVE";
@@ -1498,7 +1641,9 @@ function manageActiveTrade(livePrice) {
         }
         return;
     }
-    const dollarRisk1R = (trade.lot / 0.04) * 20.0, spreadCost = (trade.lot / 0.04) * 3.20;
+    const lotUsed = trade.lot || ENGINE_CONFIG.baseLotPer400;
+    const dollarRisk1R = (lotUsed / 0.02) * 10.0;
+    const spreadCost = (lotUsed / 0.02) * 1.20;
     if (trade.dir === "BUY") {
         if (livePrice >= trade.tp) closeTrade("WIN", (dollarRisk1R * 2.0) - spreadCost);
         else if (livePrice <= trade.sl) closeTrade("LOSS", -dollarRisk1R - (spreadCost * 0.5));
@@ -1511,8 +1656,6 @@ function manageActiveTrade(livePrice) {
 function closeTrade(outcome, netDollarPnL) {
     const trade = state.activeTrade;
     const roundedPnL = Math.round(netDollarPnL * 100) / 100;
-    state.balance = Math.round((state.balance + roundedPnL) * 100) / 100;
-    if (state.balance > state.highWaterMark) state.highWaterMark = state.balance;
 
     const closedRecord = {
         tradeId: trade.tradeId || 1,
@@ -1521,26 +1664,27 @@ function closeTrade(outcome, netDollarPnL) {
         entry: trade.entry,
         sl: trade.sl,
         tp: trade.tp,
-        lot: trade.lot,
+        lot: trade.lot || ENGINE_CONFIG.baseLotPer400,
         outcome: outcome,
         netPnL: roundedPnL,
+        closedTs: Date.now(),
         closedAt: new Date().toUTCString().slice(5, 22) + " UTC"
     };
     state.history = [closedRecord, ...(state.history || [])];
 
     if (outcome === "WIN") {
         state.consecutiveLosses = 0;
-        const logStr = "✅ #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ") | Equity: $" + state.balance.toFixed(2);
-        const tgStr = "✅ Mr.Trader AI — #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + trade.lot.toFixed(2);
+        const logStr = "✅ #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")";
+        const tgStr = "✅ Mr.Trader AI — #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")\nLot Rule: 0.02 / $400";
         logEvent(logStr);
         if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
     } else {
         state.consecutiveLosses += 1;
-        const logStr = "❌ #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ") | Streak: " + state.consecutiveLosses + "/3";
-        const tgStr = "❌ Mr.Trader AI — #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")\nStreak: " + state.consecutiveLosses + "/3 | Equity: $" + state.balance.toFixed(2);
+        const logStr = "❌ #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")";
+        const tgStr = "❌ Mr.Trader AI — #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")\nLot Rule: 0.02 / $400";
         logEvent(logStr);
         if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
-        if (state.consecutiveLosses >= TEST_D_CONFIG.maxConsecutiveLosses) {
+        if (state.consecutiveLosses >= ENGINE_CONFIG.maxConsecutiveLosses) {
             state.activeTrade = null; clearChartLines(); triggerCircuitBreaker(); return;
         }
     }
@@ -1549,7 +1693,6 @@ function closeTrade(outcome, netDollarPnL) {
 
 async function runAutopilotCycle(forceFresh = false) {
     const isAdmin = isCurrentUserAdmin();
-    if (isAdmin) evaluateMonthlyLotScaling();
     updateDashboardUI();
 
     if (!isAdmin) return;
@@ -1579,9 +1722,9 @@ async function runAutopilotCycle(forceFresh = false) {
         state.activeTrade = setup;
         drawTradeLines(setup);
 
-        const orderAction = setup.type === "PENDING" ? (setup.dir + " LIMIT") : (setup.dir + " NOW");
+        const orderAction = setup.type === "LIMIT" ? (setup.dir + " LIMIT") : (setup.dir + " NOW");
         const tgText = "🚨 Mr.Trader AI — XAUUSD " + orderAction + " " + setup.entry.toFixed(2) + "\n\n🔴 SL: " + setup.sl.toFixed(2) + "\n🎯 TP1: " + setup.tp.toFixed(2) + "\n\n#Trade-" + tradeId;
-        logEvent(`🚀 Signal #Trade-${tradeId}: <b>${setup.dir} @ ${setup.entry.toFixed(2)}</b>`);
+        logEvent(`🚀 Signal #Trade-${tradeId}: <b>${setup.dir} (${setup.type}) @ ${setup.entry.toFixed(2)}</b>`);
         sendTelegramAlert(tgText);
     }
     await saveState();
@@ -1614,26 +1757,33 @@ async function hardSyncRefresh() {
 }
 
 async function testTelegramConnection() {
-    const ok = await sendTelegramAlert("✅ Mr.Trader AI ENGINE — CONNECTION VERIFIED\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
+    const ok = await sendTelegramAlert("✅ Mr.Trader AI ENGINE — CONNECTION VERIFIED\nRisk Rule: 0.02 lot per $400 capital");
     if (ok) logEvent("✅ Telegram test message delivered!");
 }
 
 async function testTpHitTelegram() {
-    const ok = await sendTelegramAlert("✅ Mr.Trader AI — #Trade-TEST TP1 HIT (+$36.80)\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
+    const ok = await sendTelegramAlert("✅ Mr.Trader AI — #Trade-TEST TP1 HIT (+$18.80)\nRisk Rule: 0.02 lot per $400 capital");
     if (ok) logEvent("🎯 Test TP1 HIT alert sent to Telegram!");
 }
 
+async function clearClosedHistory() {
+    if (!isCurrentUserAdmin()) return;
+    if (!confirm(currentLang === 'ar' ? 'هل تريد مسح سجل الصفقات المغلقة بالكامل؟' : 'Clear all closed trades history?')) return;
+    state.history = [];
+    logEvent('🗑️ Closed trades history cleared.');
+    await saveState();
+}
+
 async function resetLiveAccountState() {
-    if (!confirm("Reset equity to $400.00, lot to 0.04, history, and #Trade-1?")) return;
+    if (!confirm("Reset all history, stats, and counter to #Trade-1?")) return;
     state = {
-        balance: 400.00, highWaterMark: 400.00, monthStartBalance: 400.00,
-        currentLot: 0.04, monthTier: 1, lastScaledMonth: new Date().toISOString().slice(0, 7),
+        currentLot: ENGINE_CONFIG.baseLotPer400,
         consecutiveLosses: 0, lockoutUntil: 0, tradeCounter: 1, activeTrade: null, history: [],
         lastPrice: state.lastPrice, htfBias: htfBias, recentLogs: [], latestBars: state.latestBars || [],
         betaMode: masterConfig.beta_mode !== false
     };
     clearChartLines();
-    logEvent("♻️ Account reset to $400.00 | #Trade-1.");
+    logEvent("♻️ Terminal reset to #Trade-1.");
     await saveState();
 }
 
@@ -1682,15 +1832,37 @@ function updateDashboardUI() {
     if (state.lastPrice) document.getElementById('uiLivePrice').innerText = Number(state.lastPrice).toFixed(2);
     document.getElementById('uiTrendBias').innerText = htfBias;
     document.getElementById('uiTrendBias').style.color = htfBias === "BULLISH" ? "var(--accent-green)" : htfBias === "BEARISH" ? "var(--accent-red)" : "var(--accent-gold)";
-    document.getElementById('uiKillZone').innerText = isInstitutionalKillZone() ? t('kzInside') : t('kzOutside');
 
-    document.getElementById('uiBalance').innerText = `$${Number(state.balance).toFixed(2)}`;
-    document.getElementById('uiLotSub').innerText = `${Number(state.currentLot).toFixed(2)} lots (Tier #${state.monthTier})`;
+    // Update London & Tokyo Sessions Status
+    const sess = getSessionStatuses();
+    const londonBadge = sess.londonOpen
+        ? `<span style="color:var(--accent-green);">London: ${currentLang === 'ar' ? 'مفتوح' : 'OPEN'}</span>`
+        : `<span style="color:var(--text-secondary);">London: ${currentLang === 'ar' ? 'مغلق' : 'CLOSED'}</span>`;
+    const tokyoBadge = sess.tokyoOpen
+        ? `<span style="color:var(--accent-green);">Tokyo: ${currentLang === 'ar' ? 'مفتوح' : 'OPEN'}</span>`
+        : `<span style="color:var(--text-secondary);">Tokyo: ${currentLang === 'ar' ? 'مغلق' : 'CLOSED'}</span>`;
+    document.getElementById('uiSessionsStatus').innerHTML = `${londonBadge} &nbsp;|&nbsp; ${tokyoBadge}`;
 
-    const hist = state.history || [];
-    const wins = hist.filter(h => h.outcome === 'WIN');
-    const losses = hist.filter(h => h.outcome === 'LOSS');
-    const total = hist.length;
+    // Update Top Signal Summary Box (Replaced Model Equity Box)
+    const topSigDir = document.getElementById('uiTopSignalDir');
+    const topSigLevels = document.getElementById('uiTopSignalLevels');
+    if (state.activeTrade) {
+        const tr = state.activeTrade;
+        const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
+        topSigDir.innerText = `${tr.dir} (${modeLabel})`;
+        topSigDir.style.color = tr.dir === 'BUY' ? 'var(--accent-green)' : 'var(--accent-red)';
+        topSigLevels.innerText = `E: ${Number(tr.entry).toFixed(2)} | SL: ${Number(tr.sl).toFixed(2)} | TP: ${Number(tr.tp).toFixed(2)}`;
+    } else {
+        topSigDir.innerText = currentLang === 'ar' ? 'لا توجد صفقة (NONE)' : 'NONE';
+        topSigDir.style.color = 'var(--text-secondary)';
+        topSigLevels.innerText = currentLang === 'ar' ? 'بانتظار إشارة دخول أو أمر معلق' : 'No active or limit signal';
+    }
+
+    // Dynamic Win Rate Calculation (Strictly Based on Actual Closed Trades)
+    const allHist = state.history || [];
+    const wins = allHist.filter(h => h.outcome === 'WIN');
+    const losses = allHist.filter(h => h.outcome === 'LOSS');
+    const total = allHist.length;
     const winRatePct = total > 0 ? ((wins.length / total) * 100).toFixed(1) : '0.0';
     const grossProfit = wins.reduce((s, w) => s + Number(w.netPnL), 0);
     const grossLoss = Math.abs(losses.reduce((s, l) => s + Number(l.netPnL), 0));
@@ -1706,7 +1878,6 @@ function updateDashboardUI() {
     const netEl = document.getElementById('statNetProfit');
     netEl.innerText = `${netProfit >= 0 ? '+' : '-'}$${Math.abs(netProfit).toFixed(2)}`;
     netEl.style.color = netProfit >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
-    document.getElementById('statEquityHigh').innerText = `Peak: $${Number(state.highWaterMark).toFixed(2)}`;
     document.getElementById('statProfitFactor').innerText = profitFactor;
 
     const homeSigBox = document.getElementById('homeSignalContainer');
@@ -1715,17 +1886,18 @@ function updateDashboardUI() {
 
     if (state.activeTrade) {
         const tr = state.activeTrade, cls = tr.dir.toLowerCase();
-        statusTag.innerText = `🟢 ${tr.type} — #Trade-${tr.tradeId || 1}`;
+        const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
+        statusTag.innerText = `🟢 ${modeLabel} — #Trade-${tr.tradeId || 1}`;
         const cardHtml = `
             <div class="signal-card ${cls}">
                 <div class="sig-row">
                     <strong>#Trade-${tr.tradeId || 1} — ${tr.setupName}</strong>
-                    <span class="sig-badge ${cls}">${tr.dir} (${tr.type})</span>
+                    <span class="sig-badge ${cls}">${tr.dir} (${modeLabel})</span>
                 </div>
                 <div class="sig-row"><span>${t('thEntry')}:</span><strong>${Number(tr.entry).toFixed(2)}</strong></div>
                 <div class="sig-row"><span>Stop Loss (SL):</span><strong style="color:var(--accent-red);">${Number(tr.sl).toFixed(2)}</strong></div>
                 <div class="sig-row"><span>Take Profit (TP1 1:2):</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
-                <div class="sig-row"><span>${t('thLot')}:</span><strong>${Number(tr.lot).toFixed(2)} lots</strong></div>
+                <div class="sig-row"><span>${t('thLot')}:</span><strong>0.02 lot / $400</strong></div>
             </div>`;
         homeSigBox.innerHTML = cardHtml;
         activeTabBox.innerHTML = cardHtml;
@@ -1742,12 +1914,26 @@ function updateDashboardUI() {
         activeTabBox.innerHTML = standbyHtml;
     }
 
-    document.getElementById('closedCountTag').innerText = `${total}`;
+    // Filter Closed Trades by Time Selection
+    const filterEl = document.getElementById('closedTimeFilter');
+    const filterVal = filterEl ? filterEl.value : 'all';
+    const nowMs = Date.now();
+    const filteredHist = allHist.filter(h => {
+        if (filterVal === 'all') return true;
+        const ts = h.closedTs || (h.closedAt ? Date.parse(h.closedAt) : nowMs);
+        if (!ts || isNaN(ts)) return true;
+        if (filterVal === 'today') return (nowMs - ts) <= 24 * 60 * 60 * 1000;
+        if (filterVal === '7d') return (nowMs - ts) <= 7 * 24 * 60 * 60 * 1000;
+        if (filterVal === '30d') return (nowMs - ts) <= 30 * 24 * 60 * 60 * 1000;
+        return true;
+    });
+
+    document.getElementById('closedCountTag').innerText = `${filteredHist.length}`;
     const closedTbody = document.getElementById('closedTradesTableBody');
-    if (total === 0) {
+    if (filteredHist.length === 0) {
         closedTbody.innerHTML = `<tr><td colspan="10" style="color:var(--text-secondary); text-align:center; padding:18px;">${t('noClosed')}</td></tr>`;
     } else {
-        closedTbody.innerHTML = hist.map(h => {
+        closedTbody.innerHTML = filteredHist.map(h => {
             const isWin = h.outcome === 'WIN';
             const pnlColor = isWin ? 'var(--accent-green)' : 'var(--accent-red)';
             const dirColor = h.dir === 'BUY' ? 'var(--accent-green)' : 'var(--accent-red)';
@@ -1759,7 +1945,7 @@ function updateDashboardUI() {
                     <td>${Number(h.entry).toFixed(2)}</td>
                     <td>${Number(h.sl).toFixed(2)}</td>
                     <td>${Number(h.tp).toFixed(2)}</td>
-                    <td>${Number(h.lot).toFixed(2)}</td>
+                    <td>${Number(h.lot || 0.02).toFixed(2)}</td>
                     <td style="color:${pnlColor}; font-weight:700;">${h.outcome}</td>
                     <td style="color:${pnlColor}; font-weight:700;">${h.netPnL >= 0 ? '+' : '-'}$${Math.abs(h.netPnL).toFixed(2)}</td>
                     <td style="color:var(--text-secondary);">${h.closedAt}</td>
@@ -1787,8 +1973,8 @@ function startTerminalEngine(isAdmin) {
 
     if (isAdmin) {
         runAutopilotCycle(true);
-        setInterval(() => runAutopilotCycle(false), TEST_D_CONFIG.scanIntervalMs);
-        setInterval(pollLivePriceOnly, TEST_D_CONFIG.priceTickMs);
+        setInterval(() => runAutopilotCycle(false), ENGINE_CONFIG.scanIntervalMs);
+        setInterval(pollLivePriceOnly, ENGINE_CONFIG.priceTickMs);
     } else {
         setInterval(loadSharedTerminalState, 30000);
     }
