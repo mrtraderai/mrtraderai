@@ -508,13 +508,21 @@
             }
         }
 
-        function sendToTelegram(message){
+        // --- TELEGRAM WITH REPLY THREADING ---
+        async function sendToTelegram(message, replyToId = null){
             try{
                 const cleanMsg=message.replace(/<[^>]*>?/gm,'');
-                const url=`https://api.telegram.org/bot9176956197:AAEt0JRB2B6FZstzUpAl4AL-viDKS4Jo1X4/sendMessage?chat_id=-1004321406060&text=${encodeURIComponent(cleanMsg)}`;
-                const img=new Image();
-                img.src=url
+                let url = `https://api.telegram.org/bot9176956197:AAEt0JRB2B6FZstzUpAl4AL-viDKS4Jo1X4/sendMessage?chat_id=-1004321406060&text=${encodeURIComponent(cleanMsg)}`;
+                if (replyToId) {
+                    url += `&reply_to_message_id=${replyToId}`;
+                }
+                const res = await fetch(url);
+                const data = await res.json();
+                if(data.ok){
+                    return data.result.message_id; // Return the message ID for threading
+                }
             }catch(e){console.error('Telegram send error:',e)}
+            return null;
         }
 
         function getSessionData(){
@@ -1274,10 +1282,18 @@
             
             if (trade.status === 'ACTIVE') {
                 sendPushNotification('New Signal',`${currentAsset} ${trade.dir} at ${trade.entry.toFixed(2)}`);
-                sendToTelegram(`New Signal: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)}`);
+                const msgId = await sendToTelegram(`🚀 NEW SIGNAL: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)} | TP2: ${trade.tp2.toFixed(2)}`);
+                if(msgId) {
+                    trade.telegramId = msgId; // Save the ID
+                    localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+                }
             } else {
                 sendPushNotification('Pending Setup',`${currentAsset} ${trade.dir} limit at ${trade.entry.toFixed(2)}`);
-                sendToTelegram(`Pending Setup: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)}`);
+                const msgId = await sendToTelegram(`⏳ PENDING: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)} | TP2: ${trade.tp2.toFixed(2)}`);
+                if(msgId) {
+                    trade.telegramId = msgId; // Save the ID
+                    localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+                }
             }
         }
 
@@ -1420,7 +1436,6 @@
                 const now = new Date();
                 const utcHour = now.getUTCHours();
                 if (utcHour < 2 || utcHour >= 20) {
-                    // Log only once every few hours to avoid spam
                     if(autoLogs.length === 0 || !autoLogs[autoLogs.length-1].msg.includes('Outside hours')){
                         logAuto("Outside 2AM-8PM UTC window. Autopilot pausing.");
                     }
@@ -1466,10 +1481,18 @@
                     
                     if (trade.status === 'ACTIVE') {
                         sendPushNotification('Auto Signal',`${currentAsset} ${trade.dir} at ${trade.entry.toFixed(2)}`);
-                        sendToTelegram(`Auto Signal: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)}`);
+                        const msgId = await sendToTelegram(`🤖 AUTO SIGNAL: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)} | TP2: ${trade.tp2.toFixed(2)}`);
+                        if(msgId) {
+                            trade.telegramId = msgId; 
+                            localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+                        }
                     } else {
                         sendPushNotification('Auto Pending',`${currentAsset} ${trade.dir} limit at ${trade.entry.toFixed(2)}`);
-                        sendToTelegram(`Auto Pending: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)}`);
+                        const msgId = await sendToTelegram(`🤖 AUTO PENDING: ${currentAsset} ${trade.dir} @ ${trade.entry.toFixed(2)} | SL: ${trade.sl.toFixed(2)} | TP1: ${trade.tp1.toFixed(2)} | TP2: ${trade.tp2.toFixed(2)}`);
+                        if(msgId) {
+                            trade.telegramId = msgId; 
+                            localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+                        }
                     }
                 } else {
                     logAuto("Auto-scan checked, but no valid setup found.");
