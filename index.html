@@ -1475,83 +1475,91 @@
             }else badge.style.display='none'
         }
 
+        // --- FIXED AUTOPILOT TO RUN IMMEDIATELY ---
         function startAutopilot(){
             if(autopilotInterval)clearInterval(autopilotInterval);
-            autopilotInterval=setInterval(async()=>{
-                if(document.hidden)return;
-                
-                // --- THE 2 AM TO 8 PM RULE (EDITED) ---
-                const now = new Date();
-                const utcHour = now.getUTCHours();
-                if (utcHour < 2 || utcHour >= 20) {
-                    if(autoLogs.length === 0 || !autoLogs[autoLogs.length-1].msg.includes('Outside hours')){
-                        logAuto("Outside 2AM-8PM UTC window. Autopilot pausing.");
-                    }
-                    return; 
-                }
+            
+            // Run immediately on startup
+            runAutopilotScan();
+            
+            // Then run every 5 minutes
+            autopilotInterval=setInterval(runAutopilotScan,5*60*1000);
+        }
 
-                // --- STOP IF ACTIVE TRADE ---
-                const key=getTradeKey(currentAsset,currentTF);
-                if(activeTrades[key])return;
-                
-                // --- CHECK NEWS ---
-                const blocked=await getBlockingNews(30,30);
-                if(blocked){
-                    logAuto(`Blocked by news: ${blocked.title}`);
-                    return;
+        async function runAutopilotScan() {
+            if(document.hidden)return;
+            
+            // --- THE 2 AM TO 8 PM RULE (EDITED) ---
+            const now = new Date();
+            const utcHour = now.getUTCHours();
+            if (utcHour < 2 || utcHour >= 20) {
+                if(autoLogs.length === 0 || !autoLogs[autoLogs.length-1].msg.includes('Outside hours')){
+                    logAuto("Outside 2AM-8PM UTC window. Autopilot pausing.");
                 }
+                return; 
+            }
+
+            // --- STOP IF ACTIVE TRADE ---
+            const key=getTradeKey(currentAsset,currentTF);
+            if(activeTrades[key])return;
+            
+            // --- CHECK NEWS ---
+            const blocked=await getBlockingNews(30,30);
+            if(blocked){
+                logAuto(`Blocked by news: ${blocked.title}`);
+                return;
+            }
+            
+            // --- FETCH CHART ---
+            const bars=await loadChartData(currentTF);
+            if(!bars)return;
+            
+            // --- FIND SETUP ---
+            const setup=findSMCSetup(bars);
+            
+            if(setup){
+                logAuto(`Valid setup found: ${setup.dir} at ${setup.entry}`);
+                const trade={
+                    asset:currentAsset,
+                    dir:setup.dir,
+                    entry:setup.entry,
+                    sl:setup.sl,
+                    tp1:setup.tp1,
+                    tp2:setup.tp2,
+                    tf:setup.tf,
+                    status:setup.status, 
+                    date:new Date().toISOString(),
+                    tp1Hit:false
+                };
+                activeTrades[key]=trade;
+                localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+                await saveActiveTradeToCloud(trade);
+                renderActiveSignalsList();
                 
-                // --- FETCH CHART ---
-                const bars=await loadChartData(currentTF);
-                if(!bars)return;
+                // --- UPDATED TELEGRAM MESSAGE FORMAT ---
+                const asset = trade.asset.replace('/',''); // e.g., XAUUSD
+                const tradeNum = tradeCounter++;
+                localStorage.setItem('tradeCounter', tradeCounter);
+                const hashtag = `#Trade-${tradeNum}`;
                 
-                // --- FIND SETUP ---
-                const setup=findSMCSetup(bars);
-                
-                if(setup){
-                    logAuto(`Valid setup found: ${setup.dir} at ${setup.entry}`);
-                    const trade={
-                        asset:currentAsset,
-                        dir:setup.dir,
-                        entry:setup.entry,
-                        sl:setup.sl,
-                        tp1:setup.tp1,
-                        tp2:setup.tp2,
-                        tf:setup.tf,
-                        status:setup.status, 
-                        date:new Date().toISOString(),
-                        tp1Hit:false
-                    };
-                    activeTrades[key]=trade;
-                    localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
-                    await saveActiveTradeToCloud(trade);
-                    renderActiveSignalsList();
-                    
-                    // --- UPDATED TELEGRAM MESSAGE FORMAT ---
-                    const asset = trade.asset.replace('/',''); // e.g., XAUUSD
-                    const tradeNum = tradeCounter++;
-                    localStorage.setItem('tradeCounter', tradeCounter);
-                    const hashtag = `#Trade-${tradeNum}`;
-                    
-                    let msg = "";
-                    if (trade.status === 'ACTIVE') {
-                        msg = `🚨 ${asset} ${trade.dir} NOW ${trade.entry.toFixed(2)}\n\n🔴 SL: ${trade.sl.toFixed(2)}\n🎯 TP1: ${trade.tp1.toFixed(2)}\n🎯 TP2: ${trade.tp2.toFixed(2)}\n\n${hashtag}`;
-                        sendPushNotification('Auto Signal',`${currentAsset} ${trade.dir} at ${trade.entry.toFixed(2)}`);
-                    } else {
-                        msg = `⏳ ${asset} ${trade.dir} LIMIT ${trade.entry.toFixed(2)}\n\n🔴 SL: ${trade.sl.toFixed(2)}\n🎯 TP1: ${trade.tp1.toFixed(2)}\n🎯 TP2: ${trade.tp2.toFixed(2)}\n\n${hashtag}`;
-                        sendPushNotification('Auto Pending',`${currentAsset} ${trade.dir} limit at ${trade.entry.toFixed(2)}`);
-                    }
-                    
-                    trade.tradeNumber = tradeNum;
-                    const msgId = await sendToTelegram(msg);
-                    if(msgId) {
-                        trade.telegramId = msgId; 
-                    }
-                    localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+                let msg = "";
+                if (trade.status === 'ACTIVE') {
+                    msg = `🚨 ${asset} ${trade.dir} NOW ${trade.entry.toFixed(2)}\n\n🔴 SL: ${trade.sl.toFixed(2)}\n🎯 TP1: ${trade.tp1.toFixed(2)}\n🎯 TP2: ${trade.tp2.toFixed(2)}\n\n${hashtag}`;
+                    sendPushNotification('Auto Signal',`${currentAsset} ${trade.dir} at ${trade.entry.toFixed(2)}`);
                 } else {
-                    logAuto("Auto-scan checked, but no valid setup found.");
+                    msg = `⏳ ${asset} ${trade.dir} LIMIT ${trade.entry.toFixed(2)}\n\n🔴 SL: ${trade.sl.toFixed(2)}\n🎯 TP1: ${trade.tp1.toFixed(2)}\n🎯 TP2: ${trade.tp2.toFixed(2)}\n\n${hashtag}`;
+                    sendPushNotification('Auto Pending',`${currentAsset} ${trade.dir} limit at ${trade.entry.toFixed(2)}`);
                 }
-            },5*60*1000)
+                
+                trade.tradeNumber = tradeNum;
+                const msgId = await sendToTelegram(msg);
+                if(msgId) {
+                    trade.telegramId = msgId; 
+                }
+                localStorage.setItem('activeTrades',JSON.stringify(activeTrades));
+            } else {
+                logAuto("Auto-scan checked, but no valid setup found.");
+            }
         }
 
         // Helper for Auto Logs
