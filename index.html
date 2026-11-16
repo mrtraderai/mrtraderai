@@ -23,7 +23,7 @@
         body { background: var(--bg-primary); color: var(--text-primary); padding: 14px; }
         .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 
-        /* Auth Overlay (Login / Sign Up / Forgot Password) */
+        /* Auth Overlay */
         .auth-overlay {
             position: fixed; inset: 0; background: var(--bg-primary); z-index: 9999;
             display: flex; justify-content: center; align-items: center; padding: 16px;
@@ -49,9 +49,7 @@
             width: 100%; padding: 11px; background: var(--accent-gold); color: #000; border: none;
             border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.88rem;
         }
-        .auth-link-row {
-            display: flex; justify-content: flex-end; margin-top: -6px; margin-bottom: 14px;
-        }
+        .auth-link-row { display: flex; justify-content: flex-end; margin-top: -6px; margin-bottom: 14px; }
         .auth-link {
             background: none; border: none; color: var(--text-secondary); font-size: 0.75rem;
             cursor: pointer; text-decoration: underline;
@@ -65,7 +63,7 @@
             display: none; justify-content: center; align-items: center; padding: 16px;
         }
         .admin-window {
-            width: 100%; max-width: 780px; max-height: 90vh; overflow-y: auto;
+            width: 100%; max-width: 820px; max-height: 90vh; overflow-y: auto;
             background: var(--bg-secondary); border: 1px solid var(--accent-gold);
             border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px;
         }
@@ -78,14 +76,15 @@
             border-radius: 8px; padding: 14px;
         }
         .admin-section h4 { color: var(--accent-gold); font-size: 0.85rem; margin-bottom: 10px; }
-        .client-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-        .client-table th, .client-table td {
-            padding: 8px; border-bottom: 1px solid var(--border-color); text-align: left;
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+        .data-table th, .data-table td {
+            padding: 9px 8px; border-bottom: 1px solid var(--border-color); text-align: left;
         }
+        .data-table th { color: var(--text-secondary); font-size: 0.72rem; text-transform: uppercase; }
         .badge-approved { color: var(--accent-green); font-weight: 700; }
-        .badge-pending { color: var(--accent-red); font-weight: 700; }
+        .badge-pending { color: var(--accent-gold); font-weight: 700; }
 
-        /* Header & Watchdog Bar */
+        /* Header & Navigation Bar */
         .header {
             display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
             background: var(--bg-secondary); padding: 14px 18px; border-radius: 10px;
@@ -112,6 +111,24 @@
         .btn-ui:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
         .btn-admin { border-color: var(--accent-gold); color: var(--accent-gold); display: none; }
 
+        /* Navigation Tabs (Home / Active Trade / Closed Trades / Win Rate) */
+        .nav-tabs {
+            display: flex; gap: 8px; flex-wrap: wrap; background: var(--bg-secondary);
+            padding: 8px; border-radius: 10px; border: 1px solid var(--border-color);
+        }
+        .nav-tab {
+            flex: 1; min-width: 130px; padding: 10px 14px; background: var(--bg-primary);
+            border: 1px solid var(--border-color); color: var(--text-secondary);
+            border-radius: 7px; cursor: pointer; font-weight: 700; font-size: 0.82rem;
+            text-align: center; transition: all 0.15s;
+        }
+        .nav-tab:hover { border-color: var(--accent-gold); color: var(--text-primary); }
+        .nav-tab.active {
+            background: var(--accent-gold); color: #000; border-color: var(--accent-gold);
+        }
+        .tab-view { display: none; flex-direction: column; gap: 14px; }
+        .tab-view.active { display: flex; }
+
         /* Metrics Grid */
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 10px; }
         .metric-card { background: var(--bg-secondary); padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border-color); }
@@ -124,24 +141,24 @@
         @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
         .chart-box, .panel-box {
             background: var(--bg-secondary); border-radius: 10px; border: 1px solid var(--border-color);
-            padding: 12px; display: flex; flex-direction: column;
+            padding: 14px; display: flex; flex-direction: column;
         }
         .box-header {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);
             font-size: 0.85rem; font-weight: 600;
         }
-        #chart { width: 100%; height: 430px; }
+        #chart { width: 100%; height: 420px; }
 
         /* Active Signal Card */
         .signal-card {
-            background: var(--bg-card); border-radius: 8px; padding: 12px;
+            background: var(--bg-card); border-radius: 8px; padding: 14px;
             border-left: 4px solid var(--accent-gold); margin-bottom: 12px;
         }
         .signal-card.buy { border-left-color: var(--accent-green); }
         .signal-card.sell { border-left-color: var(--accent-red); }
-        .sig-row { display: flex; justify-content: space-between; font-size: 0.82rem; margin: 4px 0; }
-        .sig-badge { padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.75rem; }
+        .sig-row { display: flex; justify-content: space-between; font-size: 0.84rem; margin: 5px 0; }
+        .sig-badge { padding: 3px 9px; border-radius: 4px; font-weight: 700; font-size: 0.75rem; }
         .sig-badge.buy { background: rgba(16,185,129,0.2); color: var(--accent-green); }
         .sig-badge.sell { background: rgba(239,68,68,0.2); color: var(--accent-red); }
 
@@ -156,9 +173,8 @@
 </head>
 <body>
 
-<!-- ==================== 1. CLIENT LOGIN / SIGN UP / RESET SCREEN ==================== -->
+<!-- ==================== 1. LOGIN / SIGN UP / RESET SCREEN ==================== -->
 <div id="authOverlay" class="auth-overlay">
-    <!-- Standard Login / Sign Up / Forgot Password Box -->
     <div class="auth-box" id="authFormBox">
         <h2>XAU/USD TEST D TERMINAL</h2>
         <p id="authSubtitle">Free Demo Testing Beta — Create a Free Account for Instant Access</p>
@@ -178,7 +194,7 @@
         <div id="authMessage" class="auth-msg"></div>
     </div>
 
-    <!-- New Password Form (Shown automatically when user clicks the reset link in their email) -->
+    <!-- Set New Password Form -->
     <div class="auth-box" id="updatePasswordBox" style="display:none;">
         <h2>🔐 SET NEW PASSWORD</h2>
         <p>Enter your new password below to regain access to your terminal.</p>
@@ -188,7 +204,7 @@
         <div id="updatePwdMessage" class="auth-msg"></div>
     </div>
 
-    <!-- Pending Approval Box (Used later when switching from Free Beta to Paid Access) -->
+    <!-- Pending VIP Approval Box -->
     <div class="auth-box" id="pendingApprovalBox" style="display:none; text-align:center;">
         <h2>⏳ VIP Subscription Required</h2>
         <p style="margin-top:8px;">Your account (<strong id="pendingEmailText"></strong>) has been registered. Please contact the Admin to activate your paid signal subscription.</p>
@@ -204,9 +220,9 @@
             <button type="button" class="btn-ui" onclick="document.getElementById('adminModal').style.display='none'">✖ Close</button>
         </div>
 
-        <!-- Master API & Telegram Config -->
+        <!-- Master TwelveData & Telegram Credentials -->
         <div class="admin-section">
-            <h4>1. Master Engine Credentials (Hidden from Clients)</h4>
+            <h4>1. Master Engine Credentials (Admin Only — Never Exposed to Clients)</h4>
             <div style="display:flex; flex-wrap:wrap; gap:8px;">
                 <input type="password" id="adminTdKey" class="auth-input" style="flex:1; margin:0;" placeholder="TwelveData API Key">
                 <input type="password" id="adminTgToken" class="auth-input" style="flex:1; margin:0;" placeholder="Telegram Bot Token">
@@ -220,18 +236,18 @@
             </div>
         </div>
 
-        <!-- Client Approval Manager -->
+        <!-- Registered Clients Table -->
         <div class="admin-section">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <h4 style="margin:0;">2. Registered Demo Beta Users (Ready for Paid Switch Later)</h4>
+                <h4 style="margin:0;">2. Registered Clients (<span id="clientCountBadge">0</span> Users)</h4>
                 <button type="button" class="btn-ui" onclick="loadClientList()">🔄 Refresh List</button>
             </div>
-            <table class="client-table">
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>User Email</th>
                         <th>Role</th>
-                        <th>Paid Status</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -247,13 +263,13 @@
 <div id="terminalApp" class="container" style="display:none;">
     <div class="header">
         <div class="title-group">
-            <h1>XAU/USD TEST D — AUTONOMOUS SMC ENGINE</h1>
-            <p>FREE DEMO TESTING BETA — Instant Sign-Up & Live XAU/USD SMC Autopilot | Single 1:2.0 TP</p>
+            <h1>XAU/USD TEST D — AUTONOMOUS SMC TERMINAL</h1>
+            <p id="headerRoleSub">Live Institutional Kill-Zone Signals | Single 1:2.0 R:R Target</p>
         </div>
         <div class="controls">
             <div id="autopilotStatusPill" class="status-pill">
                 <span class="pulse-dot"></span>
-                <span id="autopilotStatusText">FREE BETA ACTIVE</span>
+                <span id="autopilotStatusText">LIVE STREAM ACTIVE</span>
             </div>
             <button type="button" id="openAdminBtn" class="btn-ui btn-admin" onclick="openAdminWindow()">🛡️ Admin Window</button>
             <button type="button" id="forceRefreshBtn" class="btn-ui" onclick="hardSyncRefresh()">🔄 Sync</button>
@@ -261,84 +277,169 @@
         </div>
     </div>
 
-    <div class="metrics-grid">
-        <div class="metric-card">
-            <div class="metric-label">Demo Model Equity</div>
-            <div class="metric-value" id="uiBalance">$400.00</div>
-            <div class="metric-sub" id="uiHighWater">High-Water Mark: $400.00</div>
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <button type="button" id="navHome" class="nav-tab active" onclick="switchTerminalTab('home')">🏠 Home</button>
+        <button type="button" id="navActive" class="nav-tab" onclick="switchTerminalTab('active')">⚡ Active Trade</button>
+        <button type="button" id="navClosed" class="nav-tab" onclick="switchTerminalTab('closed')">📜 Closed Trades</button>
+        <button type="button" id="navWinrate" class="nav-tab" onclick="switchTerminalTab('winrate')">📊 Win Rate & Stats</button>
+    </div>
+
+    <!-- ==================== TAB 1: HOME ==================== -->
+    <div id="viewHome" class="tab-view active">
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Live XAU/USD Price</div>
+                <div class="metric-value" id="uiLivePrice" style="color: var(--accent-gold);">---.--</div>
+                <div class="metric-sub">Exness 80-pt Spread Model</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">H1 / H4 Trend Bias</div>
+                <div class="metric-value" id="uiTrendBias">NEUTRAL</div>
+                <div class="metric-sub" id="uiKillZone">Checking Kill Zone...</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Model Equity</div>
+                <div class="metric-value" id="uiBalance">$400.00</div>
+                <div class="metric-sub" id="uiLotSub">0.04 lots (1.5x/Mo)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Win Rate</div>
+                <div class="metric-value" id="uiHomeWinRate" style="color: var(--accent-green);">0.0%</div>
+                <div class="metric-sub" id="uiHomeRecord">0W - 0L (0 Trades)</div>
+            </div>
         </div>
-        <div class="metric-card">
-            <div class="metric-label">Active Lot Size (1.5x/Mo)</div>
-            <div class="metric-value" id="uiLotSize" style="color: var(--accent-gold);">0.04 lots</div>
-            <div class="metric-sub" id="uiLotTier">Month Tier #1 ($20.00 / 1R)</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">H1 / H4 Trend Bias</div>
-            <div class="metric-value" id="uiTrendBias">NEUTRAL</div>
-            <div class="metric-sub" id="uiKillZone">Checking Kill Zone...</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">3-SL Circuit Breaker</div>
-            <div class="metric-value" id="uiLossStreak">0 / 3 Losses</div>
-            <div class="metric-sub" id="uiCbStatus">Guard Armed (24h Lockout)</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">Live XAU/USD Price</div>
-            <div class="metric-value" id="uiLivePrice">---.--</div>
-            <div class="metric-sub">Exness 80-pt Spread Protected</div>
+
+        <div class="main-grid">
+            <div class="chart-box">
+                <div class="box-header">
+                    <span>XAU/USD M5 Live Chart (Closed-Candle SMC Execution)</span>
+                    <span id="lastSyncTime" style="color: var(--text-secondary); font-size: 0.75rem;">Syncing...</span>
+                </div>
+                <div id="chart"></div>
+            </div>
+
+            <div class="panel-box">
+                <div class="box-header">
+                    <span>Latest Signal Detected</span>
+                    <span style="color: var(--accent-green); font-size: 0.75rem;">1:2.0 Single TP</span>
+                </div>
+                <div id="homeSignalContainer"></div>
+
+                <div class="box-header" style="margin-top: 6px;">
+                    <span>Live Alerts & Feed</span>
+                </div>
+                <div id="systemLogs" class="log-box"></div>
+            </div>
         </div>
     </div>
 
-    <div class="main-grid">
-        <div class="chart-box">
+    <!-- ==================== TAB 2: ACTIVE TRADE ==================== -->
+    <div id="viewActive" class="tab-view">
+        <div class="panel-box">
             <div class="box-header">
-                <span>XAU/USD M5 Execution Chart (Closed-Candle Confirmation)</span>
-                <span id="lastSyncTime" style="color: var(--text-secondary); font-size: 0.75rem;">Syncing...</span>
+                <span>⚡ Live Active / Pending Signal Details</span>
+                <span id="activeTradeStatusTag" style="color: var(--accent-gold); font-size: 0.78rem;">Scanning...</span>
             </div>
-            <div id="chart"></div>
+            <div id="dedicatedActiveContainer"></div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 3: CLOSED TRADES ==================== -->
+    <div id="viewClosed" class="tab-view">
+        <div class="panel-box">
+            <div class="box-header">
+                <span>📜 Closed Trades History (Spread-Adjusted Net P&L)</span>
+                <span id="closedCountTag" style="color: var(--text-secondary); font-size: 0.78rem;">0 Completed Trades</span>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Trade #</th>
+                            <th>Dir</th>
+                            <th>Setup</th>
+                            <th>Entry</th>
+                            <th>SL</th>
+                            <th>TP1 (1:2)</th>
+                            <th>Lot</th>
+                            <th>Outcome</th>
+                            <th>Net P&L</th>
+                            <th>Closed (UTC)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="closedTradesTableBody">
+                        <tr><td colspan="10" style="color:var(--text-secondary); text-align:center; padding:18px;">No closed trades recorded yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 4: WIN RATE & PERFORMANCE ==================== -->
+    <div id="viewWinrate" class="tab-view">
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Overall Win Rate</div>
+                <div class="metric-value" id="statWinRate" style="color: var(--accent-green);">0.0%</div>
+                <div class="metric-sub">Target R:R = 1:2.0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Total Wins / Losses</div>
+                <div class="metric-value" id="statWinsLosses">0W / 0L</div>
+                <div class="metric-sub" id="statTotalTrades">0 Total Closed</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Net Cumulative Profit</div>
+                <div class="metric-value" id="statNetProfit">$0.00</div>
+                <div class="metric-sub" id="statEquityHigh">Peak Equity: $400.00</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Profit Factor</div>
+                <div class="metric-value" id="statProfitFactor">0.00</div>
+                <div class="metric-sub">3-SL Circuit Breaker Guarded</div>
+            </div>
         </div>
 
         <div class="panel-box">
             <div class="box-header">
-                <span>Live Signal Feed</span>
-                <span style="color: var(--accent-green); font-size: 0.75rem;">1:2.0 Single TP</span>
+                <span>📊 Strategy Performance Breakdown</span>
+                <span style="color: var(--text-secondary); font-size: 0.75rem;">Exness 80-pt Spread Included</span>
             </div>
-
-            <div id="activeSignalContainer">
-                <div class="signal-card">
-                    <div class="sig-row">
-                        <strong>🤖 Autopilot Scanning</strong>
-                        <span class="sig-badge">STANDBY</span>
-                    </div>
-                    <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 6px;">
-                        Monitoring Asian Range & 24-bar liquidity pools during London (07:00–10:30 UTC) and NY (12:30–16:30 UTC) Kill Zones.
-                    </p>
-                </div>
-            </div>
-
-            <div class="box-header" style="margin-top: 4px;">
-                <span>System Logs</span>
-            </div>
-            <div id="systemLogs" class="log-box"></div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
+                • <strong>Execution Window:</strong> London Kill Zone (07:00–10:30 UTC) &amp; New York Kill Zone (12:30–16:30 UTC).<br>
+                • <strong>Entry Models:</strong> Asian Range &amp; 24-Bar Liquidity Sweeps with ≥68% Displacement or 50% FVG Retracement.<br>
+                • <strong>Risk Management:</strong> Fixed 1:2.0 Single TP, 1.5x monthly compounding on new equity highs, and automatic 24-hour lockout after 3 consecutive losses.
+            </p>
         </div>
     </div>
 </div>
 
 <script>
 // ============================================================================
-// 1. SUPABASE AUTH, SIGN UP & FORGOT PASSWORD RECOVERY (PKCE + HASH SUPPORT)
+// 1. SUPABASE AUTH, ROLE DETECTION & PASSWORD RECOVERY
 // ============================================================================
 const SUPABASE_URL = 'https://wdexwfoplycblaxmrfws.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_6U7d-ihEr1ivc362mhkDeQ_2suPM3gy';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Set to true during Free Demo Testing; flip to false later when charging clients!
 const FREE_DEMO_BETA_MODE = true;
-
 let authMode = 'login';
 let isPasswordRecoveryMode = false;
 let currentUserProfile = null;
 let masterConfig = { td_api_key: '', tg_bot_token: '', tg_chat_id: '' };
+
+function switchTerminalTab(tabName) {
+    ['home', 'active', 'closed', 'winrate'].forEach(t => {
+        const btn = document.getElementById('nav' + t.charAt(0).toUpperCase() + t.slice(1));
+        const view = document.getElementById('view' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (btn) btn.classList.toggle('active', t === tabName);
+        if (view) view.classList.toggle('active', t === tabName);
+    });
+    if (tabName === 'home' && chart) {
+        setTimeout(() => chart.applyOptions({ width: document.getElementById('chart').clientWidth }), 50);
+    }
+}
 
 function showNewPasswordScreen() {
     isPasswordRecoveryMode = true;
@@ -392,7 +493,6 @@ async function handleAuthSubmit() {
     if (authMode === 'forgot') {
         msgEl.style.color = 'var(--accent-gold)';
         msgEl.innerText = 'Sending password reset email...';
-        // Append ?recovery=1 so the returning URL is unmistakably detected
         const redirectUrl = window.location.origin + window.location.pathname + '?recovery=1';
         const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
         if (error) {
@@ -470,11 +570,8 @@ async function handleUpdatePassword() {
     }
 }
 
-// Listen for Supabase PASSWORD_RECOVERY event (fires for both PKCE ?code= and #type=recovery)
-sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'PASSWORD_RECOVERY') {
-        showNewPasswordScreen();
-    }
+sb.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') showNewPasswordScreen();
 });
 
 async function logoutClient() {
@@ -484,18 +581,11 @@ async function logoutClient() {
 
 async function checkUserSession() {
     const urlParams = new URLSearchParams(window.location.search);
-    const hasRecoveryIndicator =
-        isPasswordRecoveryMode ||
-        urlParams.get('recovery') === '1' ||
-        urlParams.get('type') === 'recovery' ||
-        (window.location.hash && window.location.hash.includes('type=recovery'));
-
-    if (hasRecoveryIndicator) {
+    if (isPasswordRecoveryMode || urlParams.get('recovery') === '1' || urlParams.get('type') === 'recovery' || (window.location.hash && window.location.hash.includes('type=recovery'))) {
         showNewPasswordScreen();
         return;
     }
 
-    // If Supabase PKCE ?code=... is present, wait briefly for Supabase to exchange code & fire PASSWORD_RECOVERY
     if (urlParams.has('code')) {
         await new Promise(resolve => setTimeout(resolve, 700));
         if (isPasswordRecoveryMode) return;
@@ -508,12 +598,7 @@ async function checkUserSession() {
         return;
     }
 
-    const { data: profile } = await sb
-        .from('client_profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-
+    const { data: profile } = await sb.from('client_profiles').select('*').eq('id', session.user.id).single();
     currentUserProfile = profile || { email: session.user.email, role: 'client', is_approved: false };
 
     if (!FREE_DEMO_BETA_MODE && !currentUserProfile.is_approved && currentUserProfile.role !== 'admin') {
@@ -526,26 +611,31 @@ async function checkUserSession() {
     document.getElementById('authOverlay').style.display = 'none';
     document.getElementById('terminalApp').style.display = 'flex';
 
-    if (currentUserProfile.role === 'admin') {
+    const isAdmin = currentUserProfile.role === 'admin';
+    if (isAdmin) {
         document.getElementById('openAdminBtn').style.display = 'inline-block';
+        document.getElementById('headerRoleSub').innerText = 'ADMIN MASTER ENGINE — Live Scanning & Signal Broadcasting';
+    } else {
+        document.getElementById('headerRoleSub').innerText = 'CLIENT LIVE TERMINAL — Real-Time Signals, Alerts & Performance';
     }
 
-    await loadMasterConfig();
-    startTerminalEngine();
+    await loadMasterConfig(isAdmin);
+    await loadSharedTerminalState();
+    subscribeToRealtimeState();
+    startTerminalEngine(isAdmin);
 }
 
 // ============================================================================
-// 2. ADMIN WINDOW FUNCTIONS
+// 2. ADMIN CONFIG & SHARED SUPABASE STATE SYNC (ZERO CLIENT API POLLING)
 // ============================================================================
-async function loadMasterConfig() {
+async function loadMasterConfig(isAdmin) {
+    if (!isAdmin) return;
     const { data } = await sb.from('engine_config').select('*').eq('id', 1).single();
     if (data) {
         masterConfig = data;
-        if (currentUserProfile?.role === 'admin') {
-            document.getElementById('adminTdKey').value = data.td_api_key || '';
-            document.getElementById('adminTgToken').value = data.tg_bot_token || '';
-            document.getElementById('adminTgChat').value = data.tg_chat_id || '';
-        }
+        document.getElementById('adminTdKey').value = data.td_api_key || '';
+        document.getElementById('adminTgToken').value = data.tg_bot_token || '';
+        document.getElementById('adminTgChat').value = data.tg_chat_id || '';
     }
 }
 
@@ -561,7 +651,7 @@ async function saveMasterConfig() {
 
     if (!error) {
         masterConfig = { td_api_key: td, tg_bot_token: tg, tg_chat_id: chat };
-        logEvent('🔑 Master API & Telegram credentials updated in Supabase.');
+        logEvent('🔑 Master TwelveData & Telegram credentials saved.');
         hardSyncRefresh();
     }
 }
@@ -573,9 +663,7 @@ function openAdminWindow() {
 }
 
 function closeAdminWindow(e) {
-    if (e.target.id === 'adminModal') {
-        document.getElementById('adminModal').style.display = 'none';
-    }
+    if (e.target.id === 'adminModal') document.getElementById('adminModal').style.display = 'none';
 }
 
 async function loadClientList() {
@@ -585,10 +673,11 @@ async function loadClientList() {
         tbody.innerHTML = '<tr><td colspan="4">Error loading users.</td></tr>';
         return;
     }
+    document.getElementById('clientCountBadge').innerText = data.length;
     tbody.innerHTML = data.map(u => `
         <tr>
             <td>${u.email}</td>
-            <td>${u.role.toUpperCase()}</td>
+            <td><strong>${u.role.toUpperCase()}</strong></td>
             <td>${u.is_approved ? '<span class="badge-approved">VIP PAID</span>' : '<span class="badge-pending">FREE BETA</span>'}</td>
             <td>
                 ${u.role === 'admin' ? '—' : `
@@ -607,7 +696,7 @@ async function toggleClientApproval(userId, approveState) {
 }
 
 // ============================================================================
-// 3. TEST D AUTONOMOUS SMC ENGINE (1.5x MONTHLY SCALING & 3-SL GUARD)
+// 3. SHARED STATE & REALTIME BROADCAST (ADMIN WRITES -> CLIENTS RECEIVE)
 // ============================================================================
 const TEST_D_CONFIG = {
     startBalance: 400.00, baseLot: 0.04, monthlyMultiplier: 1.5, maxLotCap: 3.46,
@@ -616,32 +705,83 @@ const TEST_D_CONFIG = {
     lockoutHours: 24, scanIntervalMs: 60000, priceTickMs: 15000
 };
 
-let state = JSON.parse(localStorage.getItem('testD_state_v1')) || {
+let state = {
     balance: TEST_D_CONFIG.startBalance, highWaterMark: TEST_D_CONFIG.startBalance,
     monthStartBalance: TEST_D_CONFIG.startBalance, currentLot: TEST_D_CONFIG.baseLot,
     monthTier: 1, lastScaledMonth: new Date().toISOString().slice(0, 7),
-    consecutiveLosses: 0, lockoutUntil: 0, tradeCounter: 1, activeTrade: null, history: []
+    consecutiveLosses: 0, lockoutUntil: 0, tradeCounter: 1, activeTrade: null, history: [],
+    lastPrice: null, htfBias: 'NEUTRAL', recentLogs: [], latestBars: []
 };
-if (!state.tradeCounter) state.tradeCounter = 1;
 
 let chart, candleSeries, priceLines = [], chartCache = {}, htfBias = "NEUTRAL";
 let engineStarted = false;
 
-function saveState() {
-    localStorage.setItem('testD_state_v1', JSON.stringify(state));
+async function loadSharedTerminalState() {
+    const { data } = await sb.from('terminal_state').select('state_json').eq('id', 1).single();
+    if (data && data.state_json && Object.keys(data.state_json).length > 0) {
+        state = { ...state, ...data.state_json };
+        htfBias = state.htfBias || 'NEUTRAL';
+        if (candleSeries && state.latestBars && state.latestBars.length > 0) {
+            candleSeries.setData(state.latestBars);
+            if (state.activeTrade) drawTradeLines(state.activeTrade);
+        }
+    }
     updateDashboardUI();
 }
 
-function logEvent(msg) {
-    const logBox = document.getElementById('systemLogs');
-    const timeStr = new Date().toUTCString().slice(17, 25) + " UTC";
-    const div = document.createElement('div');
-    div.className = 'log-entry';
-    div.innerHTML = `<span class="log-time">[${timeStr}]</span>${msg}`;
-    logBox.prepend(div);
-    if (logBox.children.length > 60) logBox.removeChild(logBox.lastChild);
+async function saveState() {
+    updateDashboardUI();
+    if (currentUserProfile?.role === 'admin') {
+        state.htfBias = htfBias;
+        await sb.from('terminal_state').upsert({ id: 1, state_json: state, updated_at: new Date().toISOString() });
+    }
 }
 
+function subscribeToRealtimeState() {
+    sb.channel('terminal-live-sync')
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'terminal_state', filter: 'id=eq.1' }, (payload) => {
+            if (currentUserProfile?.role !== 'admin' && payload.new && payload.new.state_json) {
+                const prevTradeId = state.activeTrade?.tradeId;
+                const prevHistoryLen = (state.history || []).length;
+                state = { ...state, ...payload.new.state_json };
+                htfBias = state.htfBias || 'NEUTRAL';
+                updateDashboardUI();
+
+                if (candleSeries && state.latestBars && state.latestBars.length > 0) {
+                    candleSeries.setData(state.latestBars);
+                }
+                if (candleSeries && state.activeTrade) drawTradeLines(state.activeTrade);
+                if (candleSeries && !state.activeTrade) clearChartLines();
+
+                if (state.activeTrade && state.activeTrade.tradeId !== prevTradeId) {
+                    logEvent(`🚨 NEW SIGNAL #Trade-${state.activeTrade.tradeId}: <b>${state.activeTrade.dir} @ ${state.activeTrade.entry.toFixed(2)}</b>`);
+                } else if ((state.history || []).length > prevHistoryLen) {
+                    const lastClosed = state.history[0];
+                    logEvent(`${lastClosed.outcome === 'WIN' ? '✅' : '❌'} #Trade-${lastClosed.tradeId} ${lastClosed.outcome} (${lastClosed.netPnL >= 0 ? '+' : ''}$${lastClosed.netPnL.toFixed(2)})`);
+                }
+            }
+        })
+        .subscribe();
+}
+
+function logEvent(msg) {
+    const timeStr = new Date().toUTCString().slice(17, 25) + " UTC";
+    const entryHtml = `<span class="log-time">[${timeStr}]</span>${msg}`;
+    const logBox = document.getElementById('systemLogs');
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    div.innerHTML = entryHtml;
+    logBox.prepend(div);
+    if (logBox.children.length > 50) logBox.removeChild(logBox.lastChild);
+
+    if (currentUserProfile?.role === 'admin') {
+        state.recentLogs = [entryHtml, ...(state.recentLogs || [])].slice(0, 25);
+    }
+}
+
+// ============================================================================
+// 4. AUTONOMOUS SMC ENGINE LOGIC
+// ============================================================================
 function evaluateMonthlyLotScaling() {
     const currentMonthKey = new Date().toISOString().slice(0, 7);
     if (currentMonthKey !== state.lastScaledMonth) {
@@ -668,9 +808,9 @@ function isCircuitBreakerClear() {
 
 function triggerCircuitBreaker() {
     state.lockoutUntil = Date.now() + (TEST_D_CONFIG.lockoutHours * 60 * 60 * 1000);
-    saveState();
     const alertMsg = '🚨 3-SL CIRCUIT BREAKER TRIGGERED — Autopilot paused for 24h.';
     logEvent(alertMsg);
+    saveState();
     if (currentUserProfile?.role === 'admin') sendTelegramAlert(alertMsg);
 }
 
@@ -758,255 +898,13 @@ function evaluateTestDSetup(m5Bars) {
     if (allowSell && sweptHigh && c1.close < c1.open && c1Ratio >= TEST_D_CONFIG.displacementBodyRatio && rsi > 44 && rsi < 76) {
         let sl = Math.max(c1.high, c2.high) + slBuffer, risk = sl - nextOpen;
         if (risk < minSL) { risk = minSL; sl = nextOpen + risk; }
-        if (risk <= maxSL) return { dir: "SELL", type: "ACTIVE", setupName: "Test D: KZ Sweep + 68% Disp", entry: nextOpen, sl, tp: nextOpen - (risk * 2.0), riskDistance: risk, lot: state.currentLot, createdAt: Date.now() };
+        if (risk <= maxSL) return { dir: "SELL", type: "ACTIVE", setupName: "KZ Sweep + 68% Disp", entry: nextOpen, sl, tp: nextOpen - (risk * 2.0), riskDistance: risk, lot: state.currentLot, createdAt: Date.now() };
     }
     if (allowBuy && sweptLow && c1.close > c1.open && c1Ratio >= TEST_D_CONFIG.displacementBodyRatio && rsi > 24 && rsi < 56) {
         let sl = Math.min(c1.low, c2.low) - slBuffer, risk = nextOpen - sl;
         if (risk < minSL) { risk = minSL; sl = nextOpen - risk; }
-        if (risk <= maxSL) return { dir: "BUY", type: "ACTIVE", setupName: "Test D: KZ Sweep + 68% Disp", entry: nextOpen, sl, tp: nextOpen + (risk * 2.0), riskDistance: risk, lot: state.currentLot, createdAt: Date.now() };
+        if (risk <= maxSL) return { dir: "BUY", type: "ACTIVE", setupName: "KZ Sweep + 68% Disp", entry: nextOpen, sl, tp: nextOpen + (risk * 2.0), riskDistance: risk, lot: state.currentLot, createdAt: Date.now() };
     }
 
     const minFvg = atr * 0.45, bullFvg = c1.low - c3.high, bearFvg = c3.low - c1.high;
-    if (allowBuy && Math.min(c3.low, c4.low) <= targetLowPool * 1.0005 && bullFvg >= minFvg && c2.close > c2.open && c2Ratio >= 0.65 && rsi < 66) {
-        const entry = c3.high + (bullFvg * 0.50);
-        let sl = Math.min(c3.low, c4.low) - slBuffer, risk = entry - sl;
-        if (risk < minSL) { risk = minSL; sl = entry - risk; }
-        if (entry < nextOpen && risk <= maxSL) return { dir: "BUY", type: "PENDING", setupName: "Test D: Sweep + 50% FVG", entry, sl, tp: entry + (risk * 2.0), riskDistance: risk, lot: state.currentLot, createdAt: Date.now() };
-    }
-    if (allowSell && Math.max(c3.high, c4.high) >= targetHighPool * 0.9995 && bearFvg >= minFvg && c2.close < c2.open && c2Ratio >= 0.65 && rsi > 34) {
-        const entry = c3.low - (bearFvg * 0.50);
-        let sl = Math.max(c3.high, c4.high) + slBuffer, risk = sl - entry;
-        if (risk < minSL) { risk = minSL; sl = entry + risk; }
-        if (entry > nextOpen && risk <= maxSL) return { dir: "SELL", type: "PENDING", setupName: "Test D: Sweep + 50% FVG", entry, sl, tp: entry - (risk * 2.0), riskDistance: risk, lot: state.currentLot, createdAt: Date.now() };
-    }
-    return null;
-}
-
-async function fetchTwelveData(interval, outputsize = 120, forceFresh = false) {
-    const apiKey = masterConfig.td_api_key;
-    if (!apiKey) {
-        logEvent("⚠️ Engine waiting for Admin to configure TwelveData API key.");
-        return null;
-    }
-    const cacheKey = `XAU_${interval}`;
-    if (!forceFresh && chartCache[cacheKey] && (Date.now() - chartCache[cacheKey].ts < 45000)) return chartCache[cacheKey].bars;
-    try {
-        const res = await fetch(`https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=${interval}&outputsize=${outputsize}&apikey=${apiKey}`);
-        const data = await res.json();
-        if (!data.values) return null;
-        const bars = data.values.reverse().map(v => ({
-            time: Math.floor(new Date(v.datetime.replace(' ', 'T') + 'Z').getTime() / 1000),
-            open: parseFloat(v.open), high: parseFloat(v.high), low: parseFloat(v.low), close: parseFloat(v.close)
-        }));
-        chartCache[cacheKey] = { bars, ts: Date.now() };
-        return bars;
-    } catch (e) { return null; }
-}
-
-async function syncHTFTrend(forceFresh = false) {
-    const h1Bars = await fetchTwelveData('1h', 210, forceFresh);
-    if (!h1Bars || h1Bars.length < 200) return;
-    const closedH1 = h1Bars.slice(0, -1);
-    const ema50 = calcEMA(closedH1, 50), ema200 = calcEMA(closedH1, 200);
-    const lastClose = closedH1[closedH1.length - 1].close;
-    htfBias = (lastClose > ema50 && ema50 > ema200) ? "BULLISH" : (lastClose < ema50 && ema50 < ema200) ? "BEARISH" : "NEUTRAL";
-    document.getElementById('uiTrendBias').innerText = htfBias;
-    document.getElementById('uiTrendBias').style.color = htfBias === "BULLISH" ? "var(--accent-green)" : htfBias === "BEARISH" ? "var(--accent-red)" : "var(--accent-gold)";
-}
-
-function manageActiveTrade(livePrice) {
-    const trade = state.activeTrade;
-    if (!trade) return;
-    if (trade.type === "PENDING") {
-        if (Date.now() - trade.createdAt > 45 * 60 * 1000) { state.activeTrade = null; clearChartLines(); saveState(); return; }
-        if ((trade.dir === "BUY" && livePrice <= trade.entry) || (trade.dir === "SELL" && livePrice >= trade.entry)) {
-            trade.type = "ACTIVE";
-            if (currentUserProfile?.role === 'admin') {
-                sendTelegramAlert("⚡ XAUUSD " + trade.dir + " FILLED @ " + trade.entry.toFixed(2) + "\n\n🔴 SL: " + trade.sl.toFixed(2) + "\n🎯 TP1: " + trade.tp.toFixed(2) + "\n\n#Trade-" + (trade.tradeId || 1));
-            }
-            saveState();
-        }
-        return;
-    }
-    const dollarRisk1R = (trade.lot / 0.04) * 20.0, spreadCost = (trade.lot / 0.04) * 3.20;
-    if (trade.dir === "BUY") {
-        if (livePrice >= trade.tp) closeTrade("WIN", (dollarRisk1R * 2.0) - spreadCost);
-        else if (livePrice <= trade.sl) closeTrade("LOSS", -dollarRisk1R - (spreadCost * 0.5));
-    } else {
-        if (livePrice <= trade.tp) closeTrade("WIN", (dollarRisk1R * 2.0) - spreadCost);
-        else if (livePrice >= trade.sl) closeTrade("LOSS", -dollarRisk1R - (spreadCost * 0.5));
-    }
-}
-
-function closeTrade(outcome, netDollarPnL) {
-    const trade = state.activeTrade;
-    state.balance = Math.round((state.balance + netDollarPnL) * 100) / 100;
-    if (state.balance > state.highWaterMark) state.highWaterMark = state.balance;
-    if (outcome === "WIN") {
-        state.consecutiveLosses = 0;
-        const logStr = "✅ #Trade-" + (trade.tradeId || 1) + " TP1 HIT (+$" + netDollarPnL.toFixed(2) + ") | Equity: $" + state.balance.toFixed(2);
-        const tgStr = "✅ #Trade-" + (trade.tradeId || 1) + " TP1 HIT (+$" + netDollarPnL.toFixed(2) + ")\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + trade.lot.toFixed(2);
-        logEvent(logStr);
-        if (currentUserProfile?.role === 'admin') sendTelegramAlert(tgStr);
-    } else {
-        state.consecutiveLosses += 1;
-        const logStr = "❌ #Trade-" + (trade.tradeId || 1) + " SL HIT (-$" + Math.abs(netDollarPnL).toFixed(2) + ") | Streak: " + state.consecutiveLosses + "/3";
-        const tgStr = "❌ #Trade-" + (trade.tradeId || 1) + " SL HIT (-$" + Math.abs(netDollarPnL).toFixed(2) + ")\nStreak: " + state.consecutiveLosses + "/3 | Equity: $" + state.balance.toFixed(2);
-        logEvent(logStr);
-        if (currentUserProfile?.role === 'admin') sendTelegramAlert(tgStr);
-        if (state.consecutiveLosses >= TEST_D_CONFIG.maxConsecutiveLosses) {
-            state.activeTrade = null; clearChartLines(); triggerCircuitBreaker(); return;
-        }
-    }
-    state.activeTrade = null; clearChartLines(); saveState();
-}
-
-async function runAutopilotCycle(forceFresh = false) {
-    evaluateMonthlyLotScaling();
-    updateDashboardUI();
-    if (!isCircuitBreakerClear()) return;
-    await syncHTFTrend(forceFresh);
-    const m5Bars = await fetchTwelveData('5min', 120, forceFresh);
-    if (!m5Bars) return;
-
-    candleSeries.setData(m5Bars);
-    const livePrice = m5Bars[m5Bars.length - 1].close;
-    document.getElementById('uiLivePrice').innerText = livePrice.toFixed(2);
-    document.getElementById('lastSyncTime').innerText = `Last Sync: ${new Date().toUTCString().slice(17, 25)} UTC`;
-
-    if (state.activeTrade) { manageActiveTrade(livePrice); drawTradeLines(state.activeTrade); return; }
-
-    const setup = evaluateTestDSetup(m5Bars);
-    if (setup) {
-        const tradeId = state.tradeCounter++;
-        setup.tradeId = tradeId;
-        state.activeTrade = setup;
-        drawTradeLines(setup);
-        saveState();
-
-        const orderAction = setup.type === "PENDING" ? (setup.dir + " LIMIT") : (setup.dir + " NOW");
-        const tgText = "🚨 XAUUSD " + orderAction + " " + setup.entry.toFixed(2) + "\n\n🔴 SL: " + setup.sl.toFixed(2) + "\n🎯 TP1: " + setup.tp.toFixed(2) + "\n\n#Trade-" + tradeId;
-        logEvent(`🚀 Signal #Trade-${tradeId}: <b>${setup.dir} @ ${setup.entry.toFixed(2)}</b>`);
-        if (currentUserProfile?.role === 'admin') sendTelegramAlert(tgText);
-    }
-}
-
-async function pollLivePriceOnly() {
-    const apiKey = masterConfig.td_api_key;
-    if (!apiKey || !state.activeTrade) return;
-    try {
-        const res = await fetch(`https://api.twelvedata.com/price?symbol=XAU/USD&apikey=${apiKey}`);
-        const data = await res.json();
-        if (data.price) {
-            const p = parseFloat(data.price);
-            document.getElementById('uiLivePrice').innerText = p.toFixed(2);
-            manageActiveTrade(p);
-        }
-    } catch (e) {}
-}
-
-async function hardSyncRefresh() {
-    chartCache = {}; clearChartLines();
-    await runAutopilotCycle(true);
-}
-
-async function testTelegramConnection() {
-    const ok = await sendTelegramAlert("✅ TEST D ENGINE — CONNECTION VERIFIED\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
-    if (ok) logEvent("✅ Telegram test message delivered!");
-}
-
-async function testTpHitTelegram() {
-    const ok = await sendTelegramAlert("✅ #Trade-TEST TP1 HIT (+$36.80)\nEquity: $" + state.balance.toFixed(2) + " | Lot: " + state.currentLot.toFixed(2));
-    if (ok) logEvent("🎯 Test TP1 HIT alert sent to Telegram!");
-}
-
-function resetLiveAccountState() {
-    if (!confirm("Reset equity to $400.00, lot to 0.04, and #Trade-1?")) return;
-    state = {
-        balance: 400.00, highWaterMark: 400.00, monthStartBalance: 400.00,
-        currentLot: 0.04, monthTier: 1, lastScaledMonth: new Date().toISOString().slice(0, 7),
-        consecutiveLosses: 0, lockoutUntil: 0, tradeCounter: 1, activeTrade: null, history: []
-    };
-    clearChartLines(); saveState();
-    logEvent("♻️ Account reset to $400.00 | #Trade-1.");
-}
-
-function initChart() {
-    const container = document.getElementById('chart');
-    chart = LightweightCharts.createChart(container, {
-        layout: { background: { color: '#131722' }, textColor: '#94a3b8' },
-        grid: { vertLines: { color: '#1e2536' }, horzLines: { color: '#1e2536' } },
-        timeScale: { timeVisible: true, secondsVisible: false },
-        rightPriceScale: { borderColor: '#2a3142' }
-    });
-    candleSeries = chart.addCandlestickSeries({ upColor: '#10b981', downColor: '#ef4444', borderVisible: false, wickUpColor: '#10b981', wickDownColor: '#ef4444' });
-    window.addEventListener('resize', () => chart.applyOptions({ width: container.clientWidth }));
-}
-
-function clearChartLines() { priceLines.forEach(l => candleSeries.removePriceLine(l)); priceLines = []; }
-
-function drawTradeLines(trade) {
-    clearChartLines();
-    if (!trade) return;
-    priceLines.push(candleSeries.createPriceLine({ price: trade.entry, color: '#3b82f6', lineWidth: 2, lineStyle: 0, title: 'ENTRY' }));
-    priceLines.push(candleSeries.createPriceLine({ price: trade.sl, color: '#ef4444', lineWidth: 2, lineStyle: 2, title: 'SL' }));
-    priceLines.push(candleSeries.createPriceLine({ price: trade.tp, color: '#10b981', lineWidth: 2, lineStyle: 0, title: 'TP1 (1:2)' }));
-}
-
-async function sendTelegramAlert(text) {
-    const token = masterConfig.tg_bot_token, chatId = masterConfig.tg_chat_id;
-    if (!token || !chatId) return false;
-    try {
-        const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' })
-        });
-        return (await res.json()).ok;
-    } catch (e) { return false; }
-}
-
-function updateDashboardUI() {
-    document.getElementById('uiBalance').innerText = `$${state.balance.toFixed(2)}`;
-    document.getElementById('uiHighWater').innerText = `High-Water Mark: $${state.highWaterMark.toFixed(2)}`;
-    const risk1R = ((state.currentLot / 0.04) * 20.0).toFixed(2);
-    document.getElementById('uiLotSize').innerText = `${state.currentLot.toFixed(2)} lots`;
-    document.getElementById('uiLotTier').innerText = `Month Tier #${state.monthTier} ($${risk1R} / 1R)`;
-    document.getElementById('uiKillZone').innerText = isInstitutionalKillZone() ? "🟢 Inside Active Kill Zone" : "🟡 Outside Kill Zone";
-    document.getElementById('uiLossStreak').innerText = `${state.consecutiveLosses} / 3 Losses`;
-
-    const sigBox = document.getElementById('activeSignalContainer');
-    if (state.activeTrade) {
-        const t = state.activeTrade, cls = t.dir.toLowerCase();
-        sigBox.innerHTML = `
-            <div class="signal-card ${cls}">
-                <div class="sig-row"><strong>#Trade-${t.tradeId || 1} — ${t.setupName}</strong><span class="sig-badge ${cls}">${t.dir}</span></div>
-                <div class="sig-row"><span>Entry:</span><strong>${t.entry.toFixed(2)}</strong></div>
-                <div class="sig-row"><span>Stop Loss:</span><strong style="color:var(--accent-red);">${t.sl.toFixed(2)}</strong></div>
-                <div class="sig-row"><span>TP1 (1:2.0):</span><strong style="color:var(--accent-green);">${t.tp.toFixed(2)}</strong></div>
-            </div>`;
-    } else {
-        sigBox.innerHTML = `
-            <div class="signal-card">
-                <div class="sig-row"><strong>🤖 Autopilot Scanning</strong><span class="sig-badge">STANDBY</span></div>
-                <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 6px;">
-                    Monitoring Asian Range & 24-bar liquidity pools during London (07:00–10:30 UTC) and NY (12:30–16:30 UTC) Kill Zones.
-                </p>
-            </div>`;
-    }
-}
-
-function startTerminalEngine() {
-    if (engineStarted) return;
-    engineStarted = true;
-    initChart();
-    updateDashboardUI();
-    logEvent(`🚀 Authenticated as ${currentUserProfile.email} (${currentUserProfile.role.toUpperCase()}).`);
-    runAutopilotCycle(true);
-    setInterval(() => runAutopilotCycle(false), TEST_D_CONFIG.scanIntervalMs);
-    setInterval(pollLivePriceOnly, TEST_D_CONFIG.priceTickMs);
-}
-
-window.addEventListener('DOMContentLoaded', checkUserSession);
-</script>
-</body>
-</html>
+    if (allowBuy && Math.min(c3.low, c4.low) <= targetLowPool * 1.0005 && bullFvg >= minFvg && c2.close > c2.open && c2Ratio >= 0
