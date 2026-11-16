@@ -442,76 +442,80 @@
             </div>
         </div>
 
-        <!-- Session Filters & Risk Guardrails Control Panel -->
+        <!-- Session Filters & Risk Guardrails Control Panel (WITH HIDE / SHOW TOGGLE) -->
         <div class="panel-box" style="background:var(--bg-secondary); border:1px solid var(--border-color);">
-            <div class="box-header" style="margin-bottom:8px;">
-                <span>⚙️ Session Filters, Risk Guardrails & News Blackout (Beirut Time)</span>
-                <button type="button" class="btn-ui" style="border-color:var(--accent-gold); color:var(--accent-gold);" onclick="resetSettingsToDefault()">🔄 Reset Default Rules</button>
+            <div class="box-header" style="margin-bottom:8px; cursor:pointer;" onclick="toggleSettingsCard()">
+                <span>⚙️ Session Filters, Risk Guardrails & News Blackout (Beirut Time) <span id="settingsToggleIcon" style="font-size:0.75rem; color:var(--accent-gold);">[▲ Hide / إخفاء]</span></span>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn-ui" style="border-color:var(--accent-gold); color:var(--accent-gold); padding:4px 8px;" onclick="event.stopPropagation(); resetSettingsToDefault()">🔄 Reset Rules</button>
+                </div>
             </div>
-            <div class="setting-grid">
-                <!-- Tokyo Session (03:00 - 12:00 Beirut) -->
-                <div class="setting-card">
-                    <div class="setting-row">
-                        <span>🇯🇵 Tokyo (03:00-12:00)</span>
-                        <input type="checkbox" id="sessTokyo" onchange="saveRiskAndSessionSettings()">
+            <div id="settingsCardBody" style="display:flex; flex-direction:column; gap:10px;">
+                <div class="setting-grid">
+                    <!-- Tokyo Session (03:00 - 12:00 Beirut) -->
+                    <div class="setting-card">
+                        <div class="setting-row">
+                            <span>🇯🇵 Tokyo (03:00-12:00)</span>
+                            <input type="checkbox" id="sessTokyo" onchange="saveRiskAndSessionSettings()">
+                        </div>
+                        <div style="font-size:0.7rem; color:var(--text-secondary);" id="tokyoLiveStatusTag">Status: Checking...</div>
                     </div>
-                    <div style="font-size:0.7rem; color:var(--text-secondary);" id="tokyoLiveStatusTag">Status: Checking...</div>
-                </div>
-                <!-- London Session (10:00 - 19:00 Beirut) -->
-                <div class="setting-card">
-                    <div class="setting-row">
-                        <span>🇬🇧 London (10:00-19:00)</span>
-                        <input type="checkbox" id="sessLondon" onchange="saveRiskAndSessionSettings()">
+                    <!-- London Session (10:00 - 19:00 Beirut) -->
+                    <div class="setting-card">
+                        <div class="setting-row">
+                            <span>🇬🇧 London (10:00-19:00)</span>
+                            <input type="checkbox" id="sessLondon" onchange="saveRiskAndSessionSettings()">
+                        </div>
+                        <div style="font-size:0.7rem; color:var(--text-secondary);" id="londonLiveStatusTag">Status: Checking...</div>
                     </div>
-                    <div style="font-size:0.7rem; color:var(--text-secondary);" id="londonLiveStatusTag">Status: Checking...</div>
-                </div>
-                <!-- New York Session (15:00 - 00:00 Beirut) -->
-                <div class="setting-card">
-                    <div class="setting-row">
-                        <span>🇺🇸 New York (15:00-00:00)</span>
-                        <input type="checkbox" id="sessNy" onchange="saveRiskAndSessionSettings()">
+                    <!-- New York Session (15:00 - 00:00 Beirut) -->
+                    <div class="setting-card">
+                        <div class="setting-row">
+                            <span>🇺🇸 New York (15:00-00:00)</span>
+                            <input type="checkbox" id="sessNy" onchange="saveRiskAndSessionSettings()">
+                        </div>
+                        <div style="font-size:0.7rem; color:var(--text-secondary);" id="nyLiveStatusTag">Status: Checking...</div>
                     </div>
-                    <div style="font-size:0.7rem; color:var(--text-secondary);" id="nyLiveStatusTag">Status: Checking...</div>
-                </div>
-                <!-- USD News Filter -->
-                <div class="setting-card" style="border-color:var(--accent-gold);">
-                    <div class="setting-row">
-                        <span style="color:var(--accent-gold);">📰 USD News Filter (±15m)</span>
-                        <input type="checkbox" id="newsFilterEn" onchange="saveRiskAndSessionSettings()">
+                    <!-- USD News Filter -->
+                    <div class="setting-card" style="border-color:var(--accent-gold);">
+                        <div class="setting-row">
+                            <span style="color:var(--accent-gold);">📰 USD News Filter (±15m)</span>
+                            <input type="checkbox" id="newsFilterEn" onchange="saveRiskAndSessionSettings()">
+                        </div>
+                        <div style="font-size:0.7rem; color:var(--text-secondary);" id="newsFilterStatusTag">Status: Active (NFP/CPI/FOMC)</div>
                     </div>
-                    <div style="font-size:0.7rem; color:var(--text-secondary);" id="newsFilterStatusTag">Status: Active (NFP/CPI/FOMC)</div>
-                </div>
-                <!-- Max Stop Loss -->
-                <div class="setting-card">
-                    <div class="setting-row">
-                        <span>🛡️ Max Stop Loss (Pts)</span>
-                        <input type="checkbox" id="riskMaxSlEn" onchange="saveRiskAndSessionSettings()">
+                    <!-- Max Stop Loss -->
+                    <div class="setting-card">
+                        <div class="setting-row">
+                            <span>🛡️ Max Stop Loss (Pts)</span>
+                            <input type="checkbox" id="riskMaxSlEn" onchange="saveRiskAndSessionSettings()">
+                        </div>
+                        <input type="number" id="riskMaxSlVal" class="setting-input" value="130" min="20" max="300" onchange="saveRiskAndSessionSettings()">
                     </div>
-                    <input type="number" id="riskMaxSlVal" class="setting-input" value="130" min="20" max="300" onchange="saveRiskAndSessionSettings()">
-                </div>
-                <!-- Max Trades / Day -->
-                <div class="setting-card">
-                    <div class="setting-row">
-                        <span>📊 Max Trades / Day</span>
-                        <input type="checkbox" id="riskMaxTradesEn" onchange="saveRiskAndSessionSettings()">
+                    <!-- Max Trades / Day -->
+                    <div class="setting-card">
+                        <div class="setting-row">
+                            <span>📊 Max Trades / Day</span>
+                            <input type="checkbox" id="riskMaxTradesEn" onchange="saveRiskAndSessionSettings()">
+                        </div>
+                        <input type="number" id="riskMaxTradesVal" class="setting-input" value="10" min="1" max="30" onchange="saveRiskAndSessionSettings()">
                     </div>
-                    <input type="number" id="riskMaxTradesVal" class="setting-input" value="10" min="1" max="30" onchange="saveRiskAndSessionSettings()">
-                </div>
-                <!-- Max Daily Loss -->
-                <div class="setting-card">
-                    <div class="setting-row">
-                        <span>⚠️ Max Daily Loss ($)</span>
-                        <input type="checkbox" id="riskMaxLossEn" onchange="saveRiskAndSessionSettings()">
+                    <!-- Max Daily Loss -->
+                    <div class="setting-card">
+                        <div class="setting-row">
+                            <span>⚠️ Max Daily Loss ($)</span>
+                            <input type="checkbox" id="riskMaxLossEn" onchange="saveRiskAndSessionSettings()">
+                        </div>
+                        <input type="number" id="riskMaxLossVal" class="setting-input" value="250" min="50" max="2000" onchange="saveRiskAndSessionSettings()">
                     </div>
-                    <input type="number" id="riskMaxLossVal" class="setting-input" value="250" min="50" max="2000" onchange="saveRiskAndSessionSettings()">
-                </div>
-                <!-- Max Consecutive Losses -->
-                <div class="setting-card">
-                    <div class="setting-row">
-                        <span>🛑 Max Consecutive Losses</span>
-                        <input type="checkbox" id="riskMaxConEn" onchange="saveRiskAndSessionSettings()">
+                    <!-- Max Consecutive Losses -->
+                    <div class="setting-card">
+                        <div class="setting-row">
+                            <span>🛑 Max Consecutive Losses</span>
+                            <input type="checkbox" id="riskMaxConEn" onchange="saveRiskAndSessionSettings()">
+                        </div>
+                        <input type="number" id="riskMaxConVal" class="setting-input" value="3" min="1" max="10" onchange="saveRiskAndSessionSettings()">
                     </div>
-                    <input type="number" id="riskMaxConVal" class="setting-input" value="3" min="1" max="10" onchange="saveRiskAndSessionSettings()">
                 </div>
             </div>
         </div>
@@ -862,7 +866,7 @@ const I18N = {
         orderTg: 'تفعيل عبر تيليجرام',
         scanningTitle: '🤖 جاري مسح السوق عبر المحرك المؤسسي',
         scanningDesc: 'مراقبة هيكل السوق على فريم M5 ومناطق الارتداد المؤسسية للذهب.',
-        noClosed: 'لا توجد صفقات مغلقة مسجلة في هذه الفترة.'
+        noClosed: 'لا توجد صفقات مسجلة في هذه الفترة.'
     }
 };
 
@@ -906,6 +910,15 @@ let isPasswordRecoveryMode = false;
 let currentUserProfile = null;
 let masterConfig = { td_api_key: '', tg_bot_token: '', tg_chat_id: '', beta_mode: true };
 let cachedClientList = [];
+let settingsVisible = true;
+
+function toggleSettingsCard() {
+    settingsVisible = !settingsVisible;
+    const body = document.getElementById('settingsCardBody');
+    const icon = document.getElementById('settingsToggleIcon');
+    if (body) body.style.display = settingsVisible ? 'flex' : 'none';
+    if (icon) icon.innerText = settingsVisible ? '[▲ Hide / إخفاء]' : '[▼ Show / إظهار]';
+}
 
 function isCurrentUserAdmin() {
     if (!currentUserProfile) return false;
@@ -1772,7 +1785,7 @@ async function sendTelegramAlert(text) {
 }
 
 // ============================================================================
-// 4. UI RENDERING & MANAGEMENT (WITH SEARCH, CLIENT ID & SORT FILTERS)
+// 4. UI RENDERING & MANAGEMENT
 // ============================================================================
 function updateDashboardUI() {
     if (state.lastPrice) document.getElementById('uiLivePrice').innerText = Number(state.lastPrice).toFixed(2);
@@ -1980,7 +1993,6 @@ function renderClientTable() {
 
     let list = [...cachedClientList];
 
-    // Filter by search (Email or Client ID suffix)
     if (searchVal) {
         list = list.filter(u => {
             const shortId = '#UID-' + (u.id || '').slice(0, 6).toUpperCase();
@@ -1989,7 +2001,6 @@ function renderClientTable() {
         });
     }
 
-    // Sort users
     list.sort((a, b) => {
         const timeA = new Date(a.created_at || 0).getTime();
         const timeB = new Date(b.created_at || 0).getTime();
