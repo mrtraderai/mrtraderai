@@ -23,12 +23,12 @@
         body { background: var(--bg-primary); color: var(--text-primary); padding: 14px; }
         .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
 
-        .lang-switch-btn, .view-toggle-btn {
+        .lang-switch-btn {
             background: var(--bg-card); color: var(--accent-gold); border: 1px solid var(--accent-gold);
             padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: 700;
             display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s;
         }
-        .lang-switch-btn:hover, .view-toggle-btn:hover { background: var(--accent-gold); color: #000; }
+        .lang-switch-btn:hover { background: var(--accent-gold); color: #000; }
         .auth-top-left { position: fixed; top: 12px; left: 12px; z-index: 10001; display: flex; gap: 6px; }
 
         .auth-overlay {
@@ -492,6 +492,13 @@
                     </div>
                     <div class="setting-card">
                         <div class="setting-row">
+                            <span>⚠️ Stop After Max Loss</span>
+                            <input type="checkbox" id="riskMaxConEn" onchange="saveRiskAndSessionSettings()">
+                        </div>
+                        <input type="number" id="riskMaxConVal" class="setting-input" value="3" min="1" max="10" onchange="saveRiskAndSessionSettings()" placeholder="e.g. 3 or 4 losses">
+                    </div>
+                    <div class="setting-card">
+                        <div class="setting-row">
                             <span>🛡️ Max Stop Loss (Pts)</span>
                             <input type="checkbox" id="riskMaxSlEn" onchange="saveRiskAndSessionSettings()">
                         </div>
@@ -503,13 +510,6 @@
                             <input type="checkbox" id="riskMaxTradesEn" onchange="saveRiskAndSessionSettings()">
                         </div>
                         <input type="number" id="riskMaxTradesVal" class="setting-input" value="10" min="1" max="30" onchange="saveRiskAndSessionSettings()">
-                    </div>
-                    <div class="setting-card">
-                        <div class="setting-row">
-                            <span>⚠️ Max Daily Loss ($)</span>
-                            <input type="checkbox" id="riskMaxLossEn" onchange="saveRiskAndSessionSettings()">
-                        </div>
-                        <input type="number" id="riskMaxLossVal" class="setting-input" value="250" min="50" max="2000" onchange="saveRiskAndSessionSettings()">
                     </div>
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:2px;">
@@ -1347,14 +1347,14 @@ function syncSettingsToUI() {
 
         document.getElementById('newsFilterEn').checked = n.enabled !== false;
 
+        document.getElementById('riskMaxConEn').checked = r.maxConsecutiveEnabled !== false;
+        document.getElementById('riskMaxConVal').value = r.maxConsecutiveValue || 3;
+
         document.getElementById('riskMaxSlEn').checked = r.maxSlEnabled !== false;
         document.getElementById('riskMaxSlVal').value = r.maxSlValue || 120;
 
         document.getElementById('riskMaxTradesEn').checked = r.maxTradesEnabled !== false;
         document.getElementById('riskMaxTradesVal').value = r.maxTradesValue || 10;
-
-        document.getElementById('riskMaxLossEn').checked = r.maxDailyLossEnabled !== false;
-        document.getElementById('riskMaxLossVal').value = r.maxDailyLossValue || 250;
     }
 }
 
@@ -1375,19 +1375,15 @@ async function saveRiskAndSessionSettings() {
         maxSlValue: parseFloat(document.getElementById('riskMaxSlVal').value) || 120,
         maxTradesEnabled: document.getElementById('riskMaxTradesEn').checked,
         maxTradesValue: parseInt(document.getElementById('riskMaxTradesVal').value) || 10,
-        maxDailyLossEnabled: document.getElementById('riskMaxLossEn').checked,
-        maxDailyLossValue: parseFloat(document.getElementById('riskMaxLossVal').value) || 250,
-        maxConsecutiveEnabled: true,
-        maxConsecutiveValue: 3
+        maxDailyLossEnabled: true,
+        maxDailyLossValue: 250,
+        maxConsecutiveEnabled: document.getElementById('riskMaxConEn').checked,
+        maxConsecutiveValue: parseInt(document.getElementById('riskMaxConVal').value) || 3
     };
     await saveState();
-    portalSyncSettingsToUI();
+    syncSettingsToUI();
     logEvent('⚙️ Settings saved.');
     alert(currentLang === 'ar' ? '✅ تم حفظ الإعدادات!' : '✅ Settings saved!');
-}
-
-function portalSyncSettingsToUI() {
-    syncSettingsToUI();
 }
 
 async function resetSettingsToDefault() {
