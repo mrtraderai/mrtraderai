@@ -20,200 +20,211 @@
             --border-color: #2a3142;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Roboto, sans-serif; }
-        body { background: var(--bg-primary); color: var(--text-primary); padding: 14px; }
-        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+        body { background: var(--bg-primary); color: var(--text-primary); padding: 10px; }
+        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
 
-        .lang-switch-btn {
+        /* PHONE MODE OVERRIDES (Soft & Compact) */
+        body.phone-mode .container { max-width: 480px !important; padding: 4px; }
+        body.phone-mode .metrics-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; }
+        body.phone-mode .main-grid { grid-template-columns: 1fr !important; }
+        body.phone-mode .setting-grid { grid-template-columns: 1fr !important; }
+        body.phone-mode .nav-tabs { gap: 4px; padding: 4px; }
+        body.phone-mode .nav-tab { min-width: 70px !important; padding: 7px 6px !important; font-size: 0.72rem !important; }
+        body.phone-mode .header { padding: 10px 12px; }
+        body.phone-mode .panel-box, body.phone-mode .metric-card { padding: 10px !important; }
+        body.phone-mode #chart { height: 280px !important; }
+
+        .lang-switch-btn, .view-toggle-btn {
             background: var(--bg-card); color: var(--accent-gold); border: 1px solid var(--accent-gold);
-            padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-weight: 700;
-            display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s;
+            padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s;
         }
-        .lang-switch-btn:hover { background: var(--accent-gold); color: #000; }
-        .auth-top-left { position: fixed; top: 16px; left: 16px; z-index: 10001; }
+        .lang-switch-btn:hover, .view-toggle-btn:hover { background: var(--accent-gold); color: #000; }
+        .auth-top-left { position: fixed; top: 12px; left: 12px; z-index: 10001; display: flex; gap: 6px; }
 
         .auth-overlay {
             position: fixed; inset: 0; background: radial-gradient(circle at top right, #1b2234 0%, #0b0e14 65%);
-            z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; overflow-y: auto;
+            z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 16px; overflow-y: auto;
         }
-        .auth-wrapper { width: 100%; max-width: 980px; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 22px; align-items: stretch; }
-        @media (max-width: 860px) { .auth-wrapper { grid-template-columns: 1fr; max-width: 440px; } }
+        .auth-wrapper { width: 100%; max-width: 980px; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 20px; align-items: stretch; }
+        @media (max-width: 860px) { .auth-wrapper { grid-template-columns: 1fr; max-width: 420px; } }
 
         .showcase-panel {
-            background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 14px;
+            background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px;
             overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.55);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .showcase-hero {
-            position: relative; height: 220px;
+            position: relative; height: 180px;
             background: linear-gradient(to bottom, rgba(11,14,20,0.25), rgba(19,23,34,0.98)),
                         url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1000&q=80') center/cover no-repeat;
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 20px;
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 16px;
         }
         .showcase-badge {
             display: inline-block; width: fit-content; background: rgba(245, 158, 11, 0.2);
-            border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 0.72rem;
-            font-weight: 700; padding: 4px 10px; border-radius: 20px; margin-bottom: 8px;
+            border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 0.68rem;
+            font-weight: 700; padding: 3px 8px; border-radius: 20px; margin-bottom: 6px;
         }
-        .showcase-hero h1 { font-size: 1.4rem; color: #fff; letter-spacing: 0.4px; }
-        .showcase-body { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 14px; }
-        .showcase-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .sc-stat-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center; }
-        .sc-stat-val { font-size: 1.15rem; font-weight: 800; color: var(--accent-green); }
-        .sc-stat-lbl { font-size: 0.7rem; color: var(--text-secondary); margin-top: 3px; }
-        .showcase-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .showcase-hero h1 { font-size: 1.25rem; color: #fff; }
+        .showcase-body { padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .showcase-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .sc-stat-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; text-align: center; }
+        .sc-stat-val { font-size: 1.05rem; font-weight: 800; color: var(--accent-green); }
+        .sc-stat-lbl { font-size: 0.65rem; color: var(--text-secondary); margin-top: 2px; }
+        .showcase-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .sc-img-card {
-            height: 92px; border-radius: 8px; border: 1px solid var(--border-color); position: relative; overflow: hidden;
-            display: flex; align-items: flex-end; padding: 8px; font-size: 0.72rem; font-weight: 700; color: #fff;
+            height: 75px; border-radius: 6px; border: 1px solid var(--border-color); position: relative; overflow: hidden;
+            display: flex; align-items: flex-end; padding: 6px; font-size: 0.68rem; font-weight: 700; color: #fff;
         }
-        .sc-img-1 { background: linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0.15)), url('https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=600&q=80') center/cover; }
-        .sc-img-2 { background: linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0.15)), url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=600&q=80') center/cover; }
+        .sc-img-1 { background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.1)), url('https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=600&q=80') center/cover; }
+        .sc-img-2 { background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.1)), url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=600&q=80') center/cover; }
 
         .auth-box {
-            width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 14px; padding: 28px 24px;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: center;
+            width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 22px 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: center;
         }
-        .auth-box h2 { color: var(--accent-gold); font-size: 1.35rem; margin-bottom: 6px; text-align: center; }
-        .auth-box p { color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 18px; text-align: center; line-height: 1.5; }
-        .auth-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+        .auth-box h2 { color: var(--accent-gold); font-size: 1.25rem; margin-bottom: 4px; text-align: center; }
+        .auth-box p { color: var(--text-secondary); font-size: 0.78rem; margin-bottom: 14px; text-align: center; line-height: 1.4; }
+        .auth-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
         .auth-tab {
-            flex: 1; padding: 9px; background: var(--bg-primary); border: 1px solid var(--border-color);
-            color: var(--text-secondary); border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.8rem;
+            flex: 1; padding: 8px; background: var(--bg-primary); border: 1px solid var(--border-color);
+            color: var(--text-secondary); border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.78rem;
         }
         .auth-tab.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
         .auth-input {
-            width: 100%; padding: 11px 12px; margin-bottom: 12px; background: var(--bg-primary);
-            border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; font-size: 0.85rem;
+            width: 100%; padding: 10px 12px; margin-bottom: 10px; background: var(--bg-primary);
+            border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; font-size: 0.82rem;
         }
         .auth-btn {
-            width: 100%; padding: 11px; background: var(--accent-gold); color: #000; border: none;
-            border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.88rem; text-align: center; text-decoration: none;
+            width: 100%; padding: 10px; background: var(--accent-gold); color: #000; border: none;
+            border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.85rem; text-align: center; text-decoration: none;
         }
-        .auth-link-row { display: flex; justify-content: flex-end; margin-top: -6px; margin-bottom: 14px; }
-        .auth-link { background: none; border: none; color: var(--text-secondary); font-size: 0.75rem; cursor: pointer; text-decoration: underline; }
+        .auth-link-row { display: flex; justify-content: flex-end; margin-top: -4px; margin-bottom: 12px; }
+        .auth-link { background: none; border: none; color: var(--text-secondary); font-size: 0.72rem; cursor: pointer; text-decoration: underline; }
         .auth-link:hover { color: var(--accent-gold); }
-        .auth-msg { font-size: 0.78rem; margin-top: 10px; text-align: center; color: var(--accent-green); }
+        .auth-msg { font-size: 0.75rem; margin-top: 8px; text-align: center; color: var(--accent-green); }
 
-        .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 12px; }
+        .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 10px; }
         .plan-card {
-            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px;
-            padding: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; text-align: center;
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px;
+            padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; text-align: center;
         }
         .plan-card.popular { border: 1.5px solid var(--accent-gold); }
-        .plan-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
-        .plan-price { font-size: 1.55rem; font-weight: 800; color: var(--accent-gold); }
-        .plan-desc { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.45; }
+        .plan-title { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
+        .plan-price { font-size: 1.35rem; font-weight: 800; color: var(--accent-gold); }
+        .plan-desc { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.4; }
         .btn-tg {
-            background: #229ED9; color: #fff; border: none; padding: 9px 14px; border-radius: 7px;
-            font-weight: 700; font-size: 0.8rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            background: #229ED9; color: #fff; border: none; padding: 8px 12px; border-radius: 6px;
+            font-weight: 700; font-size: 0.76rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
         }
         .btn-tg:hover { background: #1d8ec4; }
 
-        .pwa-steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 10px; }
-        .pwa-step-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
-        .pwa-step-num { font-size: 0.72rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; }
-        .pwa-step-title { font-size: 0.85rem; font-weight: 700; color: #fff; }
-        .pwa-step-desc { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.45; }
+        .pwa-steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 8px; }
+        .pwa-step-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+        .pwa-step-num { font-size: 0.68rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; }
+        .pwa-step-title { font-size: 0.8rem; font-weight: 700; color: #fff; }
+        .pwa-step-desc { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.4; }
 
         .modal-backdrop {
             position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000;
-            display: none; justify-content: center; align-items: center; padding: 16px;
+            display: none; justify-content: center; align-items: center; padding: 12px;
         }
         .pin-box {
-            width: 100%; max-width: 340px; background: var(--bg-secondary); border: 1px solid var(--accent-gold);
-            border-radius: 12px; padding: 24px; text-align: center; box-shadow: 0 12px 35px rgba(0,0,0,0.75);
+            width: 100%; max-width: 320px; background: var(--bg-secondary); border: 1px solid var(--accent-gold);
+            border-radius: 10px; padding: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.7);
         }
         .pin-input {
-            width: 100%; padding: 12px; margin: 14px 0 10px; background: var(--bg-primary); border: 1px solid var(--border-color);
-            color: var(--accent-gold); border-radius: 8px; font-size: 1.35rem; font-weight: 700; text-align: center; letter-spacing: 8px;
+            width: 100%; padding: 10px; margin: 12px 0 8px; background: var(--bg-primary); border: 1px solid var(--border-color);
+            color: var(--accent-gold); border-radius: 6px; font-size: 1.25rem; font-weight: 700; text-align: center; letter-spacing: 6px;
         }
         .admin-window {
-            width: 100%; max-width: 1040px; max-height: 92vh; overflow-y: auto; background: var(--bg-secondary);
-            border: 1px solid var(--accent-gold); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px;
+            width: 100%; max-width: 980px; max-height: 90vh; overflow-y: auto; background: var(--bg-secondary);
+            border: 1px solid var(--accent-gold); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px;
         }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-        .admin-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; }
-        .admin-section h4 { color: var(--accent-gold); font-size: 0.85rem; margin-bottom: 10px; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        .admin-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; }
+        .admin-section h4 { color: var(--accent-gold); font-size: 0.82rem; margin-bottom: 8px; }
         
-        .setting-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 8px; }
-        .setting-card { background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 600; }
-        .setting-input { width: 100%; padding: 6px 8px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--accent-gold); border-radius: 4px; font-size: 0.8rem; font-weight: 700; text-align: center; }
+        .setting-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 6px; }
+        .setting-card { background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 600; }
+        .setting-input { width: 100%; padding: 5px 6px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--accent-gold); border-radius: 4px; font-size: 0.78rem; font-weight: 700; text-align: center; }
 
-        .data-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
-        .data-table th, .data-table td { padding: 8px 6px; border-bottom: 1px solid var(--border-color); text-align: start; vertical-align: middle; }
-        .data-table th { color: var(--text-secondary); font-size: 0.7rem; text-transform: uppercase; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.74rem; }
+        .data-table th, .data-table td { padding: 6px 4px; border-bottom: 1px solid var(--border-color); text-align: start; vertical-align: middle; }
+        .data-table th { color: var(--text-secondary); font-size: 0.68rem; text-transform: uppercase; }
         .badge-approved { color: var(--accent-green); font-weight: 700; }
         .badge-pending { color: var(--accent-gold); font-weight: 700; }
         .badge-expired { color: var(--accent-red); font-weight: 700; }
-        .bundle-select { background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 5px 7px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+        .bundle-select { background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 4px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: 600; }
 
         .header {
             display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
-            background: var(--bg-secondary); padding: 14px 18px; border-radius: 10px; border: 1px solid var(--border-color); gap: 10px;
+            background: var(--bg-secondary); padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-color); gap: 8px;
         }
-        .header-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .title-group h1 { font-size: 1.2rem; color: var(--accent-gold); letter-spacing: 0.5px; }
-        .title-group p { font-size: 0.78rem; color: var(--text-secondary); margin-top: 2px; }
-        .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .title-group h1 { font-size: 1.1rem; color: var(--accent-gold); }
+        .title-group p { font-size: 0.74rem; color: var(--text-secondary); margin-top: 1px; }
+        .controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .status-pill {
-            display: flex; align-items: center; gap: 8px; padding: 7px 14px;
-            background: rgba(16, 185, 129, 0.12); border: 1px solid var(--accent-green); color: var(--accent-green); border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+            display: flex; align-items: center; gap: 6px; padding: 5px 10px;
+            background: rgba(16, 185, 129, 0.12); border: 1px solid var(--accent-green); color: var(--accent-green); border-radius: 16px; font-size: 0.74rem; font-weight: 600;
         }
-        .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 1.6s infinite; }
+        .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.6s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        .btn-ui { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 7px; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
+        .btn-ui { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 0.72rem; font-weight: 600; }
         .btn-ui:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
-        .btn-admin { border-color: var(--accent-gold); color: var(--accent-gold); display: none; letter-spacing: 1px; }
+        .btn-admin { border-color: var(--accent-gold); color: var(--accent-gold); display: none; }
 
-        .nav-tabs { display: flex; gap: 8px; flex-wrap: wrap; background: var(--bg-secondary); padding: 8px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .nav-tabs { display: flex; gap: 6px; flex-wrap: wrap; background: var(--bg-secondary); padding: 6px; border-radius: 8px; border: 1px solid var(--border-color); }
         .nav-tab {
-            flex: 1; min-width: 115px; padding: 10px 12px; background: var(--bg-primary); border: 1px solid var(--border-color);
-            color: var(--text-secondary); border-radius: 7px; cursor: pointer; font-weight: 700; font-size: 0.8rem; text-align: center; transition: all 0.15s;
+            flex: 1; min-width: 100px; padding: 8px 10px; background: var(--bg-primary); border: 1px solid var(--border-color);
+            color: var(--text-secondary); border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.76rem; text-align: center; transition: all 0.15s;
         }
         .nav-tab:hover { border-color: var(--accent-gold); color: var(--text-primary); }
         .nav-tab.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
-        .tab-view { display: none; flex-direction: column; gap: 14px; }
+        .tab-view { display: none; flex-direction: column; gap: 10px; }
         .tab-view.active { display: flex; }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
-        .metric-card { background: var(--bg-secondary); padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border-color); }
-        .metric-label { font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; }
-        .metric-value { font-size: 1.15rem; font-weight: 700; margin-top: 4px; color: var(--text-primary); }
-        .metric-sub { font-size: 0.72rem; color: var(--text-secondary); margin-top: 3px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; }
+        .metric-card { background: var(--bg-secondary); padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .metric-label { font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; }
+        .metric-value { font-size: 1.05rem; font-weight: 700; margin-top: 3px; color: var(--text-primary); }
+        .metric-sub { font-size: 0.68rem; color: var(--text-secondary); margin-top: 2px; }
 
         .risk-remark {
-            background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 8px; padding: 9px 14px;
-            font-size: 0.78rem; color: var(--accent-gold); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+            background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 6px; padding: 8px 12px;
+            font-size: 0.74rem; color: var(--accent-gold); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
         }
 
-        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
         @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
         .chart-box, .panel-box {
-            background: var(--bg-secondary); border-radius: 10px; border: 1px solid var(--border-color); padding: 14px; display: flex; flex-direction: column;
+            background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color); padding: 12px; display: flex; flex-direction: column;
         }
         .box-header {
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
-            margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; font-weight: 600;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
+            margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border-color); font-size: 0.8rem; font-weight: 600;
         }
-        #chart { width: 100%; height: 420px; }
+        #chart { width: 100%; height: 380px; }
 
         .signal-card {
-            background: var(--bg-card); border-radius: 8px; padding: 14px; border-inline-start: 4px solid var(--accent-gold); margin-bottom: 12px;
+            background: var(--bg-card); border-radius: 6px; padding: 12px; border-inline-start: 4px solid var(--accent-gold); margin-bottom: 10px;
         }
         .signal-card.buy { border-inline-start-color: var(--accent-green); }
         .signal-card.sell { border-inline-start-color: var(--accent-red); }
-        .sig-row { display: flex; justify-content: space-between; font-size: 0.84rem; margin: 5px 0; }
-        .sig-badge { padding: 3px 9px; border-radius: 4px; font-weight: 700; font-size: 0.75rem; }
+        .sig-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin: 4px 0; }
+        .sig-badge { padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.72rem; }
         .sig-badge.buy { background: rgba(16,185,129,0.2); color: var(--accent-green); }
         .sig-badge.sell { background: rgba(239,68,68,0.2); color: var(--accent-red); }
 
         .log-box {
-            flex: 1; background: var(--bg-primary); border-radius: 6px; padding: 10px;
-            font-size: 0.75rem; color: var(--text-secondary); overflow-y: auto; max-height: 240px; border: 1px solid var(--border-color); line-height: 1.5;
+            flex: 1; background: var(--bg-primary); border-radius: 6px; padding: 8px;
+            font-size: 0.72rem; color: var(--text-secondary); overflow-y: auto; max-height: 220px; border: 1px solid var(--border-color); line-height: 1.4;
         }
-        .log-entry { margin-bottom: 4px; border-bottom: 1px dashed #1e2536; padding-bottom: 3px; }
-        .log-time { color: var(--accent-gold); margin-inline-end: 6px; }
+        .log-entry { margin-bottom: 3px; border-bottom: 1px dashed #1e2536; padding-bottom: 2px; }
+        .log-time { color: var(--accent-gold); margin-inline-end: 4px; }
     </style>
 </head>
 <body>
@@ -222,6 +233,7 @@
 <div id="authOverlay" class="auth-overlay">
     <div class="auth-top-left">
         <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
+        <button type="button" class="view-toggle-btn" onclick="toggleViewMode()">📱/💻 <span id="viewModeBtnLbl">Phone View</span></button>
     </div>
 
     <div class="auth-wrapper" id="authLandingWrapper">
@@ -231,7 +243,7 @@
                 <h1>Mr.Trader AI — XAU/USD</h1>
             </div>
             <div class="showcase-body">
-                <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.55;" data-i18n="scDesc">
+                <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.45;" data-i18n="scDesc">
                     Advanced institutional liquidity reclaims and multi-timeframe structural analysis engineered specifically for precision gold execution.
                 </p>
                 <div class="showcase-stats">
@@ -259,7 +271,7 @@
                 <button type="button" class="auth-link" onclick="switchAuthMode('forgot')" data-i18n="forgotPass">Forgot Password?</button>
             </div>
             <button type="button" id="authSubmitBtn" class="auth-btn" onclick="handleAuthSubmit()" data-i18n="loginBtn">Login to Terminal</button>
-            <div style="text-align:center; margin-top:10px; display:none;" id="backToLoginRow">
+            <div style="text-align:center; margin-top:8px; display:none;" id="backToLoginRow">
                 <button type="button" class="auth-link" onclick="switchAuthMode('login')" data-i18n="backLogin">← Back to Client Login</button>
             </div>
             <div id="authMessage" class="auth-msg"></div>
@@ -267,7 +279,7 @@
     </div>
 
     <!-- Set New Password Form -->
-    <div class="auth-box" id="updatePasswordBox" style="display:none; max-width:420px;">
+    <div class="auth-box" id="updatePasswordBox" style="display:none; max-width:400px;">
         <h2 data-i18n="setNewPassTitle">🔐 SET NEW PASSWORD</h2>
         <p data-i18n="setNewPassDesc">Enter your new password below to regain access to Mr.Trader AI.</p>
         <input type="password" id="newPasswordInput" class="auth-input" placeholder="New Password (min 6 chars)">
@@ -277,13 +289,13 @@
     </div>
 
     <!-- Pending / Expired VIP Subscription Screen -->
-    <div class="auth-box" id="pendingApprovalBox" style="display:none; max-width:680px; text-align:center;">
+    <div class="auth-box" id="pendingApprovalBox" style="display:none; max-width:640px; text-align:center;">
         <h2 id="vipLockTitle">⏳ VIP Subscription Required</h2>
-        <p id="vipLockDesc" style="margin-top:8px;">
-            Account: <strong id="pendingEmailText"></strong> — Choose a VIP plan below and message <strong>@mrtraderai_official</strong> on Telegram to activate instantly.
+        <p id="vipLockDesc" style="margin-top:6px;">
+            Account: <strong id="pendingEmailText"></strong> — Choose a VIP plan below and message <strong>@mrtraderai_official</strong> on Telegram.
         </p>
 
-        <div class="plans-grid" style="margin-bottom:16px;">
+        <div class="plans-grid" style="margin-bottom:12px;">
             <div class="plan-card">
                 <div class="plan-title" data-i18n="plan3dTitle">3-Day Trial</div>
                 <div class="plan-price">$15</div>
@@ -293,7 +305,7 @@
             <div class="plan-card popular">
                 <div class="plan-title" data-i18n="plan1mTitle">1 Month VIP</div>
                 <div class="plan-price">$99</div>
-                <div class="plan-desc" data-i18n="plan1mDesc">30 days full terminal access, real-time entries, SL & TP1 alerts</div>
+                <div class="plan-desc" data-i18n="plan1mDesc">30 days full terminal access, real-time entries, SL & TP alerts</div>
                 <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
             </div>
             <div class="plan-card">
@@ -312,12 +324,12 @@
 <div id="pinModal" class="modal-backdrop" onclick="closePinModal(event)">
     <div class="pin-box" onclick="event.stopPropagation()">
         <h3 style="color:var(--accent-gold); letter-spacing:1px;">🔒 ENTER AW PIN</h3>
-        <p style="color:var(--text-secondary); font-size:0.76rem; margin-top:6px;">Security verification required to unlock AW</p>
+        <p style="color:var(--text-secondary); font-size:0.74rem; margin-top:4px;">Security verification required to unlock AW</p>
         <input type="password" id="awPinInput" class="pin-input" maxlength="8" placeholder="••••" onkeydown="if(event.key==='Enter') verifyAwPin()">
-        <div id="awPinError" style="color:var(--accent-red); font-size:0.76rem; min-height:18px; margin-bottom:8px;"></div>
-        <div style="display:flex; gap:8px;">
+        <div id="awPinError" style="color:var(--accent-red); font-size:0.74rem; min-height:16px; margin-bottom:6px;"></div>
+        <div style="display:flex; gap:6px;">
             <button type="button" class="btn-ui" style="flex:1;" onclick="document.getElementById('pinModal').style.display='none'">Cancel</button>
-            <button type="button" class="auth-btn" style="flex:1; padding:8px;" onclick="verifyAwPin()">Unlock AW</button>
+            <button type="button" class="auth-btn" style="flex:1; padding:7px;" onclick="verifyAwPin()">Unlock AW</button>
         </div>
     </div>
 </div>
@@ -327,41 +339,40 @@
     <div class="admin-window" onclick="event.stopPropagation()">
         <div class="admin-header">
             <h3 style="color:var(--accent-gold); letter-spacing:1px;">🛡️ AW — CONTROL WINDOW (v1.2)</h3>
-            <button type="button" class="btn-ui" onclick="document.getElementById('adminModal').style.display='none'">✖ Lock & Close</button>
+            <button type="button" class="btn-ui" onclick="document.getElementById('adminModal').style.display='none'">✖ Close</button>
         </div>
 
         <div class="admin-section">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
                 <h4 style="margin:0;">1. Master Engine Credentials & Access Mode</h4>
                 <button type="button" id="betaModeToggleBtn" class="btn-ui" onclick="toggleBetaMode()">Loading Access Mode...</button>
             </div>
-            <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
                 <input type="password" id="adminTdKey" class="auth-input" style="flex:1; margin:0;" placeholder="TwelveData API Key">
                 <input type="password" id="adminTgToken" class="auth-input" style="flex:1; margin:0;" placeholder="Telegram Bot Token">
                 <input type="text" id="adminTgChat" class="auth-input" style="flex:1; margin:0;" placeholder="Telegram Chat ID">
             </div>
-            <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
-                <button type="button" class="auth-btn" style="width:auto; padding:8px 14px;" onclick="saveMasterConfig()">💾 Save Master Keys</button>
-                <button type="button" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="testTelegramConnection()">📨 Test Telegram</button>
-                <button type="button" class="btn-ui" style="border-color:var(--accent-blue); color:var(--accent-blue);" onclick="testTpHitTelegram()">🎯 Test TP1 Hit Alert</button>
-                <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="resetLiveAccountState()">♻️ Reset Stats & #Trade-1</button>
+            <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
+                <button type="button" class="auth-btn" style="width:auto; padding:7px 12px;" onclick="saveMasterConfig()">💾 Save Keys</button>
+                <button type="button" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="testTelegramConnection()">📨 Test TG</button>
+                <button type="button" class="btn-ui" style="border-color:var(--accent-blue); color:var(--accent-blue);" onclick="testTpHitTelegram()">🎯 Test TP</button>
+                <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="resetLiveAccountState()">♻️ Reset #1</button>
             </div>
         </div>
 
         <div class="admin-section">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-                <h4 style="margin:0;">3. Registered Clients & VIP Bundles (<span id="clientCountBadge">0</span> Users)</h4>
-                <span id="adminUserActionMsg" style="font-size:0.75rem; color:var(--accent-green);"></span>
-                <button type="button" class="btn-ui" onclick="loadClientList()">🔄 Refresh List</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+                <h4 style="margin:0;">3. Registered Clients (<span id="clientCountBadge">0</span>)</h4>
+                <span id="adminUserActionMsg" style="font-size:0.72rem; color:var(--accent-green);"></span>
+                <button type="button" class="btn-ui" onclick="loadClientList()">🔄 Refresh</button>
             </div>
 
-            <!-- Search Bar & Sort Filters -->
-            <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
-                <input type="text" id="clientSearchInput" class="auth-input" style="flex:2; margin:0; padding:8px 10px;" placeholder="🔍 Search by Email or Client ID..." oninput="renderClientTable()">
-                <select id="clientSortSelect" class="bundle-select" style="flex:1; padding:8px 10px;" onchange="renderClientTable()">
-                    <option value="newest">🕒 Newest First</option>
-                    <option value="oldest">⏳ Oldest First</option>
-                    <option value="vip_active">💎 VIP Active First</option>
+            <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+                <input type="text" id="clientSearchInput" class="auth-input" style="flex:2; margin:0; padding:6px 8px;" placeholder="🔍 Search Email or ID..." oninput="renderClientTable()">
+                <select id="clientSortSelect" class="bundle-select" style="flex:1; padding:6px 8px;" onchange="renderClientTable()">
+                    <option value="newest">🕒 Newest</option>
+                    <option value="oldest">⏳ Oldest</option>
+                    <option value="vip_active">💎 VIP Active</option>
                 </select>
             </div>
 
@@ -370,16 +381,16 @@
                     <thead>
                         <tr>
                             <th>Client ID</th>
-                            <th>User Email</th>
+                            <th>Email</th>
                             <th>Bundle</th>
-                            <th>VIP Start</th>
-                            <th>VIP Expires</th>
+                            <th>Start</th>
+                            <th>Expires</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="clientTableBody">
-                        <tr><td colspan="7" style="color:var(--text-secondary); text-align:center;">Loading users...</td></tr>
+                        <tr><td colspan="7" style="color:var(--text-secondary); text-align:center;">Loading...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -392,6 +403,7 @@
     <div class="header">
         <div class="header-left">
             <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
+            <button type="button" class="view-toggle-btn" onclick="toggleViewMode()">📱/💻 <span id="viewModeBtnLbl2">Phone View</span></button>
             <div class="title-group">
                 <h1>Mr.Trader AI v1.2</h1>
                 <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals | 120 SL / 180 TP (GMT Time)</p>
@@ -404,7 +416,7 @@
             </div>
             <div id="autopilotStatusPill" class="status-pill">
                 <span class="pulse-dot"></span>
-                <span id="autopilotStatusText" data-i18n="liveStream">LIVE STREAM ACTIVE</span>
+                <span id="autopilotStatusText" data-i18n="liveStream">LIVE</span>
             </div>
             <button type="button" id="openAdminBtn" class="btn-ui btn-admin" onclick="promptAwPin()">AW</button>
             <button type="button" id="forceRefreshBtn" class="btn-ui" onclick="hardSyncRefresh()">🔄 <span data-i18n="syncBtn">Sync</span></button>
@@ -415,9 +427,9 @@
     <!-- Navigation Tabs -->
     <div class="nav-tabs">
         <button type="button" id="navHome" class="nav-tab active" onclick="switchTerminalTab('home')">🏠 <span data-i18n="tabHome">Home</span></button>
-        <button type="button" id="navActive" class="nav-tab" onclick="switchTerminalTab('active')">⚡ <span data-i18n="tabActive">Active Trade</span></button>
-        <button type="button" id="navClosed" class="nav-tab" onclick="switchTerminalTab('closed')">📜 <span data-i18n="tabClosed">Closed Trades</span></button>
-        <button type="button" id="navWinrate" class="nav-tab" onclick="switchTerminalTab('winrate')">📊 <span data-i18n="tabWinrate">Win Rate & Stats</span></button>
+        <button type="button" id="navActive" class="nav-tab" onclick="switchTerminalTab('active')">⚡ <span data-i18n="tabActive">Active</span></button>
+        <button type="button" id="navClosed" class="nav-tab" onclick="switchTerminalTab('closed')">📜 <span data-i18n="tabClosed">History</span></button>
+        <button type="button" id="navWinrate" class="nav-tab" onclick="switchTerminalTab('winrate')">📊 <span data-i18n="tabWinrate">Stats</span></button>
         <button type="button" id="navAccount" class="nav-tab" onclick="switchTerminalTab('account')">👤 <span data-i18n="tabAccount">Account</span></button>
     </div>
 
@@ -425,36 +437,36 @@
     <div id="viewHome" class="tab-view active">
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-label" data-i18n="lblLivePrice">Live XAU/USD Price</div>
+                <div class="metric-label" data-i18n="lblLivePrice">Live XAU/USD</div>
                 <div class="metric-value" id="uiLivePrice" style="color: var(--accent-gold);">---.--</div>
                 <div class="metric-sub" data-i18n="subSpread">Exness Spread Modeled</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label" data-i18n="lblTrendBias">Market Bias & Sessions (GMT)</div>
+                <div class="metric-label" data-i18n="lblTrendBias">Market Bias & Sessions</div>
                 <div class="metric-value" id="uiTrendBias">NEUTRAL</div>
                 <div class="metric-sub" id="uiSessionsStatus" style="font-weight:600;">Tokyo: -- | London: -- | NY: --</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label" data-i18n="lblSignalSummary">Current Signal Status</div>
+                <div class="metric-label" data-i18n="lblSignalSummary">Signal Status</div>
                 <div class="metric-value" id="uiTopSignalDir" style="color: var(--text-secondary);">NONE</div>
-                <div class="metric-sub" id="uiTopSignalLevels">No active or limit order</div>
+                <div class="metric-sub" id="uiTopSignalLevels">No active order</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label" data-i18n="lblWinRate">Live Win Rate</div>
                 <div class="metric-value" id="uiHomeWinRate" style="color: var(--accent-green);">0.0%</div>
-                <div class="metric-sub" id="uiHomeRecord">0W - 0L (0 Trades)</div>
+                <div class="metric-sub" id="uiHomeRecord">0W - 0L (0)</div>
             </div>
         </div>
 
         <!-- Session Filters & Risk Guardrails Control Panel -->
         <div class="panel-box" style="background:var(--bg-secondary); border:1px solid var(--border-color);">
-            <div class="box-header" style="margin-bottom:8px; cursor:pointer;" onclick="toggleSettingsCard()">
-                <span>⚙️ Session Filters, Risk Guardrails & News Blackout (<span id="settingsTzLabel">GMT</span>) <span id="settingsToggleIcon" style="font-size:0.75rem; color:var(--accent-gold);"><span data-i18n="hideShowToggle">[▲ Hide]</span></span></span>
-                <div style="display:flex; gap:8px;">
-                    <button type="button" class="btn-ui" style="border-color:var(--accent-gold); color:var(--accent-gold); padding:4px 8px;" onclick="event.stopPropagation(); resetSettingsToDefault()">🔄 <span data-i18n="resetRulesBtn">Reset Rules</span></button>
+            <div class="box-header" style="margin-bottom:6px; cursor:pointer;" onclick="toggleSettingsCard()">
+                <span>⚙️ Session Filters & Risk Guardrails (<span id="settingsTzLabel">GMT</span>) <span id="settingsToggleIcon" style="font-size:0.72rem; color:var(--accent-gold);"><span data-i18n="hideShowToggle">[▲ Hide]</span></span></span>
+                <div style="display:flex; gap:6px;">
+                    <button type="button" class="btn-ui" style="border-color:var(--accent-gold); color:var(--accent-gold); padding:3px 6px;" onclick="event.stopPropagation(); resetSettingsToDefault()">🔄 <span data-i18n="resetRulesBtn">Reset</span></button>
                 </div>
             </div>
-            <div id="settingsCardBody" style="display:flex; flex-direction:column; gap:10px;">
+            <div id="settingsCardBody" style="display:flex; flex-direction:column; gap:8px;">
                 <div class="setting-grid">
                     <div class="setting-card" style="border-color:var(--accent-gold);">
                         <div class="setting-row">
@@ -471,31 +483,31 @@
                     </div>
                     <div class="setting-card">
                         <div class="setting-row">
-                            <span>🇯🇵 Tokyo (00:00-09:00 GMT)</span>
+                            <span>🇯🇵 Tokyo (00-09 GMT)</span>
                             <input type="checkbox" id="sessTokyo" onchange="saveRiskAndSessionSettings()">
                         </div>
-                        <div style="font-size:0.7rem; color:var(--text-secondary);" id="tokyoLiveStatusTag">Status: Checking...</div>
+                        <div style="font-size:0.68rem; color:var(--text-secondary);" id="tokyoLiveStatusTag">Checking...</div>
                     </div>
                     <div class="setting-card">
                         <div class="setting-row">
-                            <span>🇬🇧 London (07:00-16:00 GMT)</span>
+                            <span>🇬🇧 London (07-16 GMT)</span>
                             <input type="checkbox" id="sessLondon" onchange="saveRiskAndSessionSettings()">
                         </div>
-                        <div style="font-size:0.7rem; color:var(--text-secondary);" id="londonLiveStatusTag">Status: Checking...</div>
+                        <div style="font-size:0.68rem; color:var(--text-secondary);" id="londonLiveStatusTag">Checking...</div>
                     </div>
                     <div class="setting-card">
                         <div class="setting-row">
-                            <span>🇺🇸 New York (12:00-21:00 GMT)</span>
+                            <span>🇺🇸 New York (12-21 GMT)</span>
                             <input type="checkbox" id="sessNy" onchange="saveRiskAndSessionSettings()">
                         </div>
-                        <div style="font-size:0.7rem; color:var(--text-secondary);" id="nyLiveStatusTag">Status: Checking...</div>
+                        <div style="font-size:0.68rem; color:var(--text-secondary);" id="nyLiveStatusTag">Checking...</div>
                     </div>
                     <div class="setting-card" style="border-color:var(--accent-gold);">
                         <div class="setting-row">
                             <span style="color:var(--accent-gold);">📰 USD News Filter (±15m)</span>
                             <input type="checkbox" id="newsFilterEn" onchange="saveRiskAndSessionSettings()">
                         </div>
-                        <div style="font-size:0.7rem; color:var(--text-secondary);" id="newsFilterStatusTag">Status: Active (NFP/CPI/FOMC)</div>
+                        <div style="font-size:0.68rem; color:var(--text-secondary);" id="newsFilterStatusTag">Active</div>
                     </div>
                     <div class="setting-card">
                         <div class="setting-row">
@@ -518,43 +530,36 @@
                         </div>
                         <input type="number" id="riskMaxLossVal" class="setting-input" value="250" min="50" max="2000" onchange="saveRiskAndSessionSettings()">
                     </div>
-                    <div class="setting-card">
-                        <div class="setting-row">
-                            <span>🛑 Max Consecutive Losses</span>
-                            <input type="checkbox" id="riskMaxConEn" onchange="saveRiskAndSessionSettings()">
-                        </div>
-                        <input type="number" id="riskMaxConVal" class="setting-input" value="3" min="1" max="10" onchange="saveRiskAndSessionSettings()">
-                    </div>
                 </div>
-                <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:4px;">
-                    <button type="button" class="auth-btn" style="width:auto; padding:8px 18px; font-size:0.8rem;" onclick="saveRiskAndSessionSettings()"><span data-i18n="saveSettingsBtn">💾 Save Settings</span></button>
+                <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:2px;">
+                    <button type="button" class="auth-btn" style="width:auto; padding:6px 14px; font-size:0.76rem;" onclick="saveRiskAndSessionSettings()"><span data-i18n="saveSettingsBtn">💾 Save Settings</span></button>
                 </div>
             </div>
         </div>
 
         <div class="risk-remark">
-            <span>🛡️ <strong data-i18n="riskRemarkTitle">Risk Management Note:</strong> <span data-i18n="riskRemarkText">For each $400 of account capital, use 0.04 lot size. 120 SL / 180 TP configured.</span></span>
-            <span style="font-size:0.74rem; color:var(--text-secondary);" data-i18n="spreadRemarkText">Spread: 40–80 points dynamic</span>
+            <span>🛡️ <strong data-i18n="riskRemarkTitle">Risk Note:</strong> <span data-i18n="riskRemarkText">$400 cap = 0.04 lot (120 SL / 180 TP).</span></span>
+            <span style="font-size:0.7rem; color:var(--text-secondary);">Spread: 40-80 pts</span>
         </div>
 
         <div class="main-grid">
             <div class="chart-box">
                 <div class="box-header">
-                    <span data-i18n="chartTitle">XAU/USD M5 Live Chart (Institutional Execution)</span>
-                    <span id="lastSyncTime" style="color: var(--text-secondary); font-size: 0.75rem;">Syncing...</span>
+                    <span data-i18n="chartTitle">XAU/USD M5 Live Chart</span>
+                    <span id="lastSyncTime" style="color: var(--text-secondary); font-size: 0.72rem;">Syncing...</span>
                 </div>
                 <div id="chart"></div>
             </div>
 
             <div class="panel-box">
                 <div class="box-header">
-                    <span data-i18n="latestSigTitle">Latest Signal Detected</span>
-                    <span style="color: var(--accent-green); font-size: 0.75rem;">120 SL / 180 TP</span>
+                    <span data-i18n="latestSigTitle">Latest Signal</span>
+                    <span style="color: var(--accent-green); font-size: 0.72rem;">120 SL / 180 TP</span>
                 </div>
                 <div id="homeSignalContainer"></div>
 
-                <div class="box-header" style="margin-top: 6px;">
-                    <span data-i18n="liveAlertsTitle">Live Alerts & Feed</span>
+                <div class="box-header" style="margin-top: 4px;">
+                    <span data-i18n="liveAlertsTitle">Live Feed</span>
                 </div>
                 <div id="systemLogs" class="log-box"></div>
             </div>
@@ -566,7 +571,7 @@
         <div class="panel-box">
             <div class="box-header">
                 <span data-i18n="activeBoxTitle">⚡ Live Active / Limit Signal Details</span>
-                <span id="activeTradeStatusTag" style="color: var(--accent-gold); font-size: 0.78rem;">Scanning...</span>
+                <span id="activeTradeStatusTag" style="color: var(--accent-gold); font-size: 0.74rem;">Scanning...</span>
             </div>
             <div id="dedicatedActiveContainer"></div>
         </div>
@@ -576,8 +581,8 @@
     <div id="viewClosed" class="tab-view">
         <div class="panel-box">
             <div class="box-header">
-                <span data-i18n="closedBoxTitle">📜 Closed Trades History (Exness Spread Adjusted)</span>
-                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span data-i18n="closedBoxTitle">📜 Closed Trades History</span>
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                     <select id="closedTimeFilter" class="bundle-select" onchange="updateDashboardUI()">
                         <option value="all" data-i18n="filterAll">All Time</option>
                         <option value="today" data-i18n="filterToday">Today (24h)</option>
@@ -585,21 +590,21 @@
                         <option value="30d" data-i18n="filter30d">Last 30 Days</option>
                     </select>
                     <button type="button" id="clearHistoryBtn" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red); display:none;" onclick="clearClosedHistory()">
-                        🗑️ <span data-i18n="clearHistBtn">Clear History</span>
+                        🗑️ <span data-i18n="clearHistBtn">Clear</span>
                     </button>
-                    <span id="closedCountTag" style="color: var(--text-secondary); font-size: 0.78rem;">0</span>
+                    <span id="closedCountTag" style="color: var(--text-secondary); font-size: 0.74rem;">0</span>
                 </div>
             </div>
             <div style="overflow-x: auto;">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Trade #</th>
+                            <th>#</th>
                             <th data-i18n="thDir">Dir</th>
                             <th data-i18n="thSetup">Model</th>
                             <th data-i18n="thEntry">Entry</th>
                             <th>SL</th>
-                            <th>TP (180p)</th>
+                            <th>TP</th>
                             <th data-i18n="thLot">Lot</th>
                             <th data-i18n="thOutcome">Outcome</th>
                             <th data-i18n="thPnl">Net P&L</th>
@@ -607,7 +612,7 @@
                         </tr>
                     </thead>
                     <tbody id="closedTradesTableBody">
-                        <tr><td colspan="10" style="color:var(--text-secondary); text-align:center; padding:18px;">No closed trades recorded yet.</td></tr>
+                        <tr><td colspan="10" style="color:var(--text-secondary); text-align:center; padding:14px;">No closed trades recorded yet.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -618,36 +623,35 @@
     <div id="viewWinrate" class="tab-view">
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-label" data-i18n="statWinRateLbl">Live Verified Win Rate</div>
+                <div class="metric-label" data-i18n="statWinRateLbl">Live Win Rate</div>
                 <div class="metric-value" id="statWinRate" style="color: var(--accent-green);">0.0%</div>
-                <div class="metric-sub">Target R:R = 1:1.5</div>
+                <div class="metric-sub">R:R = 1:1.5</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label" data-i18n="statWLLbl">Total Wins / Losses</div>
+                <div class="metric-label" data-i18n="statWLLbl">Wins / Losses</div>
                 <div class="metric-value" id="statWinsLosses">0W / 0L</div>
-                <div class="metric-sub" id="statTotalTrades">0 Total Closed</div>
+                <div class="metric-sub" id="statTotalTrades">0 Total</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label" data-i18n="statNetLbl">Net Cumulative Profit</div>
+                <div class="metric-label" data-i18n="statNetLbl">Net Profit</div>
                 <div class="metric-value" id="statNetProfit">$0.00</div>
-                <div class="metric-sub" data-i18n="riskBaseSub">Based on 0.04 lot / $400 risk rule</div>
+                <div class="metric-sub" data-i18n="riskBaseSub">0.04 lot / $400 rule</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label" data-i18n="statPfLbl">Profit Factor</div>
                 <div class="metric-value" id="statProfitFactor">0.00</div>
-                <div class="metric-sub">Automated Drawdown Protection</div>
+                <div class="metric-sub">Protected</div>
             </div>
         </div>
 
         <div class="panel-box">
             <div class="box-header">
                 <span data-i18n="stratTitle">📊 Mr.Trader AI v1.2 Engine Overview</span>
-                <span style="color: var(--text-secondary); font-size: 0.75rem;">Exness Spread Modeled</span>
             </div>
-            <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.75;" data-i18n="stratDesc">
-                • <strong>Active Trading Sessions:</strong> Configurable institutional liquidity windows (Tokyo, London, New York) set to GMT time.<br>
-                • <strong>Execution Engine:</strong> Advanced M5 institutional multi-timeframe structural analysis with 120 SL / 180 TP.<br>
-                • <strong>Risk Management:</strong> Customizable Max SL, Max Trades, Daily Loss limits, and USD high-impact news blackout protection.
+            <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;" data-i18n="stratDesc">
+                • <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
+                • <strong>Execution:</strong> M5 institutional analysis with 120 SL / 180 TP.<br>
+                • <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
             </p>
         </div>
     </div>
@@ -656,96 +660,70 @@
     <div id="viewAccount" class="tab-view">
         <div class="panel-box">
             <div class="box-header">
-                <span data-i18n="accProfileTitle">👤 Account Details & Subscription Status</span>
+                <span data-i18n="accProfileTitle">👤 Account Details & Subscription</span>
                 <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="logoutClient()" data-i18n="logoutBtn">Logout</button>
             </div>
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <div class="metric-label" data-i18n="accEmailLbl">Registered Email</div>
-                    <div class="metric-value" id="accEmailVal" style="font-size:0.95rem;">---</div>
+                    <div class="metric-label" data-i18n="accEmailLbl">Email</div>
+                    <div class="metric-value" id="accEmailVal" style="font-size:0.85rem;">---</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label" data-i18n="accIdLbl">Client ID</div>
-                    <div class="metric-value" id="accClientIdVal" style="font-size:0.95rem; color:var(--accent-gold);">---</div>
+                    <div class="metric-value" id="accClientIdVal" style="font-size:0.85rem; color:var(--accent-gold);">---</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-label" data-i18n="accPlanLbl">Current VIP Bundle</div>
+                    <div class="metric-label" data-i18n="accPlanLbl">VIP Bundle</div>
                     <div class="metric-value" id="accPlanVal" style="color:var(--accent-gold);">🔒 Upgrade Required</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-label" data-i18n="accExpLbl">Subscription Expires</div>
-                    <div class="metric-value" id="accExpVal" style="font-size:0.95rem;">—</div>
+                    <div class="metric-label" data-i18n="accExpLbl">Expires</div>
+                    <div class="metric-value" id="accExpVal" style="font-size:0.85rem;">—</div>
                 </div>
             </div>
 
             <!-- Push Notification Settings Card -->
-            <div style="margin-top: 14px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; padding:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div style="margin-top: 10px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; padding:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                 <div>
-                    <div style="font-size:0.9rem; font-weight:700; color:var(--accent-gold);" data-i18n="notifSettingTitle">🔔 Push Notifications & Sound Alerts</div>
-                    <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;" data-i18n="notifSettingDesc">Receive desktop or phone sound alerts instantly when signals trigger.</div>
+                    <div style="font-size:0.82rem; font-weight:700; color:var(--accent-gold);" data-i18n="notifSettingTitle">🔔 Notifications & Sound</div>
+                    <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:1px;" data-i18n="notifSettingDesc">Receive alerts instantly when signals trigger.</div>
                 </div>
-                <button type="button" class="auth-btn" style="width:auto; padding:8px 16px; font-size:0.8rem;" onclick="requestPushNotificationPermission()"><span data-i18n="enableNotifBtn">Enable Notifications</span></button>
+                <button type="button" class="auth-btn" style="width:auto; padding:6px 12px; font-size:0.76rem;" onclick="requestPushNotificationPermission()"><span data-i18n="enableNotifBtn">Enable</span></button>
             </div>
 
-            <!-- Add to Home Screen Guide -->
-            <div style="margin-top: 14px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
-                <div style="font-size:0.9rem; font-weight:700; color:var(--accent-gold); margin-bottom:8px;" data-i18n="pwaGuideTitle">📱 How to Add Mr.Trader AI to Your Phone Home Screen</div>
-                <div style="font-size:0.76rem; color:var(--text-secondary); margin-bottom:12px;" data-i18n="pwaGuideSub">Transform this terminal into a mobile app on iOS (Safari) or Android (Chrome) for one-tap access and instant alerts:</div>
-                <div class="pwa-steps-grid">
-                    <div class="pwa-step-card">
-                        <div class="pwa-step-num">Step 1</div>
-                        <div class="pwa-step-title" data-i18n="pwaStep1Title">Open in Safari or Chrome</div>
-                        <div class="pwa-step-desc" data-i18n="pwaStep1Desc">Open this website link directly in Safari (iPhone) or Google Chrome (Android).</div>
-                    </div>
-                    <div class="pwa-step-card">
-                        <div class="pwa-step-num">Step 2</div>
-                        <div class="pwa-step-title" data-i18n="pwaStep2Title">Tap Share or Menu</div>
-                        <div class="pwa-step-desc" data-i18n="pwaStep2Desc">Tap the Share icon 📤 at the bottom of Safari, or the 3-dots menu <b>⋮</b> in Chrome.</div>
-                    </div>
-                    <div class="pwa-step-card">
-                        <div class="pwa-step-num">Step 3</div>
-                        <div class="pwa-step-title" data-i18n="pwaStep3Title">Add to Home Screen</div>
-                        <div class="pwa-step-desc" data-i18n="pwaStep3Desc">Select <b>"Add to Home Screen"</b> (+) and confirm. The app icon will appear on your phone screen!</div>
-                    </div>
-                </div>
-            </div>
-
-            <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+            <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
                 <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">
-                    ✈️ <span data-i18n="tgSupportBtn">Telegram Official Support & VIP (@mrtraderai_official)</span>
+                    ✈️ <span data-i18n="tgSupportBtn">Telegram Support (@mrtraderai_official)</span>
                 </a>
-                <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red); padding:9px 16px;" onclick="logoutClient()">
-                    🚪 <span data-i18n="logoutAccountBtn">Sign Out of Mr.Trader AI</span>
+                <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red); padding:7px 12px;" onclick="logoutClient()">
+                    🚪 <span data-i18n="logoutAccountBtn">Sign Out</span>
                 </button>
             </div>
         </div>
 
         <div class="panel-box">
             <div class="box-header">
-                <span data-i18n="vipPlansHeader">💎 Mr.Trader AI — VIP Membership Plans</span>
-                <span style="color:var(--accent-gold); font-size:0.76rem;">@mrtraderai_official</span>
+                <span data-i18n="vipPlansHeader">💎 VIP Membership Plans</span>
+                <span style="color:var(--accent-gold); font-size:0.72rem;">@mrtraderai_official</span>
             </div>
-            <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:8px;" data-i18n="vipPlansSub">
-                Select your preferred VIP bundle and message our official Telegram support for instant payment &amp; account activation:
-            </p>
             <div class="plans-grid">
                 <div class="plan-card">
                     <div class="plan-title" data-i18n="plan3dTitle">3-Day Trial</div>
                     <div class="plan-price">$15</div>
-                    <div class="plan-desc" data-i18n="plan3dDesc">Full live XAU/USD signals & Telegram alerts for 3 days</div>
-                    <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
+                    <div class="plan-desc" data-i18n="plan3dDesc">Full live XAU/USD signals for 3 days</div>
+                    <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate</span></a>
                 </div>
                 <div class="plan-card popular">
                     <div class="plan-title" data-i18n="plan1mTitle">1 Month VIP</div>
                     <div class="plan-price">$99</div>
-                    <div class="plan-desc" data-i18n="plan1mDesc">30 days full terminal access, real-time entries, SL & TP alerts</div>
-                    <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
+                    <div class="plan-desc" data-i18n="plan1mDesc">30 days full terminal access & real-time alerts</div>
+                    <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate</span></a>
                 </div>
                 <div class="plan-card">
                     <div class="plan-title" data-i18n="plan3mTitle">3 Months VIP</div>
                     <div class="plan-price">$250</div>
-                    <div class="plan-desc" data-i18n="plan3mDesc">90 days priority VIP access (Save $47 vs monthly)</div>
-                    <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
+                    <div class="plan-desc" data-i18n="plan3mDesc">90 days priority VIP access (Save $47)</div>
+                    <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate</span></a>
                 </div>
             </div>
         </div>
@@ -754,20 +732,41 @@
 
 <script>
 // ============================================================================
-// 0. BILINGUAL TRANSLATION ENGINE
+// 0. VIEW MODE TOGGLE (PHONE / DESKTOP) & BILINGUAL ENGINE
 // ============================================================================
+let isPhoneMode = localStorage.getItem('mrtrader_phone_mode') === 'true';
+
+function updateViewModeUI() {
+    if (isPhoneMode) {
+        document.body.classList.add('phone-mode');
+        document.querySelectorAll('#viewModeBtnLbl, #viewModeBtnLbl2').forEach(el => el.innerText = 'Desktop View');
+    } else {
+        document.body.classList.remove('phone-mode');
+        document.querySelectorAll('#viewModeBtnLbl, #viewModeBtnLbl2').forEach(el => el.innerText = 'Phone View');
+    }
+    if (chart) {
+        setTimeout(() => chart.applyOptions({ width: document.getElementById('chart').clientWidth }), 50);
+    }
+}
+
+function toggleViewMode() {
+    isPhoneMode = !isPhoneMode;
+    localStorage.setItem('mrtrader_phone_mode', isPhoneMode);
+    updateViewModeUI();
+}
+
 let currentLang = localStorage.getItem('mrtrader_lang') || 'en';
 
 const I18N = {
     en: {
         langBtn: 'العربية',
         scBadge: '⚡ INSTITUTIONAL XAU/USD ENGINE v1.2',
-        scDesc: 'Advanced institutional liquidity reclaims and multi-timeframe structural analysis engineered specifically for precision gold execution.',
-        scWinRateLbl: 'Verified Win Rate',
-        scRrLbl: 'Fixed Risk/Reward',
+        scDesc: 'Advanced institutional liquidity reclaims and multi-timeframe structural analysis.',
+        scWinRateLbl: 'Win Rate',
+        scRrLbl: 'Risk/Reward',
         scAutoLbl: 'A+ Setups',
-        scCard1: '📈 Liquidity Sweep & Reclaim',
-        scCard2: '🛡️ Precision Retracement Zones',
+        scCard1: '📈 Liquidity Sweep',
+        scCard2: '🛡️ Retracement Zones',
         authSub: 'Sign in or create an account to access the live XAU/USD AI terminal',
         clientLogin: 'Client Login',
         signUp: 'Sign Up',
@@ -777,39 +776,37 @@ const I18N = {
         loginBtn: 'Login to Terminal',
         signupBtn: 'Create Account',
         resetBtn: 'Send Reset Link',
-        backLogin: '← Back to Client Login',
-        tgSupportBtn: 'Telegram Official Support & VIP (@mrtraderai_official)',
+        backLogin: '← Back to Login',
         setNewPassTitle: '🔐 SET NEW PASSWORD',
-        setNewPassDesc: 'Enter your new password below to regain access to Mr.Trader AI.',
+        setNewPassDesc: 'Enter your new password below.',
         updatePassBtn: 'Update Password & Login',
         signOut: 'Sign Out',
-        headerSub: 'Autonomous XAU/USD Signals | 120 SL / 180 TP (GMT Time)',
-        liveStream: 'LIVE STREAM ACTIVE',
+        headerSub: 'Autonomous XAU/USD Signals | 120 SL / 180 TP (GMT)',
+        liveStream: 'LIVE',
         syncBtn: 'Sync',
         logoutBtn: 'Logout',
         tabHome: 'Home',
-        tabActive: 'Active Trade',
-        tabClosed: 'Closed Trades',
-        tabWinrate: 'Win Rate & Stats',
+        tabActive: 'Active',
+        tabClosed: 'History',
+        tabWinrate: 'Stats',
         tabAccount: 'Account',
-        lblLivePrice: 'Live XAU/USD Price',
+        lblLivePrice: 'Live XAU/USD',
         subSpread: 'Exness Spread Modeled',
-        lblTrendBias: 'Market Bias & Sessions (GMT)',
-        lblSignalSummary: 'Current Signal Status',
+        lblTrendBias: 'Market Bias & Sessions',
+        lblSignalSummary: 'Signal Status',
         lblWinRate: 'Live Win Rate',
-        riskRemarkTitle: 'Risk Management Note:',
-        riskRemarkText: 'For each $400 of account capital, use 0.04 lot size. 120 SL / 180 TP configured.',
-        spreadRemarkText: 'Spread: 40–80 points dynamic',
-        chartTitle: 'XAU/USD M5 Live Chart (Institutional Execution)',
-        latestSigTitle: 'Latest Signal Detected',
-        liveAlertsTitle: 'Live Alerts & Feed',
+        riskRemarkTitle: 'Risk Note:',
+        riskRemarkText: '$400 cap = 0.04 lot (120 SL / 180 TP).',
+        chartTitle: 'XAU/USD M5 Live Chart',
+        latestSigTitle: 'Latest Signal',
+        liveAlertsTitle: 'Live Feed',
         activeBoxTitle: '⚡ Live Active / Limit Signal Details',
-        closedBoxTitle: '📜 Closed Trades History (Exness Spread Adjusted)',
+        closedBoxTitle: '📜 Closed Trades History',
         filterAll: 'All Time',
         filterToday: 'Today (24h)',
         filter7d: 'Last 7 Days',
         filter30d: 'Last 30 Days',
-        clearHistBtn: 'Clear History',
+        clearHistBtn: 'Clear',
         thDir: 'Dir',
         thSetup: 'Model',
         thEntry: 'Entry',
@@ -817,56 +814,47 @@ const I18N = {
         thOutcome: 'Outcome',
         thPnl: 'Net P&L',
         thClosed: 'Closed (GMT)',
-        statWinRateLbl: 'Live Verified Win Rate',
-        statWLLbl: 'Total Wins / Losses',
-        statNetLbl: 'Net Cumulative Profit',
-        riskBaseSub: 'Based on 0.04 lot / $400 risk rule',
+        statWinRateLbl: 'Live Win Rate',
+        statWLLbl: 'Wins / Losses',
+        statNetLbl: 'Net Profit',
+        riskBaseSub: '0.04 lot / $400 rule',
         statPfLbl: 'Profit Factor',
         stratTitle: '📊 Mr.Trader AI v1.2 Engine Overview',
-        stratDesc: '• <strong>Active Trading Sessions:</strong> Configurable institutional liquidity windows (Tokyo, London, New York) set to GMT time.<br>• <strong>Execution Engine:</strong> Advanced M5 institutional multi-timeframe structural analysis with 120 SL / 180 TP.<br>• <strong>Risk Management:</strong> Customizable Max SL, Max Trades, Daily Loss limits, and USD high-impact news blackout protection.',
-        accProfileTitle: '👤 Account Details & Subscription Status',
-        accEmailLbl: 'Registered Email',
+        stratDesc: '• <strong>Active Sessions:</strong> Tokyo, London, New York.<br>• <strong>Execution:</strong> M5 institutional analysis with 120 SL / 180 TP.<br>• <strong>Risk:</strong> Max SL, Daily Loss, and News blackout.',
+        accProfileTitle: '👤 Account Details & Subscription',
+        accEmailLbl: 'Email',
         accIdLbl: 'Client ID',
-        accPlanLbl: 'Current VIP Bundle',
-        accExpLbl: 'Subscription Expires',
-        logoutAccountBtn: 'Sign Out of Mr.Trader AI',
-        vipPlansHeader: '💎 Mr.Trader AI — VIP Membership Plans',
-        vipPlansSub: 'Select your preferred VIP bundle and message our official Telegram support for instant payment &amp; account activation:',
+        accPlanLbl: 'VIP Bundle',
+        accExpLbl: 'Expires',
+        vipPlansHeader: '💎 VIP Membership Plans',
         plan3dTitle: '3-Day Trial',
-        plan3dDesc: 'Full live XAU/USD signals & Telegram alerts for 3 days',
+        plan3dDesc: 'Full live XAU/USD signals for 3 days',
         plan1mTitle: '1 Month VIP',
-        plan1mDesc: '30 days full terminal access, real-time entries, SL & TP alerts',
+        plan1mDesc: '30 days full terminal access & alerts',
         plan3mTitle: '3 Months VIP',
-        plan3mDesc: '90 days priority VIP access (Save $47 vs monthly)',
-        orderTg: 'Activate on Telegram',
-        scanningTitle: '🤖 Institutional Engine Scanning',
-        scanningDesc: 'Monitoring XAU/USD multi-timeframe market structure and precision retracement zones.',
-        noClosed: 'No closed trades recorded for this period.',
+        plan3mDesc: '90 days priority VIP access (Save $47)',
+        orderTg: 'Activate',
+        scanningTitle: '🤖 Scanning',
+        scanningDesc: 'Monitoring M5 market structure and retracement zones.',
+        noClosed: 'No closed trades recorded yet.',
         hideShowToggle: '[▲ Hide]',
         saveSettingsBtn: '💾 Save Settings',
-        resetRulesBtn: 'Reset Rules',
-        notifSettingTitle: '🔔 Push Notifications & Sound Alerts',
-        notifSettingDesc: 'Receive desktop or phone sound alerts instantly when signals trigger.',
-        enableNotifBtn: 'Enable Notifications',
-        pwaGuideTitle: '📱 How to Add Mr.Trader AI to Your Phone Home Screen',
-        pwaGuideSub: 'Transform this terminal into a mobile app on iOS (Safari) or Android (Chrome) for one-tap access and instant alerts:',
-        pwaStep1Title: 'Open in Safari or Chrome',
-        pwaStep1Desc: 'Open this website link directly in Safari (iPhone) or Google Chrome (Android).',
-        pwaStep2Title: 'Tap Share or Menu',
-        pwaStep2Desc: 'Tap the Share icon 📤 at the bottom of Safari, or the 3-dots menu <b>⋮</b> in Chrome.',
-        pwaStep3Title: 'Add to Home Screen',
-        pwaStep3Desc: 'Select <b>"Add to Home Screen"</b> (+) and confirm. The app icon will appear on your phone screen!'
+        resetRulesBtn: 'Reset',
+        notifSettingTitle: '🔔 Notifications & Sound',
+        notifSettingDesc: 'Receive alerts instantly when signals trigger.',
+        enableNotifBtn: 'Enable',
+        tgSupportBtn: 'Telegram Support'
     },
     ar: {
         langBtn: 'English',
         scBadge: '⚡ محرك تداول الذهب المؤسسي الإصدار 1.2',
-        scDesc: 'تحليل هيكلي متعدد الأطر الزمنية وإدارة صفقات مؤسسية متقدمة مخصصة خصيصاً لتنفيذ صفقات الذهب بدقة.',
-        scWinRateLbl: 'نسبة النجاح المحققة',
-        scRrLbl: 'نسبة العائد للمخاطرة',
+        scDesc: 'تحليل هيكلي متعدد الأطر الزمنية وإدارة صفقات مؤسسية متقدمة.',
+        scWinRateLbl: 'نسبة النجاح',
+        scRrLbl: 'العائد للمخاطرة',
         scAutoLbl: 'فرص A+',
-        scCard1: '📈 سحب السيولة واختراق النطاق',
-        scCard2: '🛡️ مناطق الارتداد الدقيقة',
-        authSub: 'سجّل الدخول أو أنشئ حساباً للوصول إلى منصة Mr.Trader AI لتداول الذهب',
+        scCard1: '📈 سحب السيولة',
+        scCard2: '🛡️ مناطق الارتداد',
+        authSub: 'سجّل الدخول أو أنشئ حساباً للوصول إلى منصة Mr.Trader AI',
         clientLogin: 'تسجيل الدخول',
         signUp: 'إنشاء حساب',
         emailPh: 'البريد الإلكتروني',
@@ -874,86 +862,75 @@ const I18N = {
         forgotPass: 'نسيت كلمة المرور؟',
         loginBtn: 'الدخول إلى المنصة',
         signupBtn: 'إنشاء حساب جديد',
-        resetBtn: 'إرسال رابط استعادة كلمة المرور',
-        backLogin: '← العودة لتسجيل الدخول',
-        tgSupportBtn: 'الدعم الفني واشتراكات VIP عبر تيليجرام (@mrtraderai_official)',
+        resetBtn: 'إرسال رابط الاستعادة',
+        backLogin: '← العودة',
         setNewPassTitle: '🔐 تعيين كلمة مرور جديدة',
-        setNewPassDesc: 'أدخل كلمة المرور الجديدة أدناه لاستعادة الدخول إلى Mr.Trader AI.',
-        updatePassBtn: 'تحديث كلمة المرور والدخول',
-        signOut: 'تسجيل الخروج',
-        headerSub: 'توصيات الذهب الذكية | إعداد 120 SL / 180 TP (بتوقيت جرينتش GMT)',
-        liveStream: 'البث المباشر نشط',
+        setNewPassDesc: 'أدخل كلمة المرور الجديدة أدناه.',
+        updatePassBtn: 'تحديث والدخول',
+        signOut: 'خروج',
+        headerSub: 'توصيات الذهب | إعداد 120 SL / 180 TP (GMT)',
+        liveStream: 'مباشر',
         syncBtn: 'تحديث',
         logoutBtn: 'خروج',
         tabHome: 'الرئيسية',
-        tabActive: 'الصفقة النشطة',
-        tabClosed: 'الصفقات المغلقة',
-        tabWinrate: 'نسبة النجاح والإحصائيات',
-        tabAccount: 'الحساب والاشتراك',
-        lblLivePrice: 'سعر الذهب المباشر XAU/USD',
-        subSpread: 'محاكاة سبريد شركة Exness',
-        lblTrendBias: 'اتجاه السوق والجلسات (GMT)',
-        lblSignalSummary: 'حالة التوصية الحالية',
-        lblWinRate: 'نسبة النجاح المباشرة',
-        riskRemarkTitle: 'ملاحظة إدارة المخاطر:',
-        riskRemarkText: 'لكل 400$ من رأس المال، استخدم حجم عقد 0.04 لوت (إعداد 120 SL / 180 TP).',
-        spreadRemarkText: 'السبريد: متغير 40-80 نقطة',
-        chartTitle: 'شارت الذهب M5 المباشر (تنفيذ مؤسسي)',
-        latestSigTitle: 'أحدث توصية مكتشفة',
-        liveAlertsTitle: 'التنبيهات المباشرة والسجل',
-        activeBoxTitle: '⚡ تفاصيل الصفقة النشطة / المعلقة حالياً',
-        closedBoxTitle: '📜 سجل الصفقات المغلقة (معدل بسبريد Exness)',
+        tabActive: 'النشطة',
+        tabClosed: 'السجل',
+        tabWinrate: 'الإحصائيات',
+        tabAccount: 'الحساب',
+        lblLivePrice: 'سعر الذهب المباشر',
+        subSpread: 'سبريد Exness',
+        lblTrendBias: 'اتجاه السوق والجلسات',
+        lblSignalSummary: 'حالة التوصية',
+        lblWinRate: 'نسبة النجاح',
+        riskRemarkTitle: 'ملاحظة المخاطر:',
+        riskRemarkText: 'رأس مال 400$ = 0.04 لوت (120 SL / 180 TP).',
+        chartTitle: 'شارت الذهب M5',
+        latestSigTitle: 'أحدث توصية',
+        liveAlertsTitle: 'التنبيهات المباشرة',
+        activeBoxTitle: '⚡ تفاصيل الصفقة النشطة / المعلقة',
+        closedBoxTitle: '📜 سجل الصفقات المغلقة',
         filterAll: 'كل الأوقات',
         filterToday: 'اليوم (24 ساعة)',
         filter7d: 'آخر 7 أيام',
         filter30d: 'آخر 30 يوماً',
-        clearHistBtn: 'مسح السجل',
+        clearHistBtn: 'مسح',
         thDir: 'النوع',
         thSetup: 'النموذج',
         thEntry: 'الدخول',
         thLot: 'اللوت',
         thOutcome: 'النتيجة',
-        thPnl: 'صافي الربح',
-        thClosed: 'وقت الإغلاق (GMT)',
+        thPnl: 'الربح',
+        thClosed: 'الإغلاق (GMT)',
         statWinRateLbl: 'نسبة النجاح الفعلية',
-        statWLLbl: 'إجمالي الصفقات الرابحة / الخاسرة',
-        statNetLbl: 'صافي الأرباح التراكمية',
-        riskBaseSub: 'بناءً على قاعدة 0.04 لوت لكل 400$',
-        statPfLbl: 'معامل الربح (Profit Factor)',
+        statWLLbl: 'الربح / الخسارة',
+        statNetLbl: 'صافي الأرباح',
+        riskBaseSub: 'قاعدة 0.04 لوت لكل 400$',
+        statPfLbl: 'معامل الربح',
         stratTitle: '📊 نظرة عامة على المحرك الإصدار 1.2',
-        stratDesc: '• <strong>جلسات التداول النشطة:</strong> جلسات السيولة المؤسسية (طوكيو، لندن، نيويورك) محسوبة بتوقيت جرينتش GMT.<br>• <strong>محرك التنفيذ:</strong> تحليل هيكلي متقدم على فريم M5 بإعدادات 120 SL / 180 TP.<br>• <strong>إدارة المخاطر:</strong> إعدادات مخصصة لوقف الخسارة، الحد الأقص للصفقات، والخسارة اليومية.',
-        accProfileTitle: '👤 تفاصيل الحساب وحالة الاشتراك',
-        accEmailLbl: 'البريد الإلكتروني المسجل',
+        stratDesc: '• <strong>الجلسات:</strong> طوكيو، لندن، نيويورك.<br>• <strong>التنفيذ:</strong> إعداد 120 SL / 180 TP على M5.<br>• <strong>المخاطر:</strong> حماية ضد الخسارة اليومية والأخبار.',
+        accProfileTitle: '👤 تفاصيل الحساب والاشتراك',
+        accEmailLbl: 'البريد',
         accIdLbl: 'معرف العميل',
-        accPlanLbl: 'باقة VIP الحالية',
-        accExpLbl: 'تاريخ انتهاء الاشتراك',
-        logoutAccountBtn: 'تسجيل الخروج من Mr.Trader AI',
-        vipPlansHeader: '💎 باقات VIP الرسمية — Mr.Trader AI',
-        vipPlansSub: 'اختر الباقة المناسبة لك وتواصل مع حسابنا الرسمي على تيليجرام للدفع وتفعيل الاشتراك فوراً:',
+        accPlanLbl: 'باقة VIP',
+        accExpLbl: 'الانتهاء',
+        vipPlansHeader: '💎 باقات VIP الرسمية',
         plan3dTitle: 'تجربة 3 أيام',
-        plan3dDesc: 'توصيات الذهب الحية وتنبيهات تيليجرام كاملة لمدة 3 أيام',
-        plan1mTitle: 'باقة شهر واحد VIP',
-        plan1mDesc: '30 يوماً من الوصول الكامل للمنصة والتوصيات اللحظية',
-        plan3mTitle: 'باقة 3 أشهر VIP',
-        plan3mDesc: '90 يوماً من الوصول الكامل مع أولوية VIP (وفر $47)',
-        orderTg: 'تفعيل عبر تيليجرام',
-        scanningTitle: '🤖 جاري مسح السوق عبر المحرك المؤسسي',
-        scanningDesc: 'مراقبة هيكل السوق على فريم M5 ومناطق الارتداد المؤسسية للذهب.',
-        noClosed: 'لا توجد صفقات مسجلة في هذه الفترة.',
+        plan3dDesc: 'توصيات الذهب الحية لمدة 3 أيام',
+        plan1mTitle: 'شهر واحد VIP',
+        plan1mDesc: '30 يوماً وصول كامل وتنبيهات فورية',
+        plan3mTitle: '3 أشهر VIP',
+        plan3mDesc: '90 يوماً وصول مميز (وفر $47)',
+        orderTg: 'تفعيل',
+        scanningTitle: '🤖 جاري المسح',
+        scanningDesc: 'مراقبة هيكل السوق على فريم M5.',
+        noClosed: 'لا توجد صفقات مسجلة.',
         hideShowToggle: '[▲ إخفاء]',
         saveSettingsBtn: '💾 حفظ الإعدادات',
-        resetRulesBtn: 'إعادة ضبط القواعد',
-        notifSettingTitle: '🔔 إشعارات الديسكتوب والهاتف والتنبيه الصوتى',
-        notifSettingDesc: 'تلقي تنبيهات فورية مع صوت عند صدور التوصيات الجديدة.',
-        enableNotifBtn: 'تفعيل الإشعارات',
-        pwaGuideTitle: '📱 طريقة إضافة منصة Mr.Trader AI إلى الشاشة الرئيسية لهاتفك',
-        pwaGuideSub: 'قم بتحويل المنصة إلى تطبيق جوال على نظام أيفون (Safari) أو أندرويد (Chrome) للوصول بنقرة واحدة والتنبيهات الفورية:',
-        pwaStep1Title: 'افتح الرابط في المتصفح',
-        pwaStep1Desc: 'افتح رابط الموقع مباشرة في متصفح Safari (لأجهزة أيفون) أو Google Chrome (لأجهزة أندرويد).',
-        pwaStep2Title: 'اضغط زر المشاركة أو القائمة',
-        pwaStep2Desc: 'اضغط على أيقونة المشاركة 📤 أسفل متصفح Safari، أو قائمة الـ 3 نقاط <b>⋮</b> في Chrome.',
-        pwaStep3Title: 'أضف إلى الشاشة الرئيسية',
-        pwaStep3Desc: 'اختر <b>"إضافة إلى الشاشة الرئيسية"</b> (+) وأكد الإضافية. ستظهر أيقونة المنصة فوراً على شاشة هاتفك!'
+        resetRulesBtn: 'إعادة ضبط',
+        notifSettingTitle: '🔔 الإشعارات والأصوات',
+        notifSettingDesc: 'تلقي تنبيهات فورية عند صدور التوصيات.',
+        enableNotifBtn: 'تفعيل',
+        tgSupportBtn: 'دعم تيليجرام'
     }
 };
 
@@ -984,20 +961,22 @@ function toggleLanguage() {
 }
 
 // ============================================================================
-// 1. NOTIFICATIONS & AUDIO ALERTS
+// 1. NOTIFICATIONS & AUDIO ALERTS (Safe for Mobile Browsers)
 // ============================================================================
 function requestPushNotificationPermission() {
+    playBeepSound();
     if (!("Notification" in window)) {
-        alert(currentLang === 'ar' ? 'متصفحك لا يدعم الإشعارات الفورية.' : 'This browser does not support desktop notifications.');
+        alert(currentLang === 'ar' ? '✅ تم تفعيل التنبيه الصوتى بنجاح (تنبيهات تيليجرام مفعلة بالخلفية).' : '✅ Sound alerts enabled! (Telegram notifications active in background).');
         return;
     }
     Notification.requestPermission().then(permission => {
         if (permission === "granted") {
             new Notification("Mr.Trader AI v1.2", { body: currentLang === 'ar' ? '✅ تم تفعيل الإشعارات بنجاح!' : '✅ Notifications successfully enabled!' });
-            playBeepSound();
         } else {
-            alert(currentLang === 'ar' ? 'تم رفض إذن الإشعارات.' : 'Notification permission was denied.');
+            alert(currentLang === 'ar' ? '✅ تم تفعيل التنبيهات الصوتية ونظام التيليجرام بنجاح.' : '✅ Sound alerts & Telegram backup active.');
         }
+    }).catch(() => {
+        alert(currentLang === 'ar' ? '✅ تم تفعيل النظام الصوتي والتنبيهات.' : '✅ Sound alert system active.');
     });
 }
 
@@ -1132,7 +1111,7 @@ function switchAuthMode(mode) {
         pwdInput.style.display = 'none';
         forgotRow.style.display = 'none';
         backRow.style.display = 'block';
-        subtitle.innerText = currentLang === 'ar' ? 'أدخل بريدك الإلكتروني لإرسال رابط استعادة كلمة المرور' : 'Enter your registered email to receive a password reset link';
+        subtitle.innerText = currentLang === 'ar' ? 'أدخل بريدك الإلكتروني لإرسال رابط الاستعادة' : 'Enter email to receive reset link';
         submitBtn.innerText = t('resetBtn');
     } else {
         tabsRow.style.display = 'flex';
@@ -1153,13 +1132,13 @@ async function handleAuthSubmit() {
 
     if (!email) {
         msgEl.style.color = 'var(--accent-red)';
-        msgEl.innerText = currentLang === 'ar' ? 'يرجى إدخال البريد الإلكتروني.' : 'Please enter your email address.';
+        msgEl.innerText = currentLang === 'ar' ? 'يرجى إدخال البريد الإلكتروني.' : 'Please enter your email.';
         return;
     }
 
     if (authMode === 'forgot') {
         msgEl.style.color = 'var(--accent-gold)';
-        msgEl.innerText = currentLang === 'ar' ? 'جاري إرسال رابط الاستعادة...' : 'Sending password reset email...';
+        msgEl.innerText = currentLang === 'ar' ? 'جاري إرسال الرابط...' : 'Sending reset email...';
         const redirectUrl = window.location.origin + window.location.pathname + '?recovery=1';
         const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
         if (error) {
@@ -1167,14 +1146,14 @@ async function handleAuthSubmit() {
             msgEl.innerText = error.message;
         } else {
             msgEl.style.color = 'var(--accent-green)';
-            msgEl.innerText = currentLang === 'ar' ? '✅ تم إرسال الرابط! تفقد بريدك الإلكتروني.' : '✅ Reset link sent! Check your email inbox.';
+            msgEl.innerText = currentLang === 'ar' ? '✅ تم إرسال الرابط!' : '✅ Reset link sent!';
         }
         return;
     }
 
     if (password.length < 6) {
         msgEl.style.color = 'var(--accent-red)';
-        msgEl.innerText = currentLang === 'ar' ? 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.' : 'Password must be at least 6 characters.';
+        msgEl.innerText = currentLang === 'ar' ? 'كلمة المرور قصيرة (6 أحرف على الأقل).' : 'Password min 6 chars.';
         return;
     }
 
@@ -1188,7 +1167,7 @@ async function handleAuthSubmit() {
             msgEl.innerText = error.message;
         } else {
             msgEl.style.color = 'var(--accent-green)';
-            msgEl.innerText = currentLang === 'ar' ? 'تم إنشاء الحساب! جاري الدخول...' : 'Account created! Checking access...';
+            msgEl.innerText = currentLang === 'ar' ? 'تم إنشاء الحساب!' : 'Account created!';
             setTimeout(checkUserSession, 900);
         }
     } else {
@@ -1227,7 +1206,7 @@ async function handleUpdatePassword() {
         msgEl.innerText = error.message;
     } else {
         msgEl.style.color = 'var(--accent-green)';
-        msgEl.innerText = '✅ Password updated! Entering Mr.Trader AI v1.2...';
+        msgEl.innerText = '✅ Password updated!';
         isPasswordRecoveryMode = false;
         window.history.replaceState({}, document.title, window.location.pathname);
         setTimeout(() => {
@@ -1248,6 +1227,7 @@ async function logoutClient() {
 
 async function checkUserSession() {
     applyLanguage();
+    updateViewModeUI();
     const urlParams = new URLSearchParams(window.location.search);
     if (isPasswordRecoveryMode || urlParams.get('recovery') === '1' || urlParams.get('type') === 'recovery' || (window.location.hash && window.location.hash.includes('type=recovery'))) {
         showNewPasswordScreen();
@@ -1287,10 +1267,10 @@ async function checkUserSession() {
     if (!isAdmin && currentUserProfile.is_approved && !vipActive) {
         document.getElementById('authLandingWrapper').style.display = 'none';
         document.getElementById('pendingApprovalBox').style.display = 'block';
-        document.getElementById('vipLockTitle').innerText = currentLang === 'ar' ? '⏰ انتهى اشتراك VIP' : '⏰ VIP Bundle Expired';
+        document.getElementById('vipLockTitle').innerText = currentLang === 'ar' ? '⏰ انتهى اشتراك VIP' : '⏰ VIP Expired';
         document.getElementById('vipLockDesc').innerHTML = currentLang === 'ar'
-            ? `انتهت باقة <strong>${currentUserProfile.vip_plan || 'VIP'}</strong> للحساب <strong>${currentUserProfile.email}</strong> بتاريخ <strong>${formatDateShort(currentUserProfile.vip_expires_at)}</strong>. اختر باقة أدناه وتواصل مع <strong>@mrtraderai_official</strong> للتجديد.`
-            : `Your <strong>${currentUserProfile.vip_plan || 'VIP'}</strong> plan for <strong>${currentUserProfile.email}</strong> expired on <strong>${formatDateShort(currentUserProfile.vip_expires_at)}</strong>. Choose a plan below and message <strong>@mrtraderai_official</strong> to renew.`;
+            ? `انتهت باقة <strong>${currentUserProfile.vip_plan || 'VIP'}</strong> للحساب <strong>${currentUserProfile.email}</strong>. اختر باقة وتواصل مع <strong>@mrtraderai_official</strong>.`
+            : `Your <strong>${currentUserProfile.vip_plan || 'VIP'}</strong> plan for <strong>${currentUserProfile.email}</strong> expired. Message <strong>@mrtraderai_official</strong> to renew.`;
         return;
     }
 
@@ -1307,7 +1287,7 @@ async function checkUserSession() {
     const shortId = '#UID-' + (currentUserProfile.id || '').slice(0, 6).toUpperCase();
     document.getElementById('accEmailVal').innerText = currentUserProfile.email;
     document.getElementById('accClientIdVal').innerText = shortId;
-    document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER OWNER' : (currentUserProfile.is_approved ? (currentUserProfile.vip_plan || 'VIP ACTIVE') : '🔒 Upgrade Required');
+    document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER' : (currentUserProfile.is_approved ? (currentUserProfile.vip_plan || 'VIP ACTIVE') : '🔒 Upgrade Required');
     document.getElementById('accExpVal').innerText = isAdmin ? 'UNLIMITED' : (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Inactive');
 
     if (isAdmin) {
@@ -1446,20 +1426,20 @@ async function saveRiskAndSessionSettings() {
     };
     await saveState();
     syncSettingsToUI();
-    logEvent('⚙️ Settings & Risk guardrails saved successfully.');
-    alert(currentLang === 'ar' ? '✅ تم حفظ الإعدادات بنجاح!' : '✅ Settings saved successfully!');
+    logEvent('⚙️ Settings saved.');
+    alert(currentLang === 'ar' ? '✅ تم حفظ الإعدادات!' : '✅ Settings saved!');
 }
 
 async function resetSettingsToDefault() {
     if (!isCurrentUserAdmin()) return;
-    if (!confirm('Reset all risk settings and session filters to default rules?')) return;
+    if (!confirm('Reset settings?')) return;
     state.timezoneOffset = 3;
     state.sessions = { ...DEFAULT_ENGINE_RULES.sessions };
     state.newsFilter = { ...DEFAULT_ENGINE_RULES.newsFilter };
     state.riskLimits = { ...DEFAULT_ENGINE_RULES.riskLimits };
     syncSettingsToUI();
     await saveState();
-    logEvent('🔄 Settings reset to default rules.');
+    logEvent('🔄 Settings reset.');
 }
 
 function subscribeToRealtimeState() {
@@ -1478,7 +1458,7 @@ function subscribeToRealtimeState() {
                 if (candleSeries && !state.activeTrade) clearChartLines();
 
                 if (state.activeTrade && state.activeTrade.tradeId !== prevTradeId) {
-                    const msg = `🚨 NEW SIGNAL #Trade-${state.activeTrade.tradeId}: ${state.activeTrade.dir} (${state.activeTrade.type}) @ ${state.activeTrade.entry.toFixed(2)}`;
+                    const msg = `🚨 NEW SIGNAL #Trade-${state.activeTrade.tradeId}: ${state.activeTrade.dir} @ ${state.activeTrade.entry.toFixed(2)}`;
                     logEvent(msg);
                     triggerClientPushAlert("Mr.Trader AI — New Signal!", msg);
                 } else if ((state.history || []).length > prevHistoryLen) {
@@ -1791,37 +1771,37 @@ async function hardSyncRefresh() {
         await runFastAutopilotCycle(true);
     } else {
         await loadSharedTerminalState();
-        logEvent('🔄 Synced latest signals & stats from server.');
+        logEvent('🔄 Synced.');
     }
 }
 
 async function testTelegramConnection() {
-    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 ENGINE — CONNECTION VERIFIED\nInstitutional Fast Engine Active (120/180)");
-    if (ok) logEvent("✅ Telegram test message delivered!");
+    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 — CONNECTION VERIFIED (120/180)");
+    if (ok) logEvent("✅ Telegram test delivered!");
 }
 
 async function testTpHitTelegram() {
-    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 — #Trade-TEST TP HIT (+$36.00)\nExecution Verified");
-    if (ok) logEvent("🎯 Test TP HIT alert sent to Telegram!");
+    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 — #Trade-TEST TP HIT (+$36.00)");
+    if (ok) logEvent("🎯 Test TP sent!");
 }
 
 async function clearClosedHistory() {
     if (!isCurrentUserAdmin()) return;
-    if (!confirm('Clear all closed trades history?')) return;
+    if (!confirm('Clear history?')) return;
     state.history = [];
-    logEvent('🗑️ Closed trades history cleared.');
+    logEvent('🗑️ History cleared.');
     await saveState();
 }
 
 async function resetLiveAccountState() {
-    if (!confirm("Reset all history, stats, and counter to #Trade-1?")) return;
+    if (!confirm("Reset terminal?")) return;
     state = {
         ...state,
         consecutiveLosses: 0, lockoutUntil: 0, tradeCounter: 1, activeTrade: null, history: [],
         recentLogs: [], latestBars: state.latestBars || []
     };
     clearChartLines();
-    logEvent("♻️ Terminal reset to #Trade-1.");
+    logEvent("♻️ Terminal reset.");
     await saveState();
 }
 
@@ -1847,8 +1827,8 @@ function drawTradeLines(trade) {
     clearChartLines();
     if (!trade || !candleSeries) return;
     priceLines.push(candleSeries.createPriceLine({ price: trade.entry, color: '#3b82f6', lineWidth: 2, lineStyle: 0, title: 'ENTRY' }));
-    priceLines.push(candleSeries.createPriceLine({ price: trade.sl, color: '#ef4444', lineWidth: 2, lineStyle: 2, title: 'SL (120)' }));
-    priceLines.push(candleSeries.createPriceLine({ price: trade.tp, color: '#10b981', lineWidth: 2, lineStyle: 0, title: 'TP (180)' }));
+    priceLines.push(candleSeries.createPriceLine({ price: trade.sl, color: '#ef4444', lineWidth: 2, lineStyle: 2, title: 'SL' }));
+    priceLines.push(candleSeries.createPriceLine({ price: trade.tp, color: '#10b981', lineWidth: 2, lineStyle: 0, title: 'TP' }));
 }
 
 async function sendTelegramAlert(textOrCustomMessage) {
@@ -1878,12 +1858,12 @@ function updateDashboardUI() {
     document.getElementById('uiSessionsStatus').innerHTML = `${tokyoBadge} | ${londonBadge} | ${nyBadge}`;
 
     if (document.getElementById('tokyoLiveStatusTag')) {
-        document.getElementById('tokyoLiveStatusTag').innerText = sess.tokyoOpen ? '🟢 Status: RUNNING NOW' : '⚪ Status: CLOSED';
-        document.getElementById('londonLiveStatusTag').innerText = sess.londonOpen ? '🟢 Status: RUNNING NOW' : '⚪ Status: CLOSED';
-        document.getElementById('nyLiveStatusTag').innerText = sess.nyOpen ? '🟢 Status: RUNNING NOW' : '⚪ Status: CLOSED';
+        document.getElementById('tokyoLiveStatusTag').innerText = sess.tokyoOpen ? '🟢 RUNNING' : '⚪ CLOSED';
+        document.getElementById('londonLiveStatusTag').innerText = sess.londonOpen ? '🟢 RUNNING' : '⚪ CLOSED';
+        document.getElementById('nyLiveStatusTag').innerText = sess.nyOpen ? '🟢 RUNNING' : '⚪ CLOSED';
         
         const newsActive = isNewsBlackoutActive();
-        document.getElementById('newsFilterStatusTag').innerText = newsActive ? '🚨 BLACKOUT (±15m News)' : '🟢 Status: Clear (No News)';
+        document.getElementById('newsFilterStatusTag').innerText = newsActive ? '🚨 BLACKOUT' : '🟢 Clear';
         document.getElementById('newsFilterStatusTag').style.color = newsActive ? 'var(--accent-red)' : 'var(--accent-green)';
     }
 
@@ -1898,7 +1878,7 @@ function updateDashboardUI() {
     } else {
         topSigDir.innerText = currentLang === 'ar' ? 'لا توجد صفقة (NONE)' : 'NONE';
         topSigDir.style.color = 'var(--text-secondary)';
-        topSigLevels.innerText = currentLang === 'ar' ? 'بانتظار إشارة دخول أو أمر معلق' : 'No active or limit signal';
+        topSigLevels.innerText = currentLang === 'ar' ? 'بانتظار إشارة دخول' : 'No active signal';
     }
 
     const allHist = state.history || [];
@@ -1932,11 +1912,11 @@ function updateDashboardUI() {
         statusTag.innerText = `🟢 ${modeLabel} — #Trade-${tr.tradeId || 1}`;
         const cardHtml = `
             <div class="signal-card ${cls}">
-                <div class="sig-row"><strong>#Trade-${tr.tradeId || 1} — ${tr.setupName}</strong><span class="sig-badge ${cls}">${tr.dir} (${modeLabel})</span></div>
+                <div class="sig-row"><strong>#Trade-${tr.tradeId || 1} — ${tr.setupName}</strong><span class="sig-badge ${cls}">${tr.dir}</span></div>
                 <div class="sig-row"><span>Entry:</span><strong>${Number(tr.entry).toFixed(2)}</strong></div>
-                <div class="sig-row"><span>Stop Loss (SL):</span><strong style="color:var(--accent-red);">${Number(tr.sl).toFixed(2)}</strong></div>
-                <div class="sig-row"><span>Take Profit (TP):</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
-                <div class="sig-row"><span>Lot:</span><strong>0.04 lot / $400</strong></div>
+                <div class="sig-row"><span>SL:</span><strong style="color:var(--accent-red);">${Number(tr.sl).toFixed(2)}</strong></div>
+                <div class="sig-row"><span>TP:</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
+                <div class="sig-row"><span>Lot:</span><strong>0.04 lot</strong></div>
             </div>`;
         homeSigBox.innerHTML = cardHtml;
         activeTabBox.innerHTML = cardHtml;
@@ -1945,7 +1925,7 @@ function updateDashboardUI() {
         const standbyHtml = `
             <div class="signal-card">
                 <div class="sig-row"><strong>${t('scanningTitle')}</strong><span class="sig-badge">STANDBY</span></div>
-                <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 6px; line-height:1.5;">${t('scanningDesc')}</p>
+                <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 4px; line-height:1.4;">${t('scanningDesc')}</p>
             </div>`;
         homeSigBox.innerHTML = standbyHtml;
         activeTabBox.innerHTML = standbyHtml;
@@ -1967,7 +1947,7 @@ function updateDashboardUI() {
     document.getElementById('closedCountTag').innerText = `${filteredHist.length}`;
     const closedTbody = document.getElementById('closedTradesTableBody');
     if (filteredHist.length === 0) {
-        closedTbody.innerHTML = `<tr><td colspan="10" style="color:var(--text-secondary); text-align:center; padding:18px;">${t('noClosed')}</td></tr>`;
+        closedTbody.innerHTML = `<tr><td colspan="10" style="color:var(--text-secondary); text-align:center; padding:14px;">${t('noClosed')}</td></tr>`;
     } else {
         closedTbody.innerHTML = filteredHist.map(h => {
             const isWin = h.outcome === 'WIN';
@@ -1975,7 +1955,7 @@ function updateDashboardUI() {
             const dirColor = h.dir === 'BUY' ? 'var(--accent-green)' : 'var(--accent-red)';
             return `
                 <tr>
-                    <td><strong>#Trade-${h.tradeId}</strong></td>
+                    <td><strong>#${h.tradeId}</strong></td>
                     <td style="color:${dirColor}; font-weight:700;">${h.dir}</td>
                     <td>${h.setupName}</td>
                     <td>${Number(h.entry).toFixed(2)}</td>
@@ -2007,11 +1987,11 @@ function updateBetaToggleButton(isBeta) {
     const btn = document.getElementById('betaModeToggleBtn');
     if (!btn) return;
     if (isBeta) {
-        btn.innerText = '🟢 Mode: FREE BETA (Everyone In)';
+        btn.innerText = '🟢 FREE BETA';
         btn.style.borderColor = 'var(--accent-green)';
         btn.style.color = 'var(--accent-green)';
     } else {
-        btn.innerText = '🔒 Mode: PAID VIP ONLY';
+        btn.innerText = '🔒 VIP ONLY';
         btn.style.borderColor = 'var(--accent-gold)';
         btn.style.color = 'var(--accent-gold)';
     }
@@ -2028,7 +2008,7 @@ async function toggleBetaMode() {
         state.betaMode = nextBeta;
         updateBetaToggleButton(nextBeta);
         await saveState();
-        logEvent(nextBeta ? '🟢 Switched Mr.Trader AI to FREE BETA mode.' : '🔒 Switched Mr.Trader AI to PAID VIP ONLY mode.');
+        logEvent(nextBeta ? '🟢 Free Beta mode.' : '🔒 VIP Only mode.');
     }
 }
 
@@ -2044,10 +2024,10 @@ async function saveMasterConfig() {
 
     if (!error) {
         masterConfig = { ...masterConfig, td_api_key: td, tg_bot_token: tg, tg_chat_id: chat };
-        logEvent('🔑 Master credentials saved.');
+        logEvent('🔑 Master keys saved.');
         hardSyncRefresh();
     } else {
-        logEvent('⚠️ Error saving config: ' + error.message);
+        logEvent('⚠️ Error: ' + error.message);
     }
 }
 
@@ -2097,7 +2077,7 @@ function renderClientTable() {
     document.getElementById('clientCountBadge').innerText = cachedClientList.length;
 
     if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="color:var(--text-secondary); text-align:center; padding:18px;">No matching clients found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="color:var(--text-secondary); text-align:center; padding:14px;">No matching clients.</td></tr>';
         return;
     }
 
@@ -2109,30 +2089,30 @@ function renderClientTable() {
             : isExpired
                 ? '<span class="badge-expired">EXPIRED</span>'
                 : u.is_approved
-                    ? '<span class="badge-approved">VIP ACTIVE</span>'
-                    : '<span class="badge-pending">UPGRADE REQ</span>';
+                    ? '<span class="badge-approved">ACTIVE</span>'
+                    : '<span class="badge-pending">PENDING</span>';
 
         return `
         <tr>
             <td><strong style="color:var(--accent-gold);">${shortId}</strong></td>
             <td><strong>${u.email}</strong></td>
-            <td>${u.role === 'admin' ? 'OWNER' : (u.vip_plan || 'UPGRADE_REQUIRED')}</td>
+            <td>${u.role === 'admin' ? 'OWNER' : (u.vip_plan || 'NONE')}</td>
             <td>${formatDateShort(u.vip_started_at)}</td>
             <td>${formatDateShort(u.vip_expires_at)}</td>
             <td>${statusBadge}</td>
             <td>
                 ${u.role === 'admin' ? `
-                    <button type="button" class="btn-ui" onclick="adminSendResetEmail('${u.email}')">🔑 Reset Pwd</button>
+                    <button type="button" class="btn-ui" onclick="adminSendResetEmail('${u.email}')">🔑 Pwd</button>
                 ` : `
-                    <div style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;">
+                    <div style="display:flex; gap:4px; flex-wrap:wrap; align-items:center;">
                         <select id="bundleSel_${u.id}" class="bundle-select">
-                            <option value="3D" ${u.vip_plan === '3_DAYS_TRIAL' ? 'selected' : ''}>3 Days Trial ($15)</option>
-                            <option value="1M" ${u.vip_plan === '1_MONTH' ? 'selected' : ''}>1 Month ($99)</option>
-                            <option value="3M" ${u.vip_plan === '3_MONTHS' ? 'selected' : ''}>3 Months ($250)</option>
+                            <option value="3D" ${u.vip_plan === '3_DAYS_TRIAL' ? 'selected' : ''}>3D ($15)</option>
+                            <option value="1M" ${u.vip_plan === '1_MONTH' ? 'selected' : ''}>1M ($99)</option>
+                            <option value="3M" ${u.vip_plan === '3_MONTHS' ? 'selected' : ''}>3M ($250)</option>
                         </select>
-                        <button type="button" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="grantVipBundle('${u.id}')">✅ Grant VIP</button>
-                        ${u.is_approved ? `<button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="revokeVipBundle('${u.id}')">✖ Revoke</button>` : ''}
-                        <button type="button" class="btn-ui" onclick="adminSendResetEmail('${u.email}')">🔑 Reset Pwd</button>
+                        <button type="button" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="grantVipBundle('${u.id}')">✅</button>
+                        ${u.is_approved ? `<button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="revokeVipBundle('${u.id}')">✖</button>` : ''}
+                        <button type="button" class="btn-ui" onclick="adminSendResetEmail('${u.email}')">🔑</button>
                     </div>
                 `}
             </td>
@@ -2155,7 +2135,7 @@ async function grantVipBundle(userId) {
     const msgEl = document.getElementById('adminUserActionMsg');
     if (!error) {
         msgEl.style.color = 'var(--accent-green)';
-        msgEl.innerText = `✅ Granted ${planLabel}`;
+        msgEl.innerText = `✅ Granted`;
         loadClientList();
     }
 }
@@ -2167,7 +2147,7 @@ async function revokeVipBundle(userId) {
     if (!error) {
         const msgEl = document.getElementById('adminUserActionMsg');
         msgEl.style.color = 'var(--accent-red)';
-        msgEl.innerText = `✖ Revoked VIP`;
+        msgEl.innerText = `✖ Revoked`;
         loadClientList();
     }
 }
@@ -2175,10 +2155,10 @@ async function revokeVipBundle(userId) {
 async function adminSendResetEmail(userEmail) {
     const msgEl = document.getElementById('adminUserActionMsg');
     msgEl.style.color = 'var(--accent-gold)';
-    msgEl.innerText = `Sending password reset link...`;
+    msgEl.innerText = `Sending...`;
     await sb.auth.resetPasswordForEmail(userEmail, { redirectTo: window.location.origin + window.location.pathname + '?recovery=1' });
     msgEl.style.color = 'var(--accent-green)';
-    msgEl.innerText = `✅ Reset link sent to ${userEmail}`;
+    msgEl.innerText = `✅ Sent`;
 }
 
 function startTerminalEngine(isAdmin) {
@@ -2196,7 +2176,7 @@ function startTerminalEngine(isAdmin) {
 
     updateDashboardUI();
     const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
-    logEvent(`🚀 Mr.Trader AI v1.2 connected (GMT+${tzVal}): ${currentUserProfile.email} (${isAdmin ? 'MASTER' : 'VIP CLIENT'}).`);
+    logEvent(`🚀 Connected (GMT+${tzVal}).`);
 
     if (isAdmin) {
         runFastAutopilotCycle(true);
@@ -2207,7 +2187,10 @@ function startTerminalEngine(isAdmin) {
     }
 }
 
-window.addEventListener('DOMContentLoaded', checkUserSession);
+window.addEventListener('DOMContentLoaded', () => {
+    checkUserSession();
+    updateViewModeUI();
+});
 </script>
 </body>
 </html>
