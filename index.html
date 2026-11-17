@@ -214,6 +214,15 @@
         }
         .log-entry { margin-bottom: 4px; border-bottom: 1px dashed #1e2536; padding-bottom: 3px; }
         .log-time { color: var(--accent-gold); margin-inline-end: 6px; }
+
+        /* MT5 CLOUD COPIER CARD STYLES */
+        .mt5-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+        .mt5-label { display: block; font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 4px; }
+        .mt5-input {
+            width: 100%; padding: 9px 10px; border-radius: 6px; background: var(--bg-primary);
+            border: 1px solid var(--border-color); color: var(--text-primary); font-size: 0.8rem;
+        }
+        .mt5-input:focus { outline: none; border-color: var(--accent-gold); }
     </style>
 </head>
 <body>
@@ -605,9 +614,9 @@
                 <span data-i18n="stratTitle">📊 Mr.Trader AI v1.2 Engine Overview</span>
             </div>
             <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;" data-i18n="stratDesc">
-                • <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
-                • <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & Gemini AI Supervisor (120 SL / 180 TP).<br>
-                • <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
+- <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
+- <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & Gemini AI Supervisor (120 SL / 180 TP).<br>
+- <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
             </p>
         </div>
     </div>
@@ -654,6 +663,85 @@
                 <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red); padding:7px 12px;" onclick="logoutClient()">
                     🚪 <span data-i18n="logoutAccountBtn">Sign Out</span>
                 </button>
+            </div>
+        </div>
+
+        <!-- CONNECT MT5 CLOUD AUTO-TRADE CARD -->
+        <div class="panel-box" id="mt5ConnectCard" style="border-color: rgba(245, 158, 11, 0.4);">
+            <div class="box-header">
+                <div>
+                    <span style="color:var(--accent-gold); font-size:0.88rem;" data-i18n="mt5CardTitle">⚡ Connect MT5 Auto-Trade (Cloud Copier)</span>
+                    <div style="font-size:0.72rem; color:var(--text-secondary); font-weight:400; margin-top:2px;" data-i18n="mt5CardSub">
+                        Link your MetaTrader 5 account directly. No downloads or VPS needed.
+                    </div>
+                </div>
+                <span id="mt5StatusBadge" style="padding:4px 10px; border-radius:16px; font-size:0.72rem; font-weight:700; background:rgba(148,163,184,0.15); color:#cbd5e1;">
+                    ⚪ Not Connected
+                </span>
+            </div>
+
+            <!-- Locked Notice for Non-VIP Users -->
+            <div id="mt5VipLockNotice" style="display:none; text-align:center; padding:12px; background:var(--bg-card); border:1px dashed var(--accent-gold); border-radius:6px;">
+                <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:6px;">
+                    🔒 <strong style="color:var(--accent-gold);">VIP Feature:</strong> Activate any VIP plan below to connect your MT5 account for 24/7 hands-free trade copying.
+                </p>
+            </div>
+
+            <!-- MT5 Connection Form -->
+            <div id="mt5ConnectFormWrap">
+                <div class="mt5-grid">
+                    <div>
+                        <label class="mt5-label" data-i18n="mt5ServerLbl">Broker Server Name</label>
+                        <input list="brokerServersList" id="mt5ServerInput" class="mt5-input" placeholder="e.g. Exness-MT5Real">
+                        <datalist id="brokerServersList">
+                            <option value="Exness-MT5Real">
+                            <option value="Exness-MT5Real2">
+                            <option value="Exness-MT5Real5">
+                            <option value="Exness-MT5Trial">
+                            <option value="ICMarketsSC-MT5">
+                            <option value="ICMarketsSC-MT5-2">
+                            <option value="XMGlobal-MT5">
+                            <option value="EquitiBrokerage-Live">
+                            <option value="Pepperstone-MT5-Live01">
+                        </datalist>
+                    </div>
+
+                    <div>
+                        <label class="mt5-label" data-i18n="mt5LoginLbl">MT5 Account Number (Login)</label>
+                        <input type="number" id="mt5LoginInput" class="mt5-input" placeholder="e.g. 15849201">
+                    </div>
+
+                    <div>
+                        <label class="mt5-label" data-i18n="mt5PassLbl">MT5 Trading Password</label>
+                        <input type="password" id="mt5PassInput" class="mt5-input" placeholder="Main Trading Password">
+                    </div>
+
+                    <div>
+                        <label class="mt5-label" data-i18n="mt5LotModeLbl">Lot Size Mode</label>
+                        <select id="mt5LotModeSelect" class="mt5-input" onchange="toggleFixedLotField()">
+                            <option value="AUTO">Auto-Lot (0.04 per $400 Balance)</option>
+                            <option value="FIXED">Fixed Lot Size</option>
+                        </select>
+                    </div>
+
+                    <div id="mt5FixedLotWrap" style="display:none;">
+                        <label class="mt5-label" data-i18n="mt5FixedLotLbl">Fixed Lot (e.g. 0.04)</label>
+                        <input type="number" step="0.01" min="0.01" id="mt5FixedLotInput" class="mt5-input" value="0.04">
+                    </div>
+                </div>
+
+                <div id="mt5StatusDetail" style="margin-top:10px; font-size:0.74rem; color:var(--text-secondary);">
+                    🔒 Encrypted with AES-256 Vault. Only trade execution permissions are used.
+                </div>
+
+                <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+                    <button type="button" onclick="connectMt5Account()" id="btnConnectMt5" class="auth-btn" style="width:auto; padding:8px 16px; font-size:0.78rem;">
+                        🔗 Connect & Start Auto-Trade
+                    </button>
+                    <button type="button" onclick="disconnectMt5Account()" id="btnDisconnectMt5" class="btn-ui" style="display:none; border-color:var(--accent-red); color:var(--accent-red); padding:8px 14px;">
+                        Disconnect
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -778,7 +866,14 @@ const I18N = {
         notifSettingTitle: '🔔 Notifications & Sound',
         notifSettingDesc: 'Receive alerts instantly when signals trigger.',
         enableNotifBtn: 'Enable',
-        tgSupportBtn: 'Telegram Support'
+        tgSupportBtn: 'Telegram Support',
+        mt5CardTitle: '⚡ Connect MT5 Auto-Trade (Cloud Copier)',
+        mt5CardSub: 'Link your MetaTrader 5 account directly. No downloads or VPS needed.',
+        mt5ServerLbl: 'Broker Server Name',
+        mt5LoginLbl: 'MT5 Account Number (Login)',
+        mt5PassLbl: 'MT5 Trading Password',
+        mt5LotModeLbl: 'Lot Size Mode',
+        mt5FixedLotLbl: 'Fixed Lot (e.g. 0.04)'
     },
     ar: {
         langBtn: 'English',
@@ -865,7 +960,14 @@ const I18N = {
         notifSettingTitle: '🔔 الإشعارات والأصوات',
         notifSettingDesc: 'تلقي تنبيهات فورية عند صدور التوصيات.',
         enableNotifBtn: 'تفعيل',
-        tgSupportBtn: 'دعم تيليجرام'
+        tgSupportBtn: 'دعم تيليجرام',
+        mt5CardTitle: '⚡ ربط حساب MT5 للتداول الآلي (Cloud Copier)',
+        mt5CardSub: 'اربط حساب MetaTrader 5 مباشرة لنسخ الصفقات تلقائياً 24/7 بدون VPS.',
+        mt5ServerLbl: 'اسم سيرفر الوسيط (Broker Server)',
+        mt5LoginLbl: 'رقم حساب MT5 (Login)',
+        mt5PassLbl: 'كلمة مرور التداول (Trading Password)',
+        mt5LotModeLbl: 'نظام حجم اللوت',
+        mt5FixedLotLbl: 'اللوت الثابت (مثلاً 0.04)'
     }
 };
 
@@ -1017,6 +1119,9 @@ function switchTerminalTab(tabName) {
     });
     if (tabName === 'home' && chart) {
         setTimeout(() => chart.applyOptions({ width: document.getElementById('chart').clientWidth }), 50);
+    }
+    if (tabName === 'account') {
+        loadMt5AccountStatus();
     }
 }
 
@@ -1215,6 +1320,15 @@ async function checkUserSession() {
     document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER' : (vipActive ? (currentUserProfile.vip_plan || 'VIP ACTIVE') : '🔒 Upgrade Required');
     document.getElementById('accExpVal').innerText = isAdmin ? 'UNLIMITED' : (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Inactive');
 
+    // Show/Lock MT5 Auto-Trade Form based on VIP Status
+    if (vipActive) {
+        document.getElementById('mt5VipLockNotice').style.display = 'none';
+        document.getElementById('mt5ConnectFormWrap').style.display = 'block';
+    } else {
+        document.getElementById('mt5VipLockNotice').style.display = 'block';
+        document.getElementById('mt5ConnectFormWrap').style.display = 'none';
+    }
+
     bindTelegramActivationLinks(shortId, currentUserProfile.email);
 
     if (isAdmin) {
@@ -1228,6 +1342,7 @@ async function checkUserSession() {
 
     await loadMasterConfig(isAdmin);
     await loadSharedTerminalState();
+    await loadMt5AccountStatus();
     subscribeToRealtimeState();
     startTerminalEngine(isAdmin);
 }
@@ -1390,7 +1505,6 @@ function subscribeToRealtimeState() {
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'terminal_state', filter: 'id=eq.1' }, (payload) => {
             if (!isCurrentUserAdmin() && payload.new && payload.new.state_json) {
                 const prevTradeId = state.activeTrade?.tradeId;
-                const prevHistoryLen = (state.history || []).length;
                 state = { ...state, ...payload.new.state_json };
                 htfBias = state.htfBias || 'NEUTRAL';
                 syncSettingsToUI();
@@ -1621,11 +1735,9 @@ async function runFastAutopilotCycle(forceFresh = false) {
     const c2 = m5Bars[m5Bars.length - 3];
     const pipSize = 0.10, spreadPrice = 0.60;
 
-    // فلتر قوة الشمعة (تجنب شموع التذبذب الصغيرة جداً أقل من 5 نقاط)
     const c1Body = Math.abs(c1.close - c1.open);
     const hasMomentum = c1Body >= 0.50;
 
-    // فلتر توافق الاتجاه مع فريم الساعة H1
     const allowBuy = htfBias !== "BEARISH";
     const allowSell = htfBias !== "BULLISH";
 
@@ -2110,6 +2222,125 @@ async function adminSendResetEmail(userEmail) {
     msgEl.innerText = `✅ Sent`;
 }
 
+// ============================================================================
+// 6. MT5 CLOUD AUTO-TRADE CONNECTION LOGIC
+// ============================================================================
+function toggleFixedLotField() {
+    const mode = document.getElementById('mt5LotModeSelect')?.value;
+    const wrap = document.getElementById('mt5FixedLotWrap');
+    if (wrap) wrap.style.display = mode === 'FIXED' ? 'block' : 'none';
+}
+
+async function loadMt5AccountStatus() {
+    try {
+        const { data: { user } } = await sb.auth.getUser();
+        if (!user) return;
+
+        const { data } = await sb
+            .from('mt5_accounts')
+            .select('broker_server, mt5_login, lot_mode, fixed_lot, is_active, connection_status, status_message')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+        if (!data) return;
+
+        const serverInp = document.getElementById('mt5ServerInput');
+        const loginInp = document.getElementById('mt5LoginInput');
+        if (serverInp && !serverInp.value) serverInp.value = data.broker_server || '';
+        if (loginInp && !loginInp.value) loginInp.value = data.mt5_login || '';
+
+        document.getElementById('mt5LotModeSelect').value = data.lot_mode || 'AUTO';
+        document.getElementById('mt5FixedLotInput').value = data.fixed_lot || 0.04;
+        toggleFixedLotField();
+
+        const badge = document.getElementById('mt5StatusBadge');
+        const detail = document.getElementById('mt5StatusDetail');
+        const btnDisc = document.getElementById('btnDisconnectMt5');
+
+        if (data.connection_status === 'CONNECTED' && data.is_active) {
+            badge.textContent = '🟢 Connected & Copying';
+            badge.style.background = 'rgba(16,185,129,0.18)';
+            badge.style.color = '#34d399';
+            btnDisc.style.display = 'inline-block';
+        } else if (data.connection_status === 'PENDING' && data.is_active) {
+            badge.textContent = '🟡 Verifying on VPS...';
+            badge.style.background = 'rgba(245,158,11,0.18)';
+            badge.style.color = '#fbbf24';
+            btnDisc.style.display = 'inline-block';
+        } else if (data.connection_status === 'ERROR') {
+            badge.textContent = '🔴 Connection Error';
+            badge.style.background = 'rgba(239,68,68,0.18)';
+            badge.style.color = '#f87171';
+            btnDisc.style.display = 'inline-block';
+        } else {
+            badge.textContent = '⚪ Disconnected';
+            badge.style.background = 'rgba(148,163,184,0.15)';
+            badge.style.color = '#cbd5e1';
+            btnDisc.style.display = 'none';
+        }
+
+        if (data.status_message) {
+            detail.textContent = `Status: ${data.status_message}`;
+        }
+    } catch (e) {
+        console.warn('MT5 status check:', e.message);
+    }
+}
+
+async function connectMt5Account() {
+    if (!hasValidVipAccess(currentUserProfile)) {
+        alert('Please activate a VIP plan first to enable MT5 Auto-Trade.');
+        return;
+    }
+
+    const server = document.getElementById('mt5ServerInput').value.trim();
+    const login = parseInt(document.getElementById('mt5LoginInput').value.trim(), 10);
+    const password = document.getElementById('mt5PassInput').value;
+    const lotMode = document.getElementById('mt5LotModeSelect').value;
+    const fixedLot = parseFloat(document.getElementById('mt5FixedLotInput').value) || 0.04;
+
+    if (!server || !login || !password) {
+        alert(currentLang === 'ar' ? 'يرجى إدخال اسم السيرفر ورقم الحساب وكلمة المرور.' : 'Please enter Broker Server, MT5 Login Number, and Trading Password.');
+        return;
+    }
+
+    const btn = document.getElementById('btnConnectMt5');
+    btn.disabled = true;
+    btn.textContent = '⏳ Encrypting & Connecting...';
+
+    try {
+        const { error } = await sb.rpc('save_mt5_account', {
+            p_server: server,
+            p_login: login,
+            p_password: password,
+            p_lot_mode: lotMode,
+            p_fixed_lot: fixedLot
+        });
+
+        if (error) throw error;
+        document.getElementById('mt5PassInput').value = '';
+        await loadMt5AccountStatus();
+        setTimeout(loadMt5AccountStatus, 6000);
+    } catch (err) {
+        alert('Error saving MT5 account: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '🔗 Connect & Start Auto-Trade';
+    }
+}
+
+async function disconnectMt5Account() {
+    if (!confirm(currentLang === 'ar' ? 'هل تريد إيقاف نسخ الصفقات الآلي لحساب MT5؟' : 'Stop automatic trade copying on your MT5 account?')) return;
+    try {
+        await sb.rpc('disconnect_mt5_account');
+        await loadMt5AccountStatus();
+    } catch (err) {
+        alert('Error disconnecting: ' + err.message);
+    }
+}
+
+setInterval(loadMt5AccountStatus, 8000);
+
 function startTerminalEngine(isAdmin) {
     if (engineStarted) return;
     engineStarted = true;
@@ -2125,13 +2356,7 @@ function startTerminalEngine(isAdmin) {
     const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
     logEvent(`🚀 Connected (GMT+${tzVal}).`);
 
-    if (isAdmin) {
-        runFastAutopilotCycle(true);
-        setInterval(() => runFastAutopilotCycle(false), DEFAULT_ENGINE_RULES.scanIntervalMs);
-        setInterval(pollLivePriceOnly, DEFAULT_ENGINE_RULES.priceTickMs);
-    } else {
-        setInterval(loadSharedTerminalState, 10000);
-    }
+    setInterval(loadSharedTerminalState, 10000);
 }
 
 window.addEventListener('DOMContentLoaded', () => {
