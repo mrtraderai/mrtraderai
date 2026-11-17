@@ -269,37 +269,6 @@
         <button type="button" class="auth-btn" onclick="handleUpdatePassword()" data-i18n="updatePassBtn">Update Password & Login</button>
         <div id="updatePwdMessage" class="auth-msg"></div>
     </div>
-
-    <!-- Pending / Expired VIP Subscription Screen -->
-    <div class="auth-box" id="pendingApprovalBox" style="display:none; max-width:640px; text-align:center;">
-        <h2 id="vipLockTitle">⏳ VIP Subscription Required</h2>
-        <p id="vipLockDesc" style="margin-top:6px;">
-            Account: <strong id="pendingEmailText"></strong> — Choose a VIP plan below and message <strong>@mrtraderai_official</strong> on Telegram.
-        </p>
-
-        <div class="plans-grid" style="margin-bottom:12px;">
-            <div class="plan-card">
-                <div class="plan-title" data-i18n="plan3dTitle">3-Day Trial</div>
-                <div class="plan-price">$15</div>
-                <div class="plan-desc" data-i18n="plan3dDesc">Full live XAU/USD signals & Telegram alerts for 3 days</div>
-                <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
-            </div>
-            <div class="plan-card popular">
-                <div class="plan-title" data-i18n="plan1mTitle">1 Month VIP</div>
-                <div class="plan-price">$99</div>
-                <div class="plan-desc" data-i18n="plan1mDesc">30 days full terminal access, real-time entries, SL & TP alerts</div>
-                <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
-            </div>
-            <div class="plan-card">
-                <div class="plan-title" data-i18n="plan3mTitle">3 Months VIP</div>
-                <div class="plan-price">$250</div>
-                <div class="plan-desc" data-i18n="plan3mDesc">90 days priority VIP access (Save $47 vs monthly)</div>
-                <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate on Telegram</span></a>
-            </div>
-        </div>
-
-        <button type="button" class="auth-btn" style="background:var(--bg-card); color:#fff; border:1px solid var(--border-color);" onclick="logoutClient()" data-i18n="signOut">Sign Out</button>
-    </div>
 </div>
 
 <!-- ==================== 2. PIN GATE FOR AW ==================== -->
@@ -440,7 +409,7 @@
         </div>
 
         <!-- Session Filters & Risk Guardrails Control Panel -->
-        <div class="panel-box" style="background:var(--bg-secondary); border:1px solid var(--border-color);">
+        <div class="panel-box" style="background:var(--bg-secondary); border:1px solid var(--border-color);" id="adminSettingsPanelBox">
             <div class="box-header" style="margin-bottom:6px; cursor:pointer;" onclick="toggleSettingsCard()">
                 <span>⚙️ Session Filters & Risk Guardrails (<span id="settingsTzLabel">GMT</span>) <span id="settingsToggleIcon" style="font-size:0.72rem; color:var(--accent-gold);"><span data-i18n="hideShowToggle">[▲ Hide]</span></span></span>
                 <div style="display:flex; gap:6px;">
@@ -1051,7 +1020,6 @@ function showNewPasswordScreen() {
     document.getElementById('authOverlay').style.display = 'flex';
     document.getElementById('terminalApp').style.display = 'none';
     document.getElementById('authLandingWrapper').style.display = 'none';
-    document.getElementById('pendingApprovalBox').style.display = 'none';
     document.getElementById('updatePasswordBox').style.display = 'block';
 }
 
@@ -1218,28 +1186,9 @@ async function checkUserSession() {
     }
 
     const isAdmin = isCurrentUserAdmin();
-
-    const { data: termRow } = await sb.from('terminal_state').select('state_json').eq('id', 1).single();
-    const globalBetaActive = termRow?.state_json?.betaMode !== false;
     const vipActive = hasValidVipAccess(currentUserProfile);
 
-    if (!isAdmin && currentUserProfile.is_approved && !vipActive) {
-        document.getElementById('authLandingWrapper').style.display = 'none';
-        document.getElementById('pendingApprovalBox').style.display = 'block';
-        document.getElementById('vipLockTitle').innerText = currentLang === 'ar' ? '⏰ انتهى اشتراك VIP' : '⏰ VIP Expired';
-        document.getElementById('vipLockDesc').innerHTML = currentLang === 'ar'
-            ? `انتهت باقة <strong>${currentUserProfile.vip_plan || 'VIP'}</strong> للحساب <strong>${currentUserProfile.email}</strong>. اختر باقة وتواصل مع <strong>@mrtraderai_official</strong>.`
-            : `Your <strong>${currentUserProfile.vip_plan || 'VIP'}</strong> plan for <strong>${currentUserProfile.email}</strong> expired. Message <strong>@mrtraderai_official</strong> to renew.`;
-        return;
-    }
-
-    if (!globalBetaActive && !vipActive && !isAdmin) {
-        document.getElementById('authLandingWrapper').style.display = 'none';
-        document.getElementById('pendingApprovalBox').style.display = 'block';
-        document.getElementById('pendingEmailText').innerText = currentUserProfile.email;
-        return;
-    }
-
+    // ✅ التعديل هنا: المستخدمون غير المفعلين يسمح لهم بالدخول ولكن يتم حجب الصفقات الحية عنهم ورؤية السجل والإحصائيات فقط
     document.getElementById('authOverlay').style.display = 'none';
     document.getElementById('terminalApp').style.display = 'flex';
 
@@ -1316,7 +1265,7 @@ async function loadSharedTerminalState() {
         htfBias = state.htfBias || 'NEUTRAL';
         if (candleSeries && state.latestBars && state.latestBars.length > 0) {
             candleSeries.setData(state.latestBars);
-            if (state.activeTrade) drawTradeLines(state.activeTrade);
+            if (state.activeTrade && (isCurrentUserAdmin() || hasValidVipAccess(currentUserProfile))) drawTradeLines(state.activeTrade);
         }
     }
     syncSettingsToUI();
@@ -1410,18 +1359,21 @@ function subscribeToRealtimeState() {
                 updateDashboardUI();
 
                 if (candleSeries && state.latestBars && state.latestBars.length > 0) candleSeries.setData(state.latestBars);
-                if (candleSeries && state.activeTrade) drawTradeLines(state.activeTrade);
+                const hasVip = hasValidVipAccess(currentUserProfile);
+                if (candleSeries && state.activeTrade && hasVip) drawTradeLines(state.activeTrade);
                 if (candleSeries && !state.activeTrade) clearChartLines();
 
-                if (state.activeTrade && state.activeTrade.tradeId !== prevTradeId) {
-                    const msg = `🚨 NEW SIGNAL #Trade-${state.activeTrade.tradeId}: ${state.activeTrade.dir} @ ${state.activeTrade.entry.toFixed(2)}`;
-                    logEvent(msg);
-                    triggerClientPushAlert("Mr.Trader AI — New Signal!", msg);
-                } else if ((state.history || []).length > prevHistoryLen) {
+                if (hasVip) {
+                    if (state.activeTrade && state.activeTrade.tradeId !== prevTradeId) {
+                        const msg = `🚨 NEW SIGNAL #Trade-${state.activeTrade.tradeId}: ${state.activeTrade.dir} @ ${state.activeTrade.entry.toFixed(2)}`;
+                        logEvent(msg);
+                        triggerClientPushAlert("Mr.Trader AI — New Signal!", msg);
+                    }
+                }
+                if ((state.history || []).length > prevHistoryLen) {
                     const lastClosed = state.history[0];
                     const msg = `${lastClosed.outcome === 'WIN' ? '✅' : '❌'} #Trade-${lastClosed.tradeId} ${lastClosed.outcome} (${lastClosed.netPnL >= 0 ? '+' : ''}$${lastClosed.netPnL.toFixed(2)})`;
                     logEvent(msg);
-                    triggerClientPushAlert("Mr.Trader AI — Trade Closed", msg);
                 }
             }
         })
@@ -1649,7 +1601,7 @@ async function runFastAutopilotCycle(forceFresh = false) {
 
     if (state.activeTrade) {
         manageActiveTrade(livePrice);
-        drawTradeLines(state.activeTrade);
+        if (hasValidVipAccess(currentUserProfile)) drawTradeLines(state.activeTrade);
         await saveState();
         return;
     }
@@ -1680,7 +1632,7 @@ async function runFastAutopilotCycle(forceFresh = false) {
         state.activeTrade = setup;
         state.tradeCounter = Number(tradeId) + 1;
 
-        drawTradeLines(setup);
+        if (hasValidVipAccess(currentUserProfile)) drawTradeLines(setup);
         const alertMsg = `⚡ [FAST SCANNER] Trade #${tradeId} Triggered: ${setup.dir} @ ${setup.entry}`;
         logEvent(alertMsg);
         triggerClientPushAlert("Mr.Trader AI — Fast Trade!", alertMsg);
@@ -1799,9 +1751,11 @@ async function sendTelegramAlert(textOrCustomMessage) {
 }
 
 // ============================================================================
-// 5. UI RENDERING & MANAGEMENT
+// 5. UI RENDERING & MANAGEMENT (WITH VIP / ADMIN PERMISSIONS GUARD)
 // ============================================================================
 function updateDashboardUI() {
+    const hasVip = hasValidVipAccess(currentUserProfile);
+
     if (state.lastPrice) document.getElementById('uiLivePrice').innerText = Number(state.lastPrice).toFixed(2);
     document.getElementById('uiTrendBias').innerText = htfBias;
     document.getElementById('uiTrendBias').style.color = htfBias === "BULLISH" ? "var(--accent-green)" : htfBias === "BEARISH" ? "var(--accent-red)" : "var(--accent-gold)";
@@ -1824,16 +1778,24 @@ function updateDashboardUI() {
 
     const topSigDir = document.getElementById('uiTopSignalDir');
     const topSigLevels = document.getElementById('uiTopSignalLevels');
-    if (state.activeTrade) {
-        const tr = state.activeTrade;
-        const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
-        topSigDir.innerText = `${tr.dir} (${modeLabel})`;
-        topSigDir.style.color = tr.dir === 'BUY' ? 'var(--accent-green)' : 'var(--accent-red)';
-        topSigLevels.innerText = `E: ${Number(tr.entry).toFixed(2)} | SL: ${Number(tr.sl).toFixed(2)} | TP: ${Number(tr.tp).toFixed(2)}`;
+
+    if (hasVip) {
+        if (state.activeTrade) {
+            const tr = state.activeTrade;
+            const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
+            topSigDir.innerText = `${tr.dir} (${modeLabel})`;
+            topSigDir.style.color = tr.dir === 'BUY' ? 'var(--accent-green)' : 'var(--accent-red)';
+            topSigLevels.innerText = `E: ${Number(tr.entry).toFixed(2)} | SL: ${Number(tr.sl).toFixed(2)} | TP: ${Number(tr.tp).toFixed(2)}`;
+        } else {
+            topSigDir.innerText = currentLang === 'ar' ? 'لا توجد صفقة (NONE)' : 'NONE';
+            topSigDir.style.color = 'var(--text-secondary)';
+            topSigLevels.innerText = currentLang === 'ar' ? 'بانتظار إشارة دخول' : 'No active signal';
+        }
     } else {
-        topSigDir.innerText = currentLang === 'ar' ? 'لا توجد صفقة (NONE)' : 'NONE';
-        topSigDir.style.color = 'var(--text-secondary)';
-        topSigLevels.innerText = currentLang === 'ar' ? 'بانتظار إشارة دخول' : 'No active signal';
+        // 🔒 حجب الصفقات الحية عن غير المشتركين
+        topSigDir.innerText = '🔒 VIP LOCKED';
+        topSigDir.style.color = 'var(--accent-gold)';
+        topSigLevels.innerHTML = `<a href="#" onclick="switchTerminalTab('account')" style="color:var(--accent-gold); text-decoration:underline;">Upgrade to view live signal</a>`;
     }
 
     const allHist = state.history || [];
@@ -1861,31 +1823,45 @@ function updateDashboardUI() {
     const activeTabBox = document.getElementById('dedicatedActiveContainer');
     const statusTag = document.getElementById('activeTradeStatusTag');
 
-    if (state.activeTrade) {
-        const tr = state.activeTrade, cls = tr.dir.toLowerCase();
-        const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
-        statusTag.innerText = `🟢 ${modeLabel} — #Trade-${tr.tradeId || 1}`;
-        const cardHtml = `
-            <div class="signal-card ${cls}">
-                <div class="sig-row"><strong>#Trade-${tr.tradeId || 1} — ${tr.setupName}</strong><span class="sig-badge ${cls}">${tr.dir}</span></div>
-                <div class="sig-row"><span>Entry:</span><strong>${Number(tr.entry).toFixed(2)}</strong></div>
-                <div class="sig-row"><span>SL:</span><strong style="color:var(--accent-red);">${Number(tr.sl).toFixed(2)}</strong></div>
-                <div class="sig-row"><span>TP:</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
-                <div class="sig-row"><span>Lot:</span><strong>0.04 lot</strong></div>
-            </div>`;
-        homeSigBox.innerHTML = cardHtml;
-        activeTabBox.innerHTML = cardHtml;
+    if (hasVip) {
+        if (state.activeTrade) {
+            const tr = state.activeTrade, cls = tr.dir.toLowerCase();
+            const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
+            statusTag.innerText = `🟢 ${modeLabel} — #Trade-${tr.tradeId || 1}`;
+            const cardHtml = `
+                <div class="signal-card ${cls}">
+                    <div class="sig-row"><strong>#Trade-${tr.tradeId || 1} — ${tr.setupName}</strong><span class="sig-badge ${cls}">${tr.dir}</span></div>
+                    <div class="sig-row"><span>Entry:</span><strong>${Number(tr.entry).toFixed(2)}</strong></div>
+                    <div class="sig-row"><span>SL:</span><strong style="color:var(--accent-red);">${Number(tr.sl).toFixed(2)}</strong></div>
+                    <div class="sig-row"><span>TP:</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
+                    <div class="sig-row"><span>Lot:</span><strong>0.04 lot</strong></div>
+                </div>`;
+            homeSigBox.innerHTML = cardHtml;
+            activeTabBox.innerHTML = cardHtml;
+        } else {
+            statusTag.innerText = '🟡 STANDBY';
+            const standbyHtml = `
+                <div class="signal-card">
+                    <div class="sig-row"><strong>${t('scanningTitle')}</strong><span class="sig-badge">STANDBY</span></div>
+                    <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 4px; line-height:1.4;">${t('scanningDesc')}</p>
+                </div>`;
+            homeSigBox.innerHTML = standbyHtml;
+            activeTabBox.innerHTML = standbyHtml;
+        }
     } else {
-        statusTag.innerText = '🟡 STANDBY';
-        const standbyHtml = `
-            <div class="signal-card">
-                <div class="sig-row"><strong>${t('scanningTitle')}</strong><span class="sig-badge">STANDBY</span></div>
-                <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 4px; line-height:1.4;">${t('scanningDesc')}</p>
+        // 🔒 حجب تفاصيل الصفقة الحية للمستخدم العادي
+        statusTag.innerText = '🔒 LOCKED';
+        const lockHtml = `
+            <div class="signal-card" style="border-inline-start-color:var(--accent-gold); text-align:center; padding:18px;">
+                <h3 style="color:var(--accent-gold); font-size:0.95rem; margin-bottom:6px;">🔒 VIP Live Signal Locked</h3>
+                <p style="font-size:0.76rem; color:var(--text-secondary); margin-bottom:10px;">Active live XAU/USD signals and instant entries are reserved for VIP subscribers.</p>
+                <button type="button" class="auth-btn" style="width:auto; display:inline-block; padding:6px 14px; font-size:0.76rem;" onclick="switchTerminalTab('account')">💎 Upgrade / Activate VIP</button>
             </div>`;
-        homeSigBox.innerHTML = standbyHtml;
-        activeTabBox.innerHTML = standbyHtml;
+        homeSigBox.innerHTML = lockHtml;
+        activeTabBox.innerHTML = lockHtml;
     }
 
+    // السماح للجميع برؤية التاريخ والإحصائيات
     const filterEl = document.getElementById('closedTimeFilter');
     const filterVal = filterEl ? filterEl.value : 'all';
     const nowMs = Date.now();
@@ -2126,7 +2102,8 @@ function startTerminalEngine(isAdmin) {
     }
     if (state.latestBars && state.latestBars.length > 0) {
         candleSeries.setData(state.latestBars);
-        if (state.activeTrade) drawTradeLines(state.activeTrade);
+        const hasVip = hasValidVipAccess(currentUserProfile);
+        if (state.activeTrade && hasVip) drawTradeLines(state.activeTrade);
     }
 
     updateDashboardUI();
