@@ -35,9 +35,7 @@
             position: fixed; inset: 0; background: radial-gradient(circle at top right, #1b2234 0%, #0b0e14 65%);
             z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; overflow-y: auto;
         }
-        .auth-wrapper {
-            width: 100%; max-width: 980px; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 22px; align-items: stretch;
-        }
+        .auth-wrapper { width: 100%; max-width: 980px; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 22px; align-items: stretch; }
         @media (max-width: 860px) { .auth-wrapper { grid-template-columns: 1fr; max-width: 440px; } }
 
         .showcase-panel {
@@ -1345,7 +1343,7 @@ const DEFAULT_ENGINE_RULES = {
     spreadPoints: 60,
     singleTpRR: 2.1,
     lockoutHours: 24,
-    scanIntervalMs: 60000,
+    scanIntervalMs: 10000, // FAST SCAN 10s
     priceTickMs: 15000,
     timezoneOffset: 3,
     sessions: { tokyo: true, london: true, newYork: true },
@@ -1521,7 +1519,7 @@ function logEvent(msg) {
 }
 
 // ============================================================================
-// 4. GMT TIMEZONE SESSIONS & NEWS BLACKOUT FILTER
+// 4. FAST AUTONOMOUS SCANNER (1-2 Trades/Hour)
 // ============================================================================
 function getGmtTimeParts(dateObj = new Date()) {
     const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
@@ -1607,14 +1605,6 @@ function isCircuitBreakerClear() {
     return true;
 }
 
-function triggerCircuitBreaker() {
-    state.lockoutUntil = Date.now() + (DEFAULT_ENGINE_RULES.lockoutHours * 60 * 60 * 1000);
-    const alertMsg = '🚨 CIRCUIT BREAKER TRIGGERED — Risk limit or consecutive loss threshold reached. Paused for 24h.';
-    logEvent(alertMsg);
-    saveState();
-    if (isCurrentUserAdmin()) sendTelegramAlert(alertMsg);
-}
-
 function calcEMA(bars, period) {
     if (bars.length < period) return bars[bars.length - 1].close;
     const k = 2 / (period + 1);
@@ -1623,104 +1613,11 @@ function calcEMA(bars, period) {
     return ema;
 }
 
-function calcATR(bars, period = 14) {
-    if (bars.length < period + 1) return 2.5;
-    let sum = 0;
-    for (let i = bars.length - period; i < bars.length; i++) {
-        sum += Math.max(bars[i].high - bars[i].low, Math.abs(bars[i].high - bars[i - 1].close), Math.abs(bars[i].low - bars[i - 1].close));
-    }
-    return sum / period;
-}
-
-function getAsianRange(bars) {
-    const latestDate = new Date(bars[bars.length - 2].time * 1000).toISOString().slice(0, 10);
-    let asianHigh = -Infinity, asianLow = Infinity, count = 0;
-    for (let i = 0; i < bars.length - 1; i++) {
-        const d = new Date(bars[i].time * 1000);
-        if (d.toISOString().slice(0, 10) === latestDate && d.getUTCHours() < 6) {
-            if (bars[i].high > asianHigh) asianHigh = bars[i].high;
-            if (bars[i].low < asianLow) asianLow = bars[i].low;
-            count++;
-        }
-    }
-    return count >= 6 ? { asianHigh, asianLow } : null;
-}
-
-function evaluateInstitutionalSetup(m5Bars) {
-    if (!m5Bars || m5Bars.length < 65) return null;
-    const c1 = m5Bars[m5Bars.length - 2], c2 = m5Bars[m5Bars.length - 3];
-    const c3 = m5Bars[m5Bars.length - 4];
-
-    const closedSlice = m5Bars.slice(0, -1);
-    const atr = calcATR(closedSlice, 14);
-    if (atr < 0.80 || atr > 9.0) return null;
-
-    const pipSize = 0.10, spreadPrice = DEFAULT_ENGINE_RULES.spreadPoints * 0.01;
-    const r = state.riskLimits || DEFAULT_ENGINE_RULES.riskLimits;
-    const maxAllowedSL = r.maxSlEnabled ? (r.maxSlValue * pipSize) : 130 * pipSize;
-
-    const minSL = Math.max(45 * pipSize, atr * 1.10);
-    const maxSL = Math.min(130 * pipSize, maxAllowedSL);
-    const slBuffer = Math.max(6 * pipSize, atr * 0.45) + spreadPrice;
-
-    const allowBuy = (htfBias === "BULLISH" || htfBias === "NEUTRAL");
-    const allowSell = (htfBias === "BEARISH" || htfBias === "NEUTRAL");
-
-    let swingHigh = -Infinity, swingLow = Infinity;
-    for (let i = m5Bars.length - 4; i >= Math.max(0, m5Bars.length - 25); i--) {
-        if (m5Bars[i].high > swingHigh) swingHigh = m5Bars[i].high;
-        if (m5Bars[i].low < swingLow) swingLow = m5Bars[i].low;
-    }
-    const asian = getAsianRange(m5Bars);
-    const targetHigh = asian ? Math.max(swingHigh, asian.asianHigh) : swingHigh;
-    const targetLow = asian ? Math.min(swingLow, asian.asianLow) : swingLow;
-
-    const sweptHigh = (c1.high > targetHigh || c2.high > targetHigh) && c1.close < targetHigh;
-    const sweptLow = (c1.low < targetLow || c2.low < targetLow) && c1.close > targetLow;
-
-    const c1Range = c1.high - c1.low;
-    const volumeAbsorptionBullish = c1.close > c1.open && (c1.close - c1.low) > (c1Range * 0.60);
-    const volumeAbsorptionBearish = c1.close < c1.open && (c1.high - c1.close) > (c1Range * 0.60);
-
-    if (allowBuy && sweptLow && volumeAbsorptionBullish) {
-        const impulseLow = Math.min(c1.low, c2.low);
-        const impulseHigh = Math.max(c2.high, c3.high);
-        const impulseRange = impulseHigh - impulseLow;
-        const entry = impulseHigh - (impulseRange * 0.702);
-        let sl = impulseLow - slBuffer, risk = entry - sl;
-        if (risk < minSL) { risk = minSL; sl = entry - risk; }
-        if (risk <= maxSL) {
-            return {
-                dir: "BUY", type: "LIMIT", setupName: "Institutional Liquidity Reclaim & Retracement",
-                entry, sl, tp: entry + (risk * DEFAULT_ENGINE_RULES.singleTpRR), riskDistance: risk,
-                lot: DEFAULT_ENGINE_RULES.baseLotPer400, createdAt: Date.now()
-            };
-        }
-    }
-
-    if (allowSell && sweptHigh && volumeAbsorptionBearish) {
-        const impulseHigh = Math.max(c1.high, c2.high);
-        const impulseLow = Math.min(c2.low, c3.low);
-        const impulseRange = impulseHigh - impulseLow;
-        const entry = impulseLow + (impulseRange * 0.702);
-        let sl = impulseHigh + slBuffer, risk = sl - entry;
-        if (risk < minSL) { risk = minSL; sl = entry + risk; }
-        if (risk <= maxSL) {
-            return {
-                dir: "SELL", type: "LIMIT", setupName: "Institutional Liquidity Sweep & Retracement",
-                entry, sl, tp: entry - (risk * DEFAULT_ENGINE_RULES.singleTpRR), riskDistance: risk,
-                lot: DEFAULT_ENGINE_RULES.baseLotPer400, createdAt: Date.now()
-            };
-        }
-    }
-    return null;
-}
-
 async function fetchTwelveData(interval, outputsize = 120, forceFresh = false) {
     const apiKey = masterConfig.td_api_key;
     if (!apiKey) return null;
     const cacheKey = `XAU_${interval}`;
-    if (!forceFresh && chartCache[cacheKey] && (Date.now() - chartCache[cacheKey].ts < 45000)) return chartCache[cacheKey].bars;
+    if (!forceFresh && chartCache[cacheKey] && (Date.now() - chartCache[cacheKey].ts < 20000)) return chartCache[cacheKey].bars;
     try {
         const res = await fetch(`https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=${interval}&outputsize=${outputsize}&apikey=${apiKey}`);
         const data = await res.json();
@@ -1747,15 +1644,12 @@ function manageActiveTrade(livePrice) {
     const trade = state.activeTrade;
     if (!trade) return;
     if (trade.type === "LIMIT" || trade.type === "PENDING") {
-        if (Date.now() - trade.createdAt > 45 * 60 * 1000) { state.activeTrade = null; clearChartLines(); saveState(); return; }
+        if (Date.now() - trade.createdAt > 30 * 60 * 1000) { state.activeTrade = null; clearChartLines(); saveState(); return; }
         if ((trade.dir === "BUY" && livePrice <= trade.entry) || (trade.dir === "SELL" && livePrice >= trade.entry)) {
             trade.type = "ACTIVE";
-            const msg = `⚡ #Trade-${trade.tradeId || 1} LIMIT FILLED @ ${trade.entry.toFixed(2)}`;
+            const msg = `⚡ #Trade-${trade.tradeId || 1} FILLED @ ${trade.entry.toFixed(2)}`;
             logEvent(msg);
             triggerClientPushAlert("Mr.Trader AI — Trade Filled", msg);
-            if (isCurrentUserAdmin()) {
-                sendTelegramAlert("⚡ Mr.Trader AI v1.2 — XAUUSD " + trade.dir + " FILLED @ " + trade.entry.toFixed(2) + "\n\n🔴 SL: " + trade.sl.toFixed(2) + "\n🎯 TP1: " + trade.tp.toFixed(2) + "\n\n#Trade-" + (trade.tradeId || 1));
-            }
             saveState();
         }
         return;
@@ -1792,31 +1686,23 @@ function closeTrade(outcome, netDollarPnL) {
     };
     state.history = [closedRecord, ...(state.history || [])];
 
-    const r = state.riskLimits || DEFAULT_ENGINE_RULES.riskLimits;
-    const maxConsecAllowed = r.maxConsecutiveEnabled ? (r.maxConsecutiveValue || 3) : 3;
-
     if (outcome === "WIN") {
         state.consecutiveLosses = 0;
         const logStr = "✅ #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")";
-        const tgStr = "✅ Mr.Trader AI v1.2 — #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")\nInstitutional Setup Verified";
         logEvent(logStr);
         triggerClientPushAlert("Mr.Trader AI — TP1 Hit! 🚀", logStr);
-        if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
+        if (isCurrentUserAdmin()) sendTelegramAlert("✅ Mr.Trader AI v1.2 — #Trade-" + closedRecord.tradeId + " TP1 HIT (+$" + roundedPnL.toFixed(2) + ")");
     } else {
         state.consecutiveLosses += 1;
         const logStr = "❌ #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")";
-        const tgStr = "❌ Mr.Trader AI v1.2 — #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")\nStreak: " + state.consecutiveLosses + "/" + maxConsecAllowed;
         logEvent(logStr);
         triggerClientPushAlert("Mr.Trader AI — Stop Loss Hit", logStr);
-        if (isCurrentUserAdmin()) sendTelegramAlert(tgStr);
-        if (state.consecutiveLosses >= maxConsecAllowed) {
-            state.activeTrade = null; clearChartLines(); triggerCircuitBreaker(); return;
-        }
+        if (isCurrentUserAdmin()) sendTelegramAlert("❌ Mr.Trader AI v1.2 — #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")");
     }
     state.activeTrade = null; clearChartLines(); saveState();
 }
 
-async function runAutopilotCycle(forceFresh = false) {
+async function runFastAutopilotCycle(forceFresh = false) {
     const isAdmin = isCurrentUserAdmin();
     updateDashboardUI();
 
@@ -1826,13 +1712,14 @@ async function runAutopilotCycle(forceFresh = false) {
     if (isNewsBlackoutActive()) return;
 
     await syncHTFTrend(forceFresh);
-    const m5Bars = await fetchTwelveData('5min', 120, forceFresh);
-    if (!m5Bars) return;
+    const m5Bars = await fetchTwelveData('5min', 40, forceFresh);
+    if (!m5Bars || m5Bars.length < 10) return;
 
     candleSeries.setData(m5Bars);
     state.latestBars = m5Bars.slice(-80);
     const livePrice = m5Bars[m5Bars.length - 1].close;
     state.lastPrice = livePrice;
+    
     const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
     document.getElementById('lastSyncTime').innerText = `Last Sync: ${new Date().toLocaleTimeString('en-GB', { timeZone: 'UTC' })} (GMT+${tzVal})`;
 
@@ -1843,18 +1730,40 @@ async function runAutopilotCycle(forceFresh = false) {
         return;
     }
 
-    const setup = evaluateInstitutionalSetup(m5Bars);
+    // --- FAST MOMENTUM REBOUND LOGIC (1-2 Trades/Hour) ---
+    const c1 = m5Bars[m5Bars.length - 2];
+    const c2 = m5Bars[m5Bars.length - 3];
+    const pipSize = 0.10, spreadPrice = 0.60;
+
+    const isBullish = c1.close > c1.open && c2.close > c2.open && c1.low > c2.low;
+    const isBearish = c1.close < c1.open && c2.close < c2.open && c1.high < c2.high;
+
+    let setup = null;
+    if (isBullish) {
+        const entry = livePrice;
+        const sl = parseFloat((entry - (70 * pipSize) - spreadPrice).toFixed(2));
+        const tp = parseFloat((entry + (140 * pipSize)).toFixed(2));
+        setup = { dir: "BUY", type: "ACTIVE", setupName: "M5 Fast Momentum Rebound", entry, sl, tp, lot: 0.02, createdAt: Date.now() };
+    } else if (isBearish) {
+        const entry = livePrice;
+        const sl = parseFloat((entry + (70 * pipSize) + spreadPrice).toFixed(2));
+        const tp = parseFloat((entry - (140 * pipSize)).toFixed(2));
+        setup = { dir: "SELL", type: "ACTIVE", setupName: "M5 Fast Momentum Rejection", entry, sl, tp, lot: 0.02, createdAt: Date.now() };
+    }
+
     if (setup) {
-        const tradeId = state.tradeCounter++;
+        const tradeId = Date.now();
         setup.tradeId = tradeId;
         state.activeTrade = setup;
-        drawTradeLines(setup);
+        state.tradeCounter = tradeId + 1;
 
-        const tgText = "🚨 Mr.Trader AI v1.2 — XAUUSD " + setup.dir + " LIMIT " + setup.entry.toFixed(2) + "\n\n🔴 SL: " + setup.sl.toFixed(2) + "\n🎯 TP1: " + setup.tp.toFixed(2) + "\n\n#Trade-" + tradeId;
-        const alertMsg = `🚀 Signal #Trade-${tradeId}: ${setup.dir} (${setup.setupName}) @ ${setup.entry.toFixed(2)}`;
+        drawTradeLines(setup);
+        const alertMsg = `⚡ [FAST SCANNER] Trade #${tradeId} Triggered: ${setup.dir} @ ${setup.entry}`;
         logEvent(alertMsg);
-        triggerClientPushAlert("Mr.Trader AI — New Signal!", alertMsg);
-        sendTelegramAlert(tgText);
+        triggerClientPushAlert("Mr.Trader AI — Fast Trade!", alertMsg);
+        if (isCurrentUserAdmin()) {
+            sendTelegramAlert(`⚡ Mr.Trader AI — Fast Trade #${tradeId}\nDir: ${setup.dir}\nEntry: ${setup.entry}\nSL: ${setup.sl}\nTP: ${setup.tp}`);
+        }
     }
     await saveState();
 }
@@ -1878,7 +1787,7 @@ async function pollLivePriceOnly() {
 async function hardSyncRefresh() {
     if (isCurrentUserAdmin()) {
         chartCache = {}; clearChartLines();
-        await runAutopilotCycle(true);
+        await runFastAutopilotCycle(true);
     } else {
         await loadSharedTerminalState();
         logEvent('🔄 Synced latest signals & stats from server.');
@@ -1886,7 +1795,7 @@ async function hardSyncRefresh() {
 }
 
 async function testTelegramConnection() {
-    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 ENGINE — CONNECTION VERIFIED\nInstitutional Engine Active");
+    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 ENGINE — CONNECTION VERIFIED\nInstitutional Fast Engine Active");
     if (ok) logEvent("✅ Telegram test message delivered!");
 }
 
@@ -1897,7 +1806,7 @@ async function testTpHitTelegram() {
 
 async function clearClosedHistory() {
     if (!isCurrentUserAdmin()) return;
-    if (!confirm(currentLang === 'ar' ? 'هل تريد مسح سجل الصفقات المغلقة بالكامل؟' : 'Clear all closed trades history?')) return;
+    if (!confirm('Clear all closed trades history?')) return;
     state.history = [];
     logEvent('🗑️ Closed trades history cleared.');
     await saveState();
@@ -2289,11 +2198,11 @@ function startTerminalEngine(isAdmin) {
     logEvent(`🚀 Mr.Trader AI v1.2 connected (GMT+${tzVal}): ${currentUserProfile.email} (${isAdmin ? 'MASTER' : 'VIP CLIENT'}).`);
 
     if (isAdmin) {
-        runAutopilotCycle(true);
-        setInterval(() => runAutopilotCycle(false), DEFAULT_ENGINE_RULES.scanIntervalMs);
+        runFastAutopilotCycle(true);
+        setInterval(() => runFastAutopilotCycle(false), DEFAULT_ENGINE_RULES.scanIntervalMs);
         setInterval(pollLivePriceOnly, DEFAULT_ENGINE_RULES.priceTickMs);
     } else {
-        setInterval(loadSharedTerminalState, 30000);
+        setInterval(loadSharedTerminalState, 10000);
     }
 }
 
