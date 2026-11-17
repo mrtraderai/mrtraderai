@@ -87,7 +87,9 @@
         .auth-btn {
             width: 100%; padding: 10px; background: var(--accent-gold); color: #000; border: none;
             border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.85rem; text-align: center; text-decoration: none;
+            transition: opacity 0.15s;
         }
+        .auth-btn:hover { opacity: 0.9; }
         .auth-link-row { display: flex; justify-content: flex-end; margin-top: -4px; margin-bottom: 12px; }
         .auth-link { background: none; border: none; color: var(--text-secondary); font-size: 0.72rem; cursor: pointer; text-decoration: underline; }
         .auth-link:hover { color: var(--accent-gold); }
@@ -98,7 +100,7 @@
             background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px;
             padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; text-align: center;
         }
-        .plan-card.popular { border: 1.5px solid var(--accent-gold); }
+        .plan-card.popular { border: 1.5px solid var(--accent-gold); box-shadow: 0 0 18px rgba(245, 158, 11, 0.12); }
         .plan-title { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
         .plan-price { font-size: 1.35rem; font-weight: 800; color: var(--accent-gold); }
         .plan-desc { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.4; }
@@ -127,7 +129,7 @@
         .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
         .admin-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; }
         .admin-section h4 { color: var(--accent-gold); font-size: 0.82rem; margin-bottom: 8px; }
-        
+
         .setting-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 6px; }
         .setting-card { background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
         .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 600; }
@@ -201,6 +203,10 @@
         .sig-badge { padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.72rem; }
         .sig-badge.buy { background: rgba(16,185,129,0.2); color: var(--accent-green); }
         .sig-badge.sell { background: rgba(239,68,68,0.2); color: var(--accent-red); }
+        .ai-audit-box {
+            margin-top: 8px; padding: 6px 8px; border-radius: 5px; font-size: 0.72rem;
+            background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd;
+        }
 
         .log-box {
             flex: 1; background: var(--bg-primary); border-radius: 6px; padding: 10px;
@@ -212,7 +218,7 @@
 </head>
 <body>
 
-<!-- ==================== 1. OUTER LOGIN / SIGN UP / VIP LOCK SCREEN ==================== -->
+<!-- ==================== 1. OUTER LOGIN / SIGN UP ==================== -->
 <div id="authOverlay" class="auth-overlay">
     <div class="auth-top-left">
         <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
@@ -226,12 +232,12 @@
             </div>
             <div class="showcase-body">
                 <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.45;" data-i18n="scDesc">
-                    Advanced institutional liquidity reclaims and multi-timeframe structural analysis engineered specifically for precision gold execution.
+                    Advanced institutional liquidity reclaims, multi-timeframe H1/M5 structural analysis, and Gemini AI signal supervision engineered specifically for precision gold execution.
                 </p>
                 <div class="showcase-stats">
-                    <div class="sc-stat-box"><div class="sc-stat-val">81.5%</div><div class="sc-stat-lbl" data-i18n="scWinRateLbl">Verified Win Rate</div></div>
+                    <div class="sc-stat-box"><div class="sc-stat-val">81.5%</div><div class="sc-stat-lbl" data-i18n="scWinRateLbl">Backtested Win Rate</div></div>
                     <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-gold);">1 : 1.5</div><div class="sc-stat-lbl" data-i18n="scRrLbl">Fixed Risk/Reward</div></div>
-                    <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-blue);">25/mo</div><div class="sc-stat-lbl" data-i18n="scAutoLbl">A+ Setups</div></div>
+                    <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-blue);">AI Audit</div><div class="sc-stat-lbl" data-i18n="scAutoLbl">Gemini Supervisor</div></div>
                 </div>
                 <div class="showcase-gallery">
                     <div class="sc-img-card sc-img-1"><span data-i18n="scCard1">📈 Liquidity Sweep & Reclaim</span></div>
@@ -242,7 +248,7 @@
 
         <div class="auth-box" id="authFormBox">
             <h2>Mr.Trader AI v1.2</h2>
-            <p id="authSubtitle" data-i18n="authSub">Sign in or create an account to access the live XAU/USD AI terminal</p>
+            <p id="authSubtitle" data-i18n="authSub">Sign in or create a free account to view live stats, trade history & VIP signals</p>
             <div class="auth-tabs" id="authTabsRow">
                 <button type="button" id="tabLogin" class="auth-tab active" onclick="switchAuthMode('login')" data-i18n="clientLogin">Client Login</button>
                 <button type="button" id="tabSignup" class="auth-tab" onclick="switchAuthMode('signup')" data-i18n="signUp">Sign Up</button>
@@ -285,7 +291,7 @@
     </div>
 </div>
 
-<!-- ==================== 3. AW CONTROL WINDOW (PIN-PROTECTED) ==================== -->
+<!-- ==================== 3. AW CONTROL WINDOW (ADMIN ONLY) ==================== -->
 <div id="adminModal" class="modal-backdrop" onclick="closeAdminWindow(event)">
     <div class="admin-window" onclick="event.stopPropagation()">
         <div class="admin-header">
@@ -313,7 +319,7 @@
 
         <div class="admin-section">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
-                <h4 style="margin:0;">3. Registered Clients (<span id="clientCountBadge">0</span>)</h4>
+                <h4 style="margin:0;">2. Registered Clients (<span id="clientCountBadge">0</span>)</h4>
                 <span id="adminUserActionMsg" style="font-size:0.72rem; color:var(--accent-green);"></span>
                 <button type="button" class="btn-ui" onclick="loadClientList()">🔄 Refresh</button>
             </div>
@@ -408,8 +414,8 @@
             </div>
         </div>
 
-        <!-- Session Filters & Risk Guardrails Control Panel -->
-        <div class="panel-box" style="background:var(--bg-secondary); border:1px solid var(--border-color);" id="adminSettingsPanelBox">
+        <!-- Admin Only: Session Filters & Risk Guardrails Control Panel -->
+        <div class="panel-box" style="background:var(--bg-secondary); border:1px solid var(--border-color); display:none;" id="adminSettingsPanelBox">
             <div class="box-header" style="margin-bottom:6px; cursor:pointer;" onclick="toggleSettingsCard()">
                 <span>⚙️ Session Filters & Risk Guardrails (<span id="settingsTzLabel">GMT</span>) <span id="settingsToggleIcon" style="font-size:0.72rem; color:var(--accent-gold);"><span data-i18n="hideShowToggle">[▲ Hide]</span></span></span>
                 <div style="display:flex; gap:6px;">
@@ -489,7 +495,7 @@
 
         <div class="risk-remark">
             <span>🛡️ <strong data-i18n="riskRemarkTitle">Risk Note:</strong> <span data-i18n="riskRemarkText">$400 cap = 0.04 lot (120 SL / 180 TP).</span></span>
-            <span style="font-size:0.7rem; color:var(--text-secondary);">Spread: 40-80 pts</span>
+            <span style="font-size:0.7rem; color:var(--text-secondary);">🤖 Gemini AI Supervisor Active • Spread: 40-80 pts</span>
         </div>
 
         <div class="main-grid">
@@ -600,7 +606,7 @@
             </div>
             <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;" data-i18n="stratDesc">
                 • <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
-                • <strong>Execution:</strong> M5 institutional analysis with 120 SL / 180 TP.<br>
+                • <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & Gemini AI Supervisor (120 SL / 180 TP).<br>
                 • <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
             </p>
         </div>
@@ -642,7 +648,7 @@
             </div>
 
             <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
-                <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">
+                <a id="tgSupportDirectLink" href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">
                     ✈️ <span data-i18n="tgSupportBtn">Telegram Support (@mrtraderai_official)</span>
                 </a>
                 <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red); padding:7px 12px;" onclick="logoutClient()">
@@ -661,19 +667,19 @@
                     <div class="plan-title" data-i18n="plan3dTitle">3-Day Trial</div>
                     <div class="plan-price">$15</div>
                     <div class="plan-desc" data-i18n="plan3dDesc">Full live XAU/USD signals for 3 days</div>
-                    <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate</span></a>
+                    <a id="btnPlan3D" href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate</span></a>
                 </div>
                 <div class="plan-card popular">
                     <div class="plan-title" data-i18n="plan1mTitle">1 Month VIP</div>
                     <div class="plan-price">$99</div>
                     <div class="plan-desc" data-i18n="plan1mDesc">30 days full terminal access & real-time alerts</div>
-                    <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate</span></a>
+                    <a id="btnPlan1M" href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate</span></a>
                 </div>
                 <div class="plan-card">
                     <div class="plan-title" data-i18n="plan3mTitle">3 Months VIP</div>
                     <div class="plan-price">$250</div>
                     <div class="plan-desc" data-i18n="plan3mDesc">90 days priority VIP access (Save $47)</div>
-                    <a href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate</span></a>
+                    <a id="btnPlan3M" href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate</span></a>
                 </div>
             </div>
         </div>
@@ -690,13 +696,13 @@ const I18N = {
     en: {
         langBtn: 'العربية',
         scBadge: '⚡ INSTITUTIONAL XAU/USD ENGINE v1.2',
-        scDesc: 'Advanced institutional liquidity reclaims and multi-timeframe structural analysis.',
-        scWinRateLbl: 'Win Rate',
+        scDesc: 'Advanced institutional liquidity reclaims, multi-timeframe H1/M5 structural analysis, and Gemini AI supervision.',
+        scWinRateLbl: 'Backtested Win Rate',
         scRrLbl: 'Risk/Reward',
-        scAutoLbl: 'A+ Setups',
+        scAutoLbl: 'Gemini Supervisor',
         scCard1: '📈 Liquidity Sweep',
         scCard2: '🛡️ Retracement Zones',
-        authSub: 'Sign in or create an account to access the live XAU/USD AI terminal',
+        authSub: 'Sign in or create a free account to view live stats, trade history & VIP signals',
         clientLogin: 'Client Login',
         signUp: 'Sign Up',
         emailPh: 'Email Address',
@@ -749,7 +755,7 @@ const I18N = {
         riskBaseSub: '0.04 lot / $400 rule',
         statPfLbl: 'Profit Factor',
         stratTitle: '📊 Mr.Trader AI v1.2 Engine Overview',
-        stratDesc: '• <strong>Active Sessions:</strong> Tokyo, London, New York.<br>• <strong>Execution:</strong> M5 institutional analysis with 120 SL / 180 TP.<br>• <strong>Risk:</strong> Max SL, Daily Loss, and News blackout.',
+        stratDesc: '• <strong>Active Sessions:</strong> Tokyo, London, New York.<br>• <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & Gemini AI Supervisor (120 SL / 180 TP).<br>• <strong>Risk:</strong> Max SL, Daily Loss, and News blackout.',
         accProfileTitle: '👤 Account Details & Subscription',
         accEmailLbl: 'Email',
         accIdLbl: 'Client ID',
@@ -777,13 +783,13 @@ const I18N = {
     ar: {
         langBtn: 'English',
         scBadge: '⚡ محرك تداول الذهب المؤسسي الإصدار 1.2',
-        scDesc: 'تحليل هيكلي متعدد الأطر الزمنية وإدارة صفقات مؤسسية متقدمة.',
-        scWinRateLbl: 'نسبة النجاح',
+        scDesc: 'تحليل هيكلي متعدد الأطر الزمنية وإشراف الذكاء الاصطناعي Gemini AI.',
+        scWinRateLbl: 'نسبة النجاح (Backtest)',
         scRrLbl: 'العائد للمخاطرة',
-        scAutoLbl: 'فرص A+',
+        scAutoLbl: 'مدقق Gemini AI',
         scCard1: '📈 سحب السيولة',
         scCard2: '🛡️ مناطق الارتداد',
-        authSub: 'سجّل الدخول أو أنشئ حساباً للوصول إلى منصة Mr.Trader AI',
+        authSub: 'سجّل الدخول أو أنشئ حساباً مجانياً لمشاهدة الإحصائيات والسجل وتفعيل VIP',
         clientLogin: 'تسجيل الدخول',
         signUp: 'إنشاء حساب',
         emailPh: 'البريد الإلكتروني',
@@ -836,7 +842,7 @@ const I18N = {
         riskBaseSub: 'قاعدة 0.04 لوت لكل 400$',
         statPfLbl: 'معامل الربح',
         stratTitle: '📊 نظرة عامة على المحرك الإصدار 1.2',
-        stratDesc: '• <strong>الجلسات:</strong> طوكيو، لندن، نيويورك.<br>• <strong>التنفيذ:</strong> إعداد 120 SL / 180 TP على M5.<br>• <strong>المخاطر:</strong> حماية ضد الخسارة اليومية والأخبار.',
+        stratDesc: '• <strong>الجلسات:</strong> طوكيو، لندن، نيويورك.<br>• <strong>التنفيذ:</strong> إعداد 120 SL / 180 TP على M5 مع تدقيق Gemini AI.<br>• <strong>المخاطر:</strong> حماية ضد الخسارة اليومية والأخبار.',
         accProfileTitle: '👤 تفاصيل الحساب والاشتراك',
         accEmailLbl: 'البريد',
         accIdLbl: 'معرف العميل',
@@ -895,18 +901,16 @@ function toggleLanguage() {
 function requestPushNotificationPermission() {
     playBeepSound();
     if (!("Notification" in window)) {
-        alert(currentLang === 'ar' ? '✅ تم تفعيل التنبيه الصوتى بنجاح (تنبيهات تيليجرام مفعلة بالخلفية).' : '✅ Sound alerts enabled! (Telegram notifications active in background).');
+        alert(currentLang === 'ar' ? '✅ تم تفعيل التنبيه الصوتى بنجاح.' : '✅ Sound alerts enabled!');
         return;
     }
     Notification.requestPermission().then(permission => {
         if (permission === "granted") {
             new Notification("Mr.Trader AI v1.2", { body: currentLang === 'ar' ? '✅ تم تفعيل الإشعارات بنجاح!' : '✅ Notifications successfully enabled!' });
         } else {
-            alert(currentLang === 'ar' ? '✅ تم تفعيل التنبيهات الصوتية ونظام التيليجرام بنجاح.' : '✅ Sound alerts & Telegram backup active.');
+            alert(currentLang === 'ar' ? '✅ تم تفعيل التنبيهات الصوتية بنجاح.' : '✅ Sound alerts active.');
         }
-    }).catch(() => {
-        alert(currentLang === 'ar' ? '✅ تم تفعيل النظام الصوتي والتنبيهات.' : '✅ Sound alert system active.');
-    });
+    }).catch(() => {});
 }
 
 function playBeepSound() {
@@ -926,6 +930,7 @@ function playBeepSound() {
 }
 
 function triggerClientPushAlert(title, message) {
+    if (!hasValidVipAccess(currentUserProfile)) return;
     playBeepSound();
     if ("Notification" in window && Notification.permission === "granted") {
         try {
@@ -946,7 +951,7 @@ const AW_PIN = '1997';
 let authMode = 'login';
 let isPasswordRecoveryMode = false;
 let currentUserProfile = null;
-let masterConfig = { td_api_key: '', tg_bot_token: '', tg_chat_id: '', beta_mode: true };
+let masterConfig = { td_api_key: '', tg_bot_token: '', tg_chat_id: '', beta_mode: false };
 let cachedClientList = [];
 let settingsVisible = true;
 
@@ -1153,6 +1158,19 @@ async function logoutClient() {
     location.reload();
 }
 
+function bindTelegramActivationLinks(shortId, email) {
+    const base = "https://t.me/mrtraderai_official?text=";
+    const msg3D = encodeURIComponent(`Hello Admin, I want to activate 3-Day Trial ($15)\nClient ID: ${shortId}\nEmail: ${email}`);
+    const msg1M = encodeURIComponent(`Hello Admin, I want to activate 1 Month VIP ($99)\nClient ID: ${shortId}\nEmail: ${email}`);
+    const msg3M = encodeURIComponent(`Hello Admin, I want to activate 3 Months VIP ($250)\nClient ID: ${shortId}\nEmail: ${email}`);
+    const msgSup = encodeURIComponent(`Hello Mr.Trader AI Support,\nClient ID: ${shortId}\nEmail: ${email}`);
+
+    if (document.getElementById('btnPlan3D')) document.getElementById('btnPlan3D').href = base + msg3D;
+    if (document.getElementById('btnPlan1M')) document.getElementById('btnPlan1M').href = base + msg1M;
+    if (document.getElementById('btnPlan3M')) document.getElementById('btnPlan3M').href = base + msg3M;
+    if (document.getElementById('tgSupportDirectLink')) document.getElementById('tgSupportDirectLink').href = base + msgSup;
+}
+
 async function checkUserSession() {
     applyLanguage();
     const urlParams = new URLSearchParams(window.location.search);
@@ -1188,19 +1206,21 @@ async function checkUserSession() {
     const isAdmin = isCurrentUserAdmin();
     const vipActive = hasValidVipAccess(currentUserProfile);
 
-    // ✅ التعديل هنا: المستخدمون غير المفعلين يسمح لهم بالدخول ولكن يتم حجب الصفقات الحية عنهم ورؤية السجل والإحصائيات فقط
     document.getElementById('authOverlay').style.display = 'none';
     document.getElementById('terminalApp').style.display = 'flex';
 
     const shortId = '#UID-' + (currentUserProfile.id || '').slice(0, 6).toUpperCase();
     document.getElementById('accEmailVal').innerText = currentUserProfile.email;
     document.getElementById('accClientIdVal').innerText = shortId;
-    document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER' : (currentUserProfile.is_approved ? (currentUserProfile.vip_plan || 'VIP ACTIVE') : '🔒 Upgrade Required');
+    document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER' : (vipActive ? (currentUserProfile.vip_plan || 'VIP ACTIVE') : '🔒 Upgrade Required');
     document.getElementById('accExpVal').innerText = isAdmin ? 'UNLIMITED' : (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Inactive');
+
+    bindTelegramActivationLinks(shortId, currentUserProfile.email);
 
     if (isAdmin) {
         document.getElementById('openAdminBtn').style.display = 'inline-block';
         document.getElementById('clearHistoryBtn').style.display = 'inline-block';
+        document.getElementById('adminSettingsPanelBox').style.display = 'flex';
     } else if (vipActive && currentUserProfile.vip_expires_at) {
         document.getElementById('vipBadgePill').style.display = 'flex';
         document.getElementById('vipBadgeText').innerText = `${currentUserProfile.vip_plan} • Exp: ${formatDateShort(currentUserProfile.vip_expires_at)}`;
@@ -1245,7 +1265,7 @@ let state = {
     htfBias: 'NEUTRAL',
     recentLogs: [],
     latestBars: [],
-    betaMode: true,
+    betaMode: false,
     timezoneOffset: 3,
     sessions: { ...DEFAULT_ENGINE_RULES.sessions },
     newsFilter: { ...DEFAULT_ENGINE_RULES.newsFilter },
@@ -1254,6 +1274,22 @@ let state = {
 
 let chart, candleSeries, priceLines = [], chartCache = {}, htfBias = "NEUTRAL";
 let engineStarted = false;
+
+function maskLogLineForNonVip(htmlStr) {
+    if (hasValidVipAccess(currentUserProfile)) return htmlStr;
+    if (htmlStr.includes('Triggered:') || htmlStr.includes('FILLED @')) {
+        return htmlStr.replace(/(Triggered:|FILLED @).*/, '🔒 <strong>[VIP LIVE SIGNAL]</strong> Upgrade to reveal Entry, SL & TP.');
+    }
+    return htmlStr;
+}
+
+function renderSystemLogsBox() {
+    const logBox = document.getElementById('systemLogs');
+    if (!logBox) return;
+    if (state.recentLogs && state.recentLogs.length > 0) {
+        logBox.innerHTML = state.recentLogs.map(l => `<div class="log-entry">${maskLogLineForNonVip(l)}</div>`).join('');
+    }
+}
 
 async function loadSharedTerminalState() {
     const { data } = await sb.from('terminal_state').select('state_json').eq('id', 1).single();
@@ -1265,10 +1301,12 @@ async function loadSharedTerminalState() {
         htfBias = state.htfBias || 'NEUTRAL';
         if (candleSeries && state.latestBars && state.latestBars.length > 0) {
             candleSeries.setData(state.latestBars);
-            if (state.activeTrade && (isCurrentUserAdmin() || hasValidVipAccess(currentUserProfile))) drawTradeLines(state.activeTrade);
+            if (state.activeTrade && hasValidVipAccess(currentUserProfile)) drawTradeLines(state.activeTrade);
+            else clearChartLines();
         }
     }
     syncSettingsToUI();
+    renderSystemLogsBox();
     updateDashboardUI();
 }
 
@@ -1276,7 +1314,7 @@ async function saveState() {
     updateDashboardUI();
     if (isCurrentUserAdmin()) {
         state.htfBias = htfBias;
-        state.betaMode = masterConfig.beta_mode !== false;
+        state.betaMode = masterConfig.beta_mode === true;
         await sb.from('terminal_state').upsert({ id: 1, state_json: state, updated_at: new Date().toISOString() });
     }
 }
@@ -1356,24 +1394,17 @@ function subscribeToRealtimeState() {
                 state = { ...state, ...payload.new.state_json };
                 htfBias = state.htfBias || 'NEUTRAL';
                 syncSettingsToUI();
+                renderSystemLogsBox();
                 updateDashboardUI();
 
                 if (candleSeries && state.latestBars && state.latestBars.length > 0) candleSeries.setData(state.latestBars);
                 const hasVip = hasValidVipAccess(currentUserProfile);
                 if (candleSeries && state.activeTrade && hasVip) drawTradeLines(state.activeTrade);
-                if (candleSeries && !state.activeTrade) clearChartLines();
+                else clearChartLines();
 
-                if (hasVip) {
-                    if (state.activeTrade && state.activeTrade.tradeId !== prevTradeId) {
-                        const msg = `🚨 NEW SIGNAL #Trade-${state.activeTrade.tradeId}: ${state.activeTrade.dir} @ ${state.activeTrade.entry.toFixed(2)}`;
-                        logEvent(msg);
-                        triggerClientPushAlert("Mr.Trader AI — New Signal!", msg);
-                    }
-                }
-                if ((state.history || []).length > prevHistoryLen) {
-                    const lastClosed = state.history[0];
-                    const msg = `${lastClosed.outcome === 'WIN' ? '✅' : '❌'} #Trade-${lastClosed.tradeId} ${lastClosed.outcome} (${lastClosed.netPnL >= 0 ? '+' : ''}$${lastClosed.netPnL.toFixed(2)})`;
-                    logEvent(msg);
+                if (hasVip && state.activeTrade && state.activeTrade.tradeId !== prevTradeId) {
+                    const msg = `🚨 NEW SIGNAL #Trade-${state.activeTrade.tradeId}: ${state.activeTrade.dir} @ ${state.activeTrade.entry.toFixed(2)}`;
+                    triggerClientPushAlert("Mr.Trader AI — New Signal!", msg);
                 }
             }
         })
@@ -1387,7 +1418,7 @@ function logEvent(msg) {
     const logBox = document.getElementById('systemLogs');
     const div = document.createElement('div');
     div.className = 'log-entry';
-    div.innerHTML = entryHtml;
+    div.innerHTML = maskLogLineForNonVip(entryHtml);
     logBox.prepend(div);
     if (logBox.children.length > 50) logBox.removeChild(logBox.lastChild);
 
@@ -1397,17 +1428,13 @@ function logEvent(msg) {
 }
 
 // ============================================================================
-// 4. FAST AUTONOMOUS SCANNER (120 SL / 180 TP)
+// 4. FAST AUTONOMOUS SCANNER (120 SL / 180 TP + H1 & MOMENTUM ALIGNMENT)
 // ============================================================================
 function getGmtTimeParts(dateObj = new Date()) {
     const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
     const shifted = new Date(dateObj.getTime() + tzVal * 3600 * 1000);
     const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'UTC',
-        hour12: false,
-        weekday: 'short',
-        hour: 'numeric',
-        minute: 'numeric'
+        timeZone: 'UTC', hour12: false, weekday: 'short', hour: 'numeric', minute: 'numeric'
     });
     const parts = formatter.formatToParts(shifted);
     let weekday = 'Mon', hour = 0, minute = 0;
@@ -1422,7 +1449,6 @@ function getGmtTimeParts(dateObj = new Date()) {
 function getSessionStatuses(dateObj = new Date()) {
     const { weekday, hour } = getGmtTimeParts(dateObj);
     const isWeekend = (weekday === 'Sat' || weekday === 'Sun');
-    
     const tokyoOpen = !isWeekend && (hour >= 0.0 && hour < 9.0);
     const londonOpen = !isWeekend && (hour >= 7.0 && hour < 16.0);
     const nyOpen = !isWeekend && (hour >= 12.0 && hour < 21.0);
@@ -1433,28 +1459,16 @@ function isSessionAllowedByFilter() {
     const sess = getSessionStatuses();
     if (sess.isWeekend) return false;
     const sf = state.sessions || DEFAULT_ENGINE_RULES.sessions;
-    let allowed = false;
-    if (sf.tokyo && sess.tokyoOpen) allowed = true;
-    if (sf.london && sess.londonOpen) allowed = true;
-    if (sf.newYork && sess.nyOpen) allowed = true;
-    return allowed;
+    return (sf.tokyo && sess.tokyoOpen) || (sf.london && sess.londonOpen) || (sf.newYork && sess.nyOpen);
 }
 
 function isNewsBlackoutActive() {
     const nf = state.newsFilter || DEFAULT_ENGINE_RULES.newsFilter;
     if (!nf.enabled) return false;
-
-    const now = new Date();
-    const { weekday, hour } = getGmtTimeParts(now);
+    const { weekday, hour } = getGmtTimeParts(new Date());
     if (weekday === 'Sat' || weekday === 'Sun') return false;
-
-    const isWednesday = (weekday === 'Wed');
-    const isFriday = (weekday === 'Fri');
-    const isTueThu = (weekday === 'Tue' || weekday === 'Thu');
-
-    if (isWednesday && hour >= 17.75 && hour <= 18.25) return true;
-    if ((isFriday || isTueThu) && hour >= 12.25 && hour <= 12.75) return true;
-
+    if (weekday === 'Wed' && hour >= 17.75 && hour <= 18.25) return true;
+    if ((weekday === 'Fri' || weekday === 'Tue' || weekday === 'Thu') && hour >= 12.25 && hour <= 12.75) return true;
     return false;
 }
 
@@ -1467,19 +1481,16 @@ function isCircuitBreakerClear() {
     const r = state.riskLimits || DEFAULT_ENGINE_RULES.riskLimits;
     if (r.maxConsecutiveEnabled && state.consecutiveLosses >= (r.maxConsecutiveValue || 3)) return false;
 
+    const todayStr = new Date().toISOString().slice(0, 10);
     if (r.maxDailyLossEnabled) {
-        const todayStr = new Date().toISOString().slice(0, 10);
         const todayLosses = (state.history || []).filter(h => (h.closedAt || '').includes(todayStr) && h.netPnL < 0);
         const totalTodayLoss = todayLosses.reduce((sum, l) => sum + Math.abs(l.netPnL), 0);
         if (totalTodayLoss >= (r.maxDailyLossValue || 250)) return false;
     }
-
     if (r.maxTradesEnabled) {
-        const todayStr = new Date().toISOString().slice(0, 10);
         const todayTrades = (state.history || []).filter(h => (h.closedAt || '').includes(todayStr));
         if (todayTrades.length >= (r.maxTradesValue || 10)) return false;
     }
-
     return true;
 }
 
@@ -1595,13 +1606,13 @@ async function runFastAutopilotCycle(forceFresh = false) {
     state.latestBars = m5Bars.slice(-80);
     const livePrice = m5Bars[m5Bars.length - 1].close;
     state.lastPrice = livePrice;
-    
+
     const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
     document.getElementById('lastSyncTime').innerText = `Last Sync: ${new Date().toLocaleTimeString('en-GB', { timeZone: 'UTC' })} (GMT+${tzVal})`;
 
     if (state.activeTrade) {
         manageActiveTrade(livePrice);
-        if (hasValidVipAccess(currentUserProfile)) drawTradeLines(state.activeTrade);
+        drawTradeLines(state.activeTrade);
         await saveState();
         return;
     }
@@ -1610,20 +1621,28 @@ async function runFastAutopilotCycle(forceFresh = false) {
     const c2 = m5Bars[m5Bars.length - 3];
     const pipSize = 0.10, spreadPrice = 0.60;
 
-    const isBullish = c1.close > c1.open && c2.close > c2.open && c1.low > c2.low;
-    const isBearish = c1.close < c1.open && c2.close < c2.open && c1.high < c2.high;
+    // فلتر قوة الشمعة (تجنب شموع التذبذب الصغيرة جداً أقل من 5 نقاط)
+    const c1Body = Math.abs(c1.close - c1.open);
+    const hasMomentum = c1Body >= 0.50;
+
+    // فلتر توافق الاتجاه مع فريم الساعة H1
+    const allowBuy = htfBias !== "BEARISH";
+    const allowSell = htfBias !== "BULLISH";
+
+    const isBullish = allowBuy && hasMomentum && c1.close > c1.open && c2.close > c2.open && c1.low > c2.low;
+    const isBearish = allowSell && hasMomentum && c1.close < c1.open && c2.close < c2.open && c1.high < c2.high;
 
     let setup = null;
     if (isBullish) {
         const entry = livePrice;
         const sl = parseFloat((entry - (120 * pipSize) - spreadPrice).toFixed(2));
         const tp = parseFloat((entry + (180 * pipSize)).toFixed(2));
-        setup = { dir: "BUY", type: "ACTIVE", setupName: "M5 Precision Rebound", entry, sl, tp, lot: 0.04, createdAt: Date.now() };
+        setup = { dir: "BUY", type: "ACTIVE", setupName: "M5 Precision Rebound", entry, sl, tp, lot: 0.04, createdAt: Date.now(), validatedByGemini: false };
     } else if (isBearish) {
         const entry = livePrice;
         const sl = parseFloat((entry + (120 * pipSize) + spreadPrice).toFixed(2));
         const tp = parseFloat((entry - (180 * pipSize)).toFixed(2));
-        setup = { dir: "SELL", type: "ACTIVE", setupName: "M5 Precision Rejection", entry, sl, tp, lot: 0.04, createdAt: Date.now() };
+        setup = { dir: "SELL", type: "ACTIVE", setupName: "M5 Precision Rejection", entry, sl, tp, lot: 0.04, createdAt: Date.now(), validatedByGemini: false };
     }
 
     if (setup) {
@@ -1632,24 +1651,19 @@ async function runFastAutopilotCycle(forceFresh = false) {
         state.activeTrade = setup;
         state.tradeCounter = Number(tradeId) + 1;
 
-        if (hasValidVipAccess(currentUserProfile)) drawTradeLines(setup);
+        drawTradeLines(setup);
         const alertMsg = `⚡ [FAST SCANNER] Trade #${tradeId} Triggered: ${setup.dir} @ ${setup.entry}`;
         logEvent(alertMsg);
         triggerClientPushAlert("Mr.Trader AI — Fast Trade!", alertMsg);
 
         if (isCurrentUserAdmin()) {
             const directionText = setup.dir.toUpperCase() === 'BUY' ? '🟢 XAUUSD BUY' : '🔴 XAUUSD SELL';
-            const formattedEntry = Number(setup.entry).toFixed(2);
-            const formattedSL = Number(setup.sl).toFixed(2);
-            const formattedTP = Number(setup.tp).toFixed(2);
-
             const telegramMsg = `🚨 Mr.Trader AI — Fast Trade #${tradeId}\n` +
                                 `${directionText}\n` +
-                                `Entry: ${formattedEntry}\n\n` +
-                                `🔴 SL: ${formattedSL}\n` +
-                                `🎯 TP: ${formattedTP}\n\n` +
+                                `Entry: ${Number(setup.entry).toFixed(2)}\n\n` +
+                                `🔴 SL: ${Number(setup.sl).toFixed(2)}\n` +
+                                `🎯 TP: ${Number(setup.tp).toFixed(2)}\n\n` +
                                 `#Trade-${tradeId}`;
-
             await sendTelegramAlert(telegramMsg);
         }
     }
@@ -1732,7 +1746,7 @@ function clearChartLines() {
 
 function drawTradeLines(trade) {
     clearChartLines();
-    if (!trade || !candleSeries) return;
+    if (!trade || !candleSeries || !hasValidVipAccess(currentUserProfile)) return;
     priceLines.push(candleSeries.createPriceLine({ price: trade.entry, color: '#3b82f6', lineWidth: 2, lineStyle: 0, title: 'ENTRY' }));
     priceLines.push(candleSeries.createPriceLine({ price: trade.sl, color: '#ef4444', lineWidth: 2, lineStyle: 2, title: 'SL' }));
     priceLines.push(candleSeries.createPriceLine({ price: trade.tp, color: '#10b981', lineWidth: 2, lineStyle: 0, title: 'TP' }));
@@ -1751,7 +1765,7 @@ async function sendTelegramAlert(textOrCustomMessage) {
 }
 
 // ============================================================================
-// 5. UI RENDERING & MANAGEMENT (WITH VIP / ADMIN PERMISSIONS GUARD)
+// 5. UI RENDERING & VIP ACCESS GUARD
 // ============================================================================
 function updateDashboardUI() {
     const hasVip = hasValidVipAccess(currentUserProfile);
@@ -1770,7 +1784,7 @@ function updateDashboardUI() {
         document.getElementById('tokyoLiveStatusTag').innerText = sess.tokyoOpen ? '🟢 RUNNING' : '⚪ CLOSED';
         document.getElementById('londonLiveStatusTag').innerText = sess.londonOpen ? '🟢 RUNNING' : '⚪ CLOSED';
         document.getElementById('nyLiveStatusTag').innerText = sess.nyOpen ? '🟢 RUNNING' : '⚪ CLOSED';
-        
+
         const newsActive = isNewsBlackoutActive();
         document.getElementById('newsFilterStatusTag').innerText = newsActive ? '🚨 BLACKOUT' : '🟢 Clear';
         document.getElementById('newsFilterStatusTag').style.color = newsActive ? 'var(--accent-red)' : 'var(--accent-green)';
@@ -1792,10 +1806,9 @@ function updateDashboardUI() {
             topSigLevels.innerText = currentLang === 'ar' ? 'بانتظار إشارة دخول' : 'No active signal';
         }
     } else {
-        // 🔒 حجب الصفقات الحية عن غير المشتركين
-        topSigDir.innerText = '🔒 VIP LOCKED';
+        topSigDir.innerText = state.activeTrade ? '🔒 LIVE SIGNAL ACTIVE' : '🔒 VIP LOCKED';
         topSigDir.style.color = 'var(--accent-gold)';
-        topSigLevels.innerHTML = `<a href="#" onclick="switchTerminalTab('account')" style="color:var(--accent-gold); text-decoration:underline;">Upgrade to view live signal</a>`;
+        topSigLevels.innerHTML = `<a href="#" onclick="switchTerminalTab('account'); return false;" style="color:var(--accent-gold); text-decoration:underline;">Activate VIP to reveal Entry / SL / TP</a>`;
     }
 
     const allHist = state.history || [];
@@ -1828,6 +1841,10 @@ function updateDashboardUI() {
             const tr = state.activeTrade, cls = tr.dir.toLowerCase();
             const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
             statusTag.innerText = `🟢 ${modeLabel} — #Trade-${tr.tradeId || 1}`;
+            const aiBadge = tr.validatedByGemini
+                ? `<div class="ai-audit-box">🤖 <strong>Gemini AI:</strong> ${tr.geminiApproved !== false ? 'APPROVED' : 'CAUTION'} — ${tr.geminiReason || 'Structure verified'}</div>`
+                : `<div class="ai-audit-box">⏳ <strong>Gemini AI:</strong> Auditing structure...</div>`;
+
             const cardHtml = `
                 <div class="signal-card ${cls}">
                     <div class="sig-row"><strong>#Trade-${tr.tradeId || 1} — ${tr.setupName}</strong><span class="sig-badge ${cls}">${tr.dir}</span></div>
@@ -1835,6 +1852,7 @@ function updateDashboardUI() {
                     <div class="sig-row"><span>SL:</span><strong style="color:var(--accent-red);">${Number(tr.sl).toFixed(2)}</strong></div>
                     <div class="sig-row"><span>TP:</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
                     <div class="sig-row"><span>Lot:</span><strong>0.04 lot</strong></div>
+                    ${aiBadge}
                 </div>`;
             homeSigBox.innerHTML = cardHtml;
             activeTabBox.innerHTML = cardHtml;
@@ -1849,19 +1867,19 @@ function updateDashboardUI() {
             activeTabBox.innerHTML = standbyHtml;
         }
     } else {
-        // 🔒 حجب تفاصيل الصفقة الحية للمستخدم العادي
-        statusTag.innerText = '🔒 LOCKED';
+        statusTag.innerText = '🔒 VIP ONLY';
         const lockHtml = `
             <div class="signal-card" style="border-inline-start-color:var(--accent-gold); text-align:center; padding:18px;">
-                <h3 style="color:var(--accent-gold); font-size:0.95rem; margin-bottom:6px;">🔒 VIP Live Signal Locked</h3>
-                <p style="font-size:0.76rem; color:var(--text-secondary); margin-bottom:10px;">Active live XAU/USD signals and instant entries are reserved for VIP subscribers.</p>
-                <button type="button" class="auth-btn" style="width:auto; display:inline-block; padding:6px 14px; font-size:0.76rem;" onclick="switchTerminalTab('account')">💎 Upgrade / Activate VIP</button>
+                <h3 style="color:var(--accent-gold); font-size:0.95rem; margin-bottom:6px;">🔒 ${state.activeTrade ? 'Active XAU/USD Signal in Progress!' : 'VIP Live Signals Locked'}</h3>
+                <p style="font-size:0.76rem; color:var(--text-secondary); margin-bottom:10px; line-height:1.45;">
+                    Real-time entries, Stop Loss, Take Profit, and Gemini AI audits are reserved for approved VIP members. You can freely inspect our verified <strong>History</strong> & <strong>Stats</strong>.
+                </p>
+                <button type="button" class="auth-btn" style="width:auto; display:inline-block; padding:7px 14px; font-size:0.76rem;" onclick="switchTerminalTab('account')">💎 Activate VIP Access</button>
             </div>`;
         homeSigBox.innerHTML = lockHtml;
         activeTabBox.innerHTML = lockHtml;
     }
 
-    // السماح للجميع برؤية التاريخ والإحصائيات
     const filterEl = document.getElementById('closedTimeFilter');
     const filterVal = filterEl ? filterEl.value : 'all';
     const nowMs = Date.now();
@@ -1910,7 +1928,7 @@ async function loadMasterConfig(isAdmin) {
         document.getElementById('adminTdKey').value = data.td_api_key || '';
         document.getElementById('adminTgToken').value = data.tg_bot_token || '';
         document.getElementById('adminTgChat').value = data.tg_chat_id || '';
-        updateBetaToggleButton(data.beta_mode !== false);
+        updateBetaToggleButton(data.beta_mode === true);
     }
 }
 
@@ -1930,7 +1948,7 @@ function updateBetaToggleButton(isBeta) {
 
 async function toggleBetaMode() {
     if (!isCurrentUserAdmin()) return;
-    const nextBeta = !(masterConfig.beta_mode !== false);
+    const nextBeta = !(masterConfig.beta_mode === true);
     const { error } = await sb.from('engine_config').upsert({
         id: 1, td_api_key: masterConfig.td_api_key || '', tg_bot_token: masterConfig.tg_bot_token || '', tg_chat_id: masterConfig.tg_chat_id || '', beta_mode: nextBeta
     });
@@ -1950,7 +1968,7 @@ async function saveMasterConfig() {
     const chat = document.getElementById('adminTgChat').value.trim();
 
     const { error } = await sb.from('engine_config').upsert({
-        id: 1, td_api_key: td, tg_bot_token: tg, tg_chat_id: chat, beta_mode: masterConfig.beta_mode !== false
+        id: 1, td_api_key: td, tg_bot_token: tg, tg_chat_id: chat, beta_mode: masterConfig.beta_mode === true
     });
 
     if (!error) {
@@ -2097,13 +2115,10 @@ function startTerminalEngine(isAdmin) {
     engineStarted = true;
     initChart();
 
-    if (state.recentLogs && state.recentLogs.length > 0) {
-        document.getElementById('systemLogs').innerHTML = state.recentLogs.map(l => `<div class="log-entry">${l}</div>`).join('');
-    }
+    renderSystemLogsBox();
     if (state.latestBars && state.latestBars.length > 0) {
         candleSeries.setData(state.latestBars);
-        const hasVip = hasValidVipAccess(currentUserProfile);
-        if (state.activeTrade && hasVip) drawTradeLines(state.activeTrade);
+        if (state.activeTrade && hasValidVipAccess(currentUserProfile)) drawTradeLines(state.activeTrade);
     }
 
     updateDashboardUI();
