@@ -20,19 +20,8 @@
             --border-color: #2a3142;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Roboto, sans-serif; }
-        body { background: var(--bg-primary); color: var(--text-primary); padding: 10px; }
-        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
-
-        /* PHONE MODE OVERRIDES (Soft & Compact) */
-        body.phone-mode .container { max-width: 480px !important; padding: 4px; }
-        body.phone-mode .metrics-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; }
-        body.phone-mode .main-grid { grid-template-columns: 1fr !important; }
-        body.phone-mode .setting-grid { grid-template-columns: 1fr !important; }
-        body.phone-mode .nav-tabs { gap: 4px; padding: 4px; }
-        body.phone-mode .nav-tab { min-width: 70px !important; padding: 7px 6px !important; font-size: 0.72rem !important; }
-        body.phone-mode .header { padding: 10px 12px; }
-        body.phone-mode .panel-box, body.phone-mode .metric-card { padding: 10px !important; }
-        body.phone-mode #chart { height: 280px !important; }
+        body { background: var(--bg-primary); color: var(--text-primary); padding: 14px; }
+        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
 
         .lang-switch-btn, .view-toggle-btn {
             background: var(--bg-card); color: var(--accent-gold); border: 1px solid var(--accent-gold);
@@ -119,12 +108,6 @@
         }
         .btn-tg:hover { background: #1d8ec4; }
 
-        .pwa-steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 8px; }
-        .pwa-step-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
-        .pwa-step-num { font-size: 0.68rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; }
-        .pwa-step-title { font-size: 0.8rem; font-weight: 700; color: #fff; }
-        .pwa-step-desc { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.4; }
-
         .modal-backdrop {
             position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000;
             display: none; justify-content: center; align-items: center; padding: 12px;
@@ -150,9 +133,9 @@
         .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 600; }
         .setting-input { width: 100%; padding: 5px 6px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--accent-gold); border-radius: 4px; font-size: 0.78rem; font-weight: 700; text-align: center; }
 
-        .data-table { width: 100%; border-collapse: collapse; font-size: 0.74rem; }
-        .data-table th, .data-table td { padding: 6px 4px; border-bottom: 1px solid var(--border-color); text-align: start; vertical-align: middle; }
-        .data-table th { color: var(--text-secondary); font-size: 0.68rem; text-transform: uppercase; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+        .data-table th, .data-table td { padding: 8px 6px; border-bottom: 1px solid var(--border-color); text-align: start; vertical-align: middle; }
+        .data-table th { color: var(--text-secondary); font-size: 0.72rem; text-transform: uppercase; }
         .badge-approved { color: var(--accent-green); font-weight: 700; }
         .badge-pending { color: var(--accent-gold); font-weight: 700; }
         .badge-expired { color: var(--accent-red); font-weight: 700; }
@@ -160,52 +143,52 @@
 
         .header {
             display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
-            background: var(--bg-secondary); padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-color); gap: 8px;
+            background: var(--bg-secondary); padding: 14px 18px; border-radius: 8px; border: 1px solid var(--border-color); gap: 10px;
         }
-        .header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .title-group h1 { font-size: 1.1rem; color: var(--accent-gold); }
-        .title-group p { font-size: 0.74rem; color: var(--text-secondary); margin-top: 1px; }
-        .controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .header-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .title-group h1 { font-size: 1.15rem; color: var(--accent-gold); }
+        .title-group p { font-size: 0.76rem; color: var(--text-secondary); margin-top: 2px; }
+        .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .status-pill {
-            display: flex; align-items: center; gap: 6px; padding: 5px 10px;
-            background: rgba(16, 185, 129, 0.12); border: 1px solid var(--accent-green); color: var(--accent-green); border-radius: 16px; font-size: 0.74rem; font-weight: 600;
+            display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+            background: rgba(16, 185, 129, 0.12); border: 1px solid var(--accent-green); color: var(--accent-green); border-radius: 16px; font-size: 0.76rem; font-weight: 600;
         }
         .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.6s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        .btn-ui { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 0.72rem; font-weight: 600; }
+        .btn-ui { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.76rem; font-weight: 600; }
         .btn-ui:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
         .btn-admin { border-color: var(--accent-gold); color: var(--accent-gold); display: none; }
 
-        .nav-tabs { display: flex; gap: 6px; flex-wrap: wrap; background: var(--bg-secondary); padding: 6px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .nav-tabs { display: flex; gap: 8px; flex-wrap: wrap; background: var(--bg-secondary); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); }
         .nav-tab {
-            flex: 1; min-width: 100px; padding: 8px 10px; background: var(--bg-primary); border: 1px solid var(--border-color);
-            color: var(--text-secondary); border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.76rem; text-align: center; transition: all 0.15s;
+            flex: 1; min-width: 110px; padding: 10px 14px; background: var(--bg-primary); border: 1px solid var(--border-color);
+            color: var(--text-secondary); border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.78rem; text-align: center; transition: all 0.15s;
         }
         .nav-tab:hover { border-color: var(--accent-gold); color: var(--text-primary); }
         .nav-tab.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
-        .tab-view { display: none; flex-direction: column; gap: 10px; }
+        .tab-view { display: none; flex-direction: column; gap: 12px; }
         .tab-view.active { display: flex; }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; }
-        .metric-card { background: var(--bg-secondary); padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); }
-        .metric-label { font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; }
-        .metric-value { font-size: 1.05rem; font-weight: 700; margin-top: 3px; color: var(--text-primary); }
-        .metric-sub { font-size: 0.68rem; color: var(--text-secondary); margin-top: 2px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+        .metric-card { background: var(--bg-secondary); padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .metric-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; }
+        .metric-value { font-size: 1.15rem; font-weight: 700; margin-top: 4px; color: var(--text-primary); }
+        .metric-sub { font-size: 0.7rem; color: var(--text-secondary); margin-top: 3px; }
 
         .risk-remark {
-            background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 6px; padding: 8px 12px;
-            font-size: 0.74rem; color: var(--accent-gold); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
+            background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 8px; padding: 10px 14px;
+            font-size: 0.76rem; color: var(--accent-gold); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
         }
 
-        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
         @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
         .chart-box, .panel-box {
-            background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color); padding: 12px; display: flex; flex-direction: column;
+            background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color); padding: 14px; display: flex; flex-direction: column;
         }
         .box-header {
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
-            margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border-color); font-size: 0.8rem; font-weight: 600;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+            margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); font-size: 0.82rem; font-weight: 600;
         }
         #chart { width: 100%; height: 380px; }
 
@@ -214,17 +197,17 @@
         }
         .signal-card.buy { border-inline-start-color: var(--accent-green); }
         .signal-card.sell { border-inline-start-color: var(--accent-red); }
-        .sig-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin: 4px 0; }
+        .sig-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin: 5px 0; }
         .sig-badge { padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.72rem; }
         .sig-badge.buy { background: rgba(16,185,129,0.2); color: var(--accent-green); }
         .sig-badge.sell { background: rgba(239,68,68,0.2); color: var(--accent-red); }
 
         .log-box {
-            flex: 1; background: var(--bg-primary); border-radius: 6px; padding: 8px;
-            font-size: 0.72rem; color: var(--text-secondary); overflow-y: auto; max-height: 220px; border: 1px solid var(--border-color); line-height: 1.4;
+            flex: 1; background: var(--bg-primary); border-radius: 6px; padding: 10px;
+            font-size: 0.74rem; color: var(--text-secondary); overflow-y: auto; max-height: 240px; border: 1px solid var(--border-color); line-height: 1.45;
         }
-        .log-entry { margin-bottom: 3px; border-bottom: 1px dashed #1e2536; padding-bottom: 2px; }
-        .log-time { color: var(--accent-gold); margin-inline-end: 4px; }
+        .log-entry { margin-bottom: 4px; border-bottom: 1px dashed #1e2536; padding-bottom: 3px; }
+        .log-time { color: var(--accent-gold); margin-inline-end: 6px; }
     </style>
 </head>
 <body>
@@ -233,7 +216,6 @@
 <div id="authOverlay" class="auth-overlay">
     <div class="auth-top-left">
         <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
-        <button type="button" class="view-toggle-btn" onclick="toggleViewMode()">📱/💻 <span id="viewModeBtnLbl">Phone View</span></button>
     </div>
 
     <div class="auth-wrapper" id="authLandingWrapper">
@@ -403,7 +385,6 @@
     <div class="header">
         <div class="header-left">
             <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
-            <button type="button" class="view-toggle-btn" onclick="toggleViewMode()">📱/💻 <span id="viewModeBtnLbl2">Phone View</span></button>
             <div class="title-group">
                 <h1>Mr.Trader AI v1.2</h1>
                 <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals | 120 SL / 180 TP (GMT Time)</p>
@@ -732,29 +713,8 @@
 
 <script>
 // ============================================================================
-// 0. VIEW MODE TOGGLE (PHONE / DESKTOP) & BILINGUAL ENGINE
+// 0. BILINGUAL ENGINE
 // ============================================================================
-let isPhoneMode = localStorage.getItem('mrtrader_phone_mode') === 'true';
-
-function updateViewModeUI() {
-    if (isPhoneMode) {
-        document.body.classList.add('phone-mode');
-        document.querySelectorAll('#viewModeBtnLbl, #viewModeBtnLbl2').forEach(el => el.innerText = 'Desktop View');
-    } else {
-        document.body.classList.remove('phone-mode');
-        document.querySelectorAll('#viewModeBtnLbl, #viewModeBtnLbl2').forEach(el => el.innerText = 'Phone View');
-    }
-    if (chart) {
-        setTimeout(() => chart.applyOptions({ width: document.getElementById('chart').clientWidth }), 50);
-    }
-}
-
-function toggleViewMode() {
-    isPhoneMode = !isPhoneMode;
-    localStorage.setItem('mrtrader_phone_mode', isPhoneMode);
-    updateViewModeUI();
-}
-
 let currentLang = localStorage.getItem('mrtrader_lang') || 'en';
 
 const I18N = {
@@ -961,7 +921,7 @@ function toggleLanguage() {
 }
 
 // ============================================================================
-// 1. NOTIFICATIONS & AUDIO ALERTS (Safe for Mobile Browsers)
+// 1. NOTIFICATIONS & AUDIO ALERTS
 // ============================================================================
 function requestPushNotificationPermission() {
     playBeepSound();
@@ -1227,7 +1187,6 @@ async function logoutClient() {
 
 async function checkUserSession() {
     applyLanguage();
-    updateViewModeUI();
     const urlParams = new URLSearchParams(window.location.search);
     if (isPasswordRecoveryMode || urlParams.get('recovery') === '1' || urlParams.get('type') === 'recovery' || (window.location.hash && window.location.hash.includes('type=recovery'))) {
         showNewPasswordScreen();
@@ -1396,9 +1355,6 @@ function syncSettingsToUI() {
 
         document.getElementById('riskMaxLossEn').checked = r.maxDailyLossEnabled !== false;
         document.getElementById('riskMaxLossVal').value = r.maxDailyLossValue || 250;
-
-        document.getElementById('riskMaxConEn').checked = r.maxConsecutiveEnabled !== false;
-        document.getElementById('riskMaxConVal').value = r.maxConsecutiveValue || 3;
     }
 }
 
@@ -1421,13 +1377,17 @@ async function saveRiskAndSessionSettings() {
         maxTradesValue: parseInt(document.getElementById('riskMaxTradesVal').value) || 10,
         maxDailyLossEnabled: document.getElementById('riskMaxLossEn').checked,
         maxDailyLossValue: parseFloat(document.getElementById('riskMaxLossVal').value) || 250,
-        maxConsecutiveEnabled: document.getElementById('riskMaxConEn').checked,
-        maxConsecutiveValue: parseInt(document.getElementById('riskMaxConVal').value) || 3
+        maxConsecutiveEnabled: true,
+        maxConsecutiveValue: 3
     };
     await saveState();
-    syncSettingsToUI();
+    portalSyncSettingsToUI();
     logEvent('⚙️ Settings saved.');
     alert(currentLang === 'ar' ? '✅ تم حفظ الإعدادات!' : '✅ Settings saved!');
+}
+
+function portalSyncSettingsToUI() {
+    syncSettingsToUI();
 }
 
 async function resetSettingsToDefault() {
@@ -1698,7 +1658,6 @@ async function runFastAutopilotCycle(forceFresh = false) {
         return;
     }
 
-    // --- M5 PRECISION MOMENTUM (120 SL / 180 TP) ---
     const c1 = m5Bars[m5Bars.length - 2];
     const c2 = m5Bars[m5Bars.length - 3];
     const pipSize = 0.10, spreadPrice = 0.60;
@@ -2189,7 +2148,6 @@ function startTerminalEngine(isAdmin) {
 
 window.addEventListener('DOMContentLoaded', () => {
     checkUserSession();
-    updateViewModeUI();
 });
 </script>
 </body>
