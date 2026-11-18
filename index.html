@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr.Trader AI v1.2 — Autonomous XAU/USD Terminal (GMT)</title>
+    <title>Mr. Trader AI — Autonomous XAU/USD Terminal (GMT)</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -215,7 +215,6 @@
         .log-entry { margin-bottom: 4px; border-bottom: 1px dashed #1e2536; padding-bottom: 3px; }
         .log-time { color: var(--accent-gold); margin-inline-end: 6px; }
 
-        /* MT5 CLOUD COPIER CARD STYLES */
         .mt5-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
         .mt5-label { display: block; font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 4px; }
         .mt5-input {
@@ -236,17 +235,17 @@
     <div class="auth-wrapper" id="authLandingWrapper">
         <div class="showcase-panel">
             <div class="showcase-hero">
-                <span class="showcase-badge" data-i18n="scBadge">⚡ INSTITUTIONAL XAU/USD ENGINE v1.2</span>
-                <h1>Mr.Trader AI — XAU/USD</h1>
+                <span class="showcase-badge" data-i18n="scBadge">⚡ INSTITUTIONAL XAU/USD ENGINE</span>
+                <h1>Mr. Trader AI — XAU/USD</h1>
             </div>
             <div class="showcase-body">
                 <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.45;" data-i18n="scDesc">
-                    Advanced institutional liquidity reclaims, multi-timeframe H1/M5 structural analysis, and Gemini AI signal supervision engineered specifically for precision gold execution.
+                    Advanced institutional liquidity reclaims, multi-timeframe H1/M5 structural analysis, and AI supervision engineered specifically for precision gold execution.
                 </p>
                 <div class="showcase-stats">
                     <div class="sc-stat-box"><div class="sc-stat-val">81.5%</div><div class="sc-stat-lbl" data-i18n="scWinRateLbl">Backtested Win Rate</div></div>
                     <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-gold);">1 : 1.5</div><div class="sc-stat-lbl" data-i18n="scRrLbl">Fixed Risk/Reward</div></div>
-                    <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-blue);">AI Audit</div><div class="sc-stat-lbl" data-i18n="scAutoLbl">Gemini Supervisor</div></div>
+                    <div class="sc-stat-box"><div class="sc-stat-val" style="color:var(--accent-blue);">AI Audit</div><div class="sc-stat-lbl" data-i18n="scAutoLbl">AI Supervisor</div></div>
                 </div>
                 <div class="showcase-gallery">
                     <div class="sc-img-card sc-img-1"><span data-i18n="scCard1">📈 Liquidity Sweep & Reclaim</span></div>
@@ -256,14 +255,14 @@
         </div>
 
         <div class="auth-box" id="authFormBox">
-            <h2>Mr.Trader AI v1.2</h2>
+            <h2>Mr. Trader AI</h2>
             <p id="authSubtitle" data-i18n="authSub">Sign in or create a free account to view live stats, trade history & VIP signals</p>
             <div class="auth-tabs" id="authTabsRow">
                 <button type="button" id="tabLogin" class="auth-tab active" onclick="switchAuthMode('login')" data-i18n="clientLogin">Client Login</button>
                 <button type="button" id="tabSignup" class="auth-tab" onclick="switchAuthMode('signup')" data-i18n="signUp">Sign Up</button>
             </div>
-            <input type="email" id="authEmail" class="auth-input" data-i18n-ph="emailPh" placeholder="Email Address">
-            <input type="password" id="authPassword" class="auth-input" data-i18n-ph="passPh" placeholder="Password (min 6 chars)">
+            <input type="email" id="authEmail" class="auth-input" data-i18n-ph="emailPh" placeholder="Email Address" onkeydown="if(event.key==='Enter') handleAuthSubmit()">
+            <input type="password" id="authPassword" class="auth-input" data-i18n-ph="passPh" placeholder="Password (min 6 chars)" onkeydown="if(event.key==='Enter') handleAuthSubmit()">
             <div class="auth-link-row" id="forgotLinkRow">
                 <button type="button" class="auth-link" onclick="switchAuthMode('forgot')" data-i18n="forgotPass">Forgot Password?</button>
             </div>
@@ -278,7 +277,7 @@
     <!-- Set New Password Form -->
     <div class="auth-box" id="updatePasswordBox" style="display:none; max-width:400px;">
         <h2 data-i18n="setNewPassTitle">🔐 SET NEW PASSWORD</h2>
-        <p data-i18n="setNewPassDesc">Enter your new password below to regain access to Mr.Trader AI.</p>
+        <p data-i18n="setNewPassDesc">Enter your new password below to regain access to Mr. Trader AI.</p>
         <input type="password" id="newPasswordInput" class="auth-input" placeholder="New Password (min 6 chars)">
         <input type="password" id="confirmPasswordInput" class="auth-input" placeholder="Confirm New Password">
         <button type="button" class="auth-btn" onclick="handleUpdatePassword()" data-i18n="updatePassBtn">Update Password & Login</button>
@@ -304,7 +303,7 @@
 <div id="adminModal" class="modal-backdrop" onclick="closeAdminWindow(event)">
     <div class="admin-window" onclick="event.stopPropagation()">
         <div class="admin-header">
-            <h3 style="color:var(--accent-gold); letter-spacing:1px;">🛡️ AW — CONTROL WINDOW (v1.2)</h3>
+            <h3 style="color:var(--accent-gold); letter-spacing:1px;">🛡️ AW — CONTROL WINDOW</h3>
             <button type="button" class="btn-ui" onclick="document.getElementById('adminModal').style.display='none'">✖ Close</button>
         </div>
 
@@ -370,8 +369,8 @@
         <div class="header-left">
             <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
             <div class="title-group">
-                <h1>Mr.Trader AI v1.2</h1>
-                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals | 120 SL / 180 TP (GMT Time)</p>
+                <h1>Mr. Trader AI</h1>
+                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals (GMT Time)</p>
             </div>
         </div>
 
@@ -503,8 +502,8 @@
         </div>
 
         <div class="risk-remark">
-            <span>🛡️ <strong data-i18n="riskRemarkTitle">Risk Note:</strong> <span data-i18n="riskRemarkText">$400 cap = 0.04 lot (120 SL / 180 TP).</span></span>
-            <span style="font-size:0.7rem; color:var(--text-secondary);">🤖 Gemini AI Supervisor Active • Spread: 40-80 pts</span>
+            <span>🛡️ <strong data-i18n="riskRemarkTitle">Risk Note:</strong> <span data-i18n="riskRemarkText">$400 cap = 0.04 lot (Institutional Risk).</span></span>
+            <span style="font-size:0.7rem; color:var(--text-secondary);">🤖 AI Supervisor Active • Spread: 40-80 pts</span>
         </div>
 
         <div class="main-grid">
@@ -519,7 +518,6 @@
             <div class="panel-box">
                 <div class="box-header">
                     <span data-i18n="latestSigTitle">Latest Signal</span>
-                    <span style="color: var(--accent-green); font-size: 0.72rem;">120 SL / 180 TP</span>
                 </div>
                 <div id="homeSignalContainer"></div>
 
@@ -600,7 +598,7 @@
             <div class="metric-card">
                 <div class="metric-label" data-i18n="statNetLbl">Net Profit</div>
                 <div class="metric-value" id="statNetProfit">$0.00</div>
-                <div class="metric-sub" data-i18n="riskBaseSub">0.04 lot / $400 rule</div>
+                <div class="metric-sub" data-i18n="riskBaseSub">Institutional Risk</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label" data-i18n="statPfLbl">Profit Factor</div>
@@ -611,12 +609,12 @@
 
         <div class="panel-box">
             <div class="box-header">
-                <span data-i18n="stratTitle">📊 Mr.Trader AI v1.2 Engine Overview</span>
+                <span data-i18n="stratTitle">📊 Mr. Trader AI Engine Overview</span>
             </div>
             <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;" data-i18n="stratDesc">
-- <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
-- <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & Gemini AI Supervisor (120 SL / 180 TP).<br>
-- <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
+                • <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
+                • <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>
+                • <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
             </p>
         </div>
     </div>
@@ -812,11 +810,11 @@ let currentLang = localStorage.getItem('mrtrader_lang') || 'en';
 const I18N = {
     en: {
         langBtn: 'العربية',
-        scBadge: '⚡ INSTITUTIONAL XAU/USD ENGINE v1.2',
-        scDesc: 'Advanced institutional liquidity reclaims, multi-timeframe H1/M5 structural analysis, and Gemini AI supervision.',
+        scBadge: '⚡ INSTITUTIONAL XAU/USD ENGINE',
+        scDesc: 'Advanced institutional liquidity reclaims, multi-timeframe H1/M5 structural analysis, and AI supervision.',
         scWinRateLbl: 'Backtested Win Rate',
         scRrLbl: 'Risk/Reward',
-        scAutoLbl: 'Gemini Supervisor',
+        scAutoLbl: 'AI Supervisor',
         scCard1: '📈 Liquidity Sweep',
         scCard2: '🛡️ Retracement Zones',
         authSub: 'Sign in or create a free account to view live stats, trade history & VIP signals',
@@ -833,7 +831,7 @@ const I18N = {
         setNewPassDesc: 'Enter your new password below.',
         updatePassBtn: 'Update Password & Login',
         signOut: 'Sign Out',
-        headerSub: 'Autonomous XAU/USD Signals | 120 SL / 180 TP (GMT)',
+        headerSub: 'Autonomous XAU/USD Signals (GMT)',
         liveStream: 'LIVE',
         syncBtn: 'Sync',
         logoutBtn: 'Logout',
@@ -848,7 +846,7 @@ const I18N = {
         lblSignalSummary: 'Signal Status',
         lblWinRate: 'Live Win Rate',
         riskRemarkTitle: 'Risk Note:',
-        riskRemarkText: '$400 cap = 0.04 lot (120 SL / 180 TP).',
+        riskRemarkText: '$400 cap = 0.04 lot (Institutional Risk).',
         chartTitle: 'XAU/USD M5 Live Chart',
         latestSigTitle: 'Latest Signal',
         liveAlertsTitle: 'Live Feed',
@@ -869,10 +867,10 @@ const I18N = {
         statWinRateLbl: 'Live Win Rate',
         statWLLbl: 'Wins / Losses',
         statNetLbl: 'Net Profit',
-        riskBaseSub: '0.04 lot / $400 rule',
+        riskBaseSub: 'Institutional Risk',
         statPfLbl: 'Profit Factor',
-        stratTitle: '📊 Mr.Trader AI v1.2 Engine Overview',
-        stratDesc: '• <strong>Active Sessions:</strong> Tokyo, London, New York.<br>• <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & Gemini AI Supervisor (120 SL / 180 TP).<br>• <strong>Risk:</strong> Max SL, Daily Loss, and News blackout.',
+        stratTitle: '📊 Mr. Trader AI Engine Overview',
+        stratDesc: '• <strong>Active Sessions:</strong> Tokyo, London, New York.<br>• <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>• <strong>Risk:</strong> Max SL, Daily Loss, and News blackout.',
         accProfileTitle: '👤 Account Details & Subscription',
         accEmailLbl: 'Email',
         accIdLbl: 'Client ID',
@@ -906,11 +904,11 @@ const I18N = {
     },
     ar: {
         langBtn: 'English',
-        scBadge: '⚡ محرك تداول الذهب المؤسسي الإصدار 1.2',
-        scDesc: 'تحليل هيكلي متعدد الأطر الزمنية وإشراف الذكاء الاصطناعي Gemini AI.',
+        scBadge: '⚡ محرك تداول الذهب المؤسسي',
+        scDesc: 'تحليل هيكلي متعدد الأطر الزمنية وإشراف الذكاء الاصطناعي.',
         scWinRateLbl: 'نسبة النجاح (Backtest)',
         scRrLbl: 'العائد للمخاطرة',
-        scAutoLbl: 'مدقق Gemini AI',
+        scAutoLbl: 'مدقق الذكاء الاصطناعي',
         scCard1: '📈 سحب السيولة',
         scCard2: '🛡️ مناطق الارتداد',
         authSub: 'سجّل الدخول أو أنشئ حساباً مجانياً لمشاهدة الإحصائيات والسجل وتفعيل VIP',
@@ -927,7 +925,7 @@ const I18N = {
         setNewPassDesc: 'أدخل كلمة المرور الجديدة أدناه.',
         updatePassBtn: 'تحديث والدخول',
         signOut: 'خروج',
-        headerSub: 'توصيات الذهب | إعداد 120 SL / 180 TP (GMT)',
+        headerSub: 'توصيات الذهب المباشرة (GMT)',
         liveStream: 'مباشر',
         syncBtn: 'تحديث',
         logoutBtn: 'خروج',
@@ -942,7 +940,7 @@ const I18N = {
         lblSignalSummary: 'حالة التوصية',
         lblWinRate: 'نسبة النجاح',
         riskRemarkTitle: 'ملاحظة المخاطر:',
-        riskRemarkText: 'رأس مال 400$ = 0.04 لوت (120 SL / 180 TP).',
+        riskRemarkText: 'رأس مال 400$ = إدارة مخاطر مؤسسية.',
         chartTitle: 'شارت الذهب M5',
         latestSigTitle: 'أحدث توصية',
         liveAlertsTitle: 'التنبيهات المباشرة',
@@ -963,10 +961,10 @@ const I18N = {
         statWinRateLbl: 'نسبة النجاح الفعلية',
         statWLLbl: 'الربح / الخسارة',
         statNetLbl: 'صافي الأرباح',
-        riskBaseSub: 'قاعدة 0.04 لوت لكل 400$',
+        riskBaseSub: 'إدارة مخاطر مؤسسية',
         statPfLbl: 'معامل الربح',
-        stratTitle: '📊 نظرة عامة على المحرك الإصدار 1.2',
-        stratDesc: '• <strong>الجلسات:</strong> طوكيو، لندن، نيويورك.<br>• <strong>التنفيذ:</strong> إعداد 120 SL / 180 TP على M5 مع تدقيق Gemini AI.<br>• <strong>المخاطر:</strong> حماية ضد الخسارة اليومية والأخبار.',
+        stratTitle: '📊 نظرة عامة على المحرك',
+        stratDesc: '• <strong>الجلسات:</strong> طوكيو، لندن، نيويورك.<br>• <strong>التنفيذ:</strong> تحليل هيكلي على M5 مع إشراف الذكاء الاصطناعي.<br>• <strong>المخاطر:</strong> حماية ضد الخسارة اليومية والأخبار.',
         accProfileTitle: '👤 تفاصيل الحساب والاشتراك',
         accEmailLbl: 'البريد',
         accIdLbl: 'معرف العميل',
@@ -1037,7 +1035,7 @@ function requestPushNotificationPermission() {
     }
     Notification.requestPermission().then(permission => {
         if (permission === "granted") {
-            new Notification("Mr.Trader AI v1.2", { body: currentLang === 'ar' ? '✅ تم تفعيل الإشعارات بنجاح!' : '✅ Notifications successfully enabled!' });
+            new Notification("Mr. Trader AI", { body: currentLang === 'ar' ? '✅ تم تفعيل الإشعارات بنجاح!' : '✅ Notifications successfully enabled!' });
         } else {
             alert(currentLang === 'ar' ? '✅ تم تفعيل التنبيهات الصوتية بنجاح.' : '✅ Sound alerts active.');
         }
@@ -1298,7 +1296,7 @@ function bindTelegramActivationLinks(shortId, email) {
     const msg3D = encodeURIComponent(`Hello Admin, I want to activate 3-Day Trial ($15)\nClient ID: ${shortId}\nEmail: ${email}`);
     const msg1M = encodeURIComponent(`Hello Admin, I want to activate 1 Month VIP ($99)\nClient ID: ${shortId}\nEmail: ${email}`);
     const msg3M = encodeURIComponent(`Hello Admin, I want to activate 3 Months VIP ($250)\nClient ID: ${shortId}\nEmail: ${email}`);
-    const msgSup = encodeURIComponent(`Hello Mr.Trader AI Support,\nClient ID: ${shortId}\nEmail: ${email}`);
+    const msgSup = encodeURIComponent(`Hello Mr. Trader AI Support,\nClient ID: ${shortId}\nEmail: ${email}`);
 
     if (document.getElementById('btnPlan3D')) document.getElementById('btnPlan3D').href = base + msg3D;
     if (document.getElementById('btnPlan1M')) document.getElementById('btnPlan1M').href = base + msg1M;
@@ -1350,7 +1348,6 @@ async function checkUserSession() {
     document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER' : (vipActive ? (currentUserProfile.vip_plan || 'VIP ACTIVE') : '🔒 Upgrade Required');
     document.getElementById('accExpVal').innerText = isAdmin ? 'UNLIMITED' : (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Inactive');
 
-    // Show/Lock MT5 Auto-Trade Form based on VIP Status
     if (vipActive) {
         document.getElementById('mt5VipLockNotice').style.display = 'none';
         document.getElementById('mt5ConnectFormWrap').style.display = 'block';
@@ -1378,9 +1375,6 @@ async function checkUserSession() {
     startTerminalEngine(isAdmin);
 }
 
-// ============================================================================
-// 3. ENGINE CONFIG & STATE DEFAULTS (120 SL / 180 TP)
-// ============================================================================
 const DEFAULT_ENGINE_RULES = {
     referenceCapital: 400.00,
     baseLotPer400: 0.04,
@@ -1549,7 +1543,7 @@ function subscribeToRealtimeState() {
 
                 if (hasVip && state.activeTrade && state.activeTrade.tradeId !== prevTradeId) {
                     const msg = `🚨 NEW SIGNAL #Trade-${state.activeTrade.tradeId}: ${state.activeTrade.dir} @ ${state.activeTrade.entry.toFixed(2)}`;
-                    triggerClientPushAlert("Mr.Trader AI — New Signal!", msg);
+                    triggerClientPushAlert("Mr. Trader AI — New Signal!", msg);
                 }
             }
         })
@@ -1572,9 +1566,6 @@ function logEvent(msg) {
     }
 }
 
-// ============================================================================
-// 4. FAST AUTONOMOUS SCANNER (120 SL / 180 TP + H1 & MOMENTUM ALIGNMENT)
-// ============================================================================
 function getGmtTimeParts(dateObj = new Date()) {
     const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
     const shifted = new Date(dateObj.getTime() + tzVal * 3600 * 1000);
@@ -1683,7 +1674,7 @@ function manageActiveTrade(livePrice) {
             trade.type = "ACTIVE";
             const msg = `⚡ #Trade-${trade.tradeId || 1} FILLED @ ${trade.entry.toFixed(2)}`;
             logEvent(msg);
-            triggerClientPushAlert("Mr.Trader AI — Trade Filled", msg);
+            triggerClientPushAlert("Mr. Trader AI — Trade Filled", msg);
             saveState();
         }
         return;
@@ -1724,12 +1715,12 @@ function closeTrade(outcome, netDollarPnL) {
         state.consecutiveLosses = 0;
         const logStr = "✅ #Trade-" + closedRecord.tradeId + " TP HIT (+$" + roundedPnL.toFixed(2) + ")";
         logEvent(logStr);
-        triggerClientPushAlert("Mr.Trader AI — TP Hit! 🚀", logStr);
+        triggerClientPushAlert("Mr. Trader AI — TP Hit! 🚀", logStr);
     } else {
         state.consecutiveLosses += 1;
         const logStr = "❌ #Trade-" + closedRecord.tradeId + " SL HIT (-$" + Math.abs(roundedPnL).toFixed(2) + ")";
         logEvent(logStr);
-        triggerClientPushAlert("Mr.Trader AI — Stop Loss Hit", logStr);
+        triggerClientPushAlert("Mr. Trader AI — Stop Loss Hit", logStr);
     }
     state.activeTrade = null; clearChartLines(); saveState();
 }
@@ -1780,12 +1771,12 @@ async function runFastAutopilotCycle(forceFresh = false) {
         const entry = livePrice;
         const sl = parseFloat((entry - (120 * pipSize) - spreadPrice).toFixed(2));
         const tp = parseFloat((entry + (180 * pipSize)).toFixed(2));
-        setup = { dir: "BUY", type: "ACTIVE", setupName: "M5 Precision Rebound", entry, sl, tp, lot: 0.04, createdAt: Date.now(), validatedByGemini: false };
+        setup = { dir: "BUY", type: "ACTIVE", setupName: "M5 Precision Rebound", entry, sl, tp, lot: 0.04, createdAt: Date.now(), validatedByAI: false };
     } else if (isBearish) {
         const entry = livePrice;
         const sl = parseFloat((entry + (120 * pipSize) + spreadPrice).toFixed(2));
         const tp = parseFloat((entry - (180 * pipSize)).toFixed(2));
-        setup = { dir: "SELL", type: "ACTIVE", setupName: "M5 Precision Rejection", entry, sl, tp, lot: 0.04, createdAt: Date.now(), validatedByGemini: false };
+        setup = { dir: "SELL", type: "ACTIVE", setupName: "M5 Precision Rejection", entry, sl, tp, lot: 0.04, createdAt: Date.now(), validatedByAI: false };
     }
 
     if (setup) {
@@ -1797,36 +1788,18 @@ async function runFastAutopilotCycle(forceFresh = false) {
         drawTradeLines(setup);
         const alertMsg = `⚡ [FAST SCANNER] Trade #${tradeId} Triggered: ${setup.dir} @ ${setup.entry}`;
         logEvent(alertMsg);
-        triggerClientPushAlert("Mr.Trader AI — Fast Trade!", alertMsg);
+        triggerClientPushAlert("Mr. Trader AI — Fast Trade!", alertMsg);
 
         if (isCurrentUserAdmin()) {
             const directionText = setup.dir.toUpperCase() === 'BUY' ? '🟢 XAUUSD BUY' : '🔴 XAUUSD SELL';
-            const telegramMsg = `🚨 Mr.Trader AI — Fast Trade #${tradeId}\n` +
+            const telegramMsg = `🚨 Mr. Trader AI — Fast Trade #${tradeId}\n` +
                                 `${directionText}\n` +
                                 `Entry: ${Number(setup.entry).toFixed(2)}\n\n` +
-                                `🔴 SL: ${Number(setup.sl).toFixed(2)}\n` +
-                                `🎯 TP: ${Number(setup.tp).toFixed(2)}\n\n` +
                                 `#Trade-${tradeId}`;
             await sendTelegramAlert(telegramMsg);
         }
     }
     await saveState();
-}
-
-async function pollLivePriceOnly() {
-    if (!isCurrentUserAdmin()) return;
-    const apiKey = masterConfig.td_api_key;
-    if (!apiKey || !state.activeTrade) return;
-    try {
-        const res = await fetch(`https://api.twelvedata.com/price?symbol=XAU/USD&apikey=${apiKey}`);
-        const data = await res.json();
-        if (data.price) {
-            const p = parseFloat(data.price);
-            state.lastPrice = p;
-            manageActiveTrade(p);
-            await saveState();
-        }
-    } catch (e) {}
 }
 
 async function hardSyncRefresh() {
@@ -1840,12 +1813,12 @@ async function hardSyncRefresh() {
 }
 
 async function testTelegramConnection() {
-    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 — CONNECTION VERIFIED (120/180)");
+    const ok = await sendTelegramAlert("✅ Mr. Trader AI — CONNECTION VERIFIED");
     if (ok) logEvent("✅ Telegram test delivered!");
 }
 
 async function testTpHitTelegram() {
-    const ok = await sendTelegramAlert("✅ Mr.Trader AI v1.2 — #Trade-TEST TP HIT (+$36.00)");
+    const ok = await sendTelegramAlert("✅ Mr. Trader AI — #Trade-TEST TP HIT");
     if (ok) logEvent("🎯 Test TP sent!");
 }
 
@@ -1907,9 +1880,6 @@ async function sendTelegramAlert(textOrCustomMessage) {
     } catch (e) { return false; }
 }
 
-// ============================================================================
-// 5. UI RENDERING & VIP ACCESS GUARD
-// ============================================================================
 function updateDashboardUI() {
     const hasVip = hasValidVipAccess(currentUserProfile);
 
@@ -1984,9 +1954,7 @@ function updateDashboardUI() {
             const tr = state.activeTrade, cls = tr.dir.toLowerCase();
             const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
             statusTag.innerText = `🟢 ${modeLabel} — #Trade-${tr.tradeId || 1}`;
-            const aiBadge = tr.validatedByGemini
-                ? `<div class="ai-audit-box">🤖 <strong>Gemini AI:</strong> ${tr.geminiApproved !== false ? 'APPROVED' : 'CAUTION'} — ${tr.geminiReason || 'Structure verified'}</div>`
-                : `<div class="ai-audit-box">⏳ <strong>Gemini AI:</strong> Auditing structure...</div>`;
+            const aiBadge = `<div class="ai-audit-box">🤖 <strong>AI Audit:</strong> Analyzing structure...</div>`;
 
             const cardHtml = `
                 <div class="signal-card ${cls}">
@@ -2015,7 +1983,7 @@ function updateDashboardUI() {
             <div class="signal-card" style="border-inline-start-color:var(--accent-gold); text-align:center; padding:18px;">
                 <h3 style="color:var(--accent-gold); font-size:0.95rem; margin-bottom:6px;">🔒 ${state.activeTrade ? 'Active XAU/USD Signal in Progress!' : 'VIP Live Signals Locked'}</h3>
                 <p style="font-size:0.76rem; color:var(--text-secondary); margin-bottom:10px; line-height:1.45;">
-                    Real-time entries, Stop Loss, Take Profit, and Gemini AI audits are reserved for approved VIP members. You can freely inspect our verified <strong>History</strong> & <strong>Stats</strong>.
+                    Real-time entries, Stop Loss, Take Profit, and AI audits are reserved for approved VIP members. You can freely inspect our verified <strong>History</strong> & <strong>Stats</strong>.
                 </p>
                 <button type="button" class="auth-btn" style="width:auto; display:inline-block; padding:7px 14px; font-size:0.76rem;" onclick="switchTerminalTab('account')">💎 Activate VIP Access</button>
             </div>`;
@@ -2253,9 +2221,6 @@ async function adminSendResetEmail(userEmail) {
     msgEl.innerText = `✅ Sent`;
 }
 
-// ============================================================================
-// 6. MT5 CLOUD AUTO-TRADE & CLIENT PREFERENCES
-// ============================================================================
 function toggleFixedLotField() {
     const mode = document.getElementById('mt5LotModeSelect')?.value;
     const wrap = document.getElementById('mt5FixedLotWrap');
