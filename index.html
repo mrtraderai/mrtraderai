@@ -23,6 +23,17 @@
         body { background: var(--bg-primary); color: var(--text-primary); padding: 14px; }
         .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
 
+        .brand-logo {
+            height: 44px; width: 44px; object-fit: cover; border-radius: 50%;
+            border: 1.5px solid var(--accent-gold); box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+            flex-shrink: 0;
+        }
+        .brand-logo-lg {
+            height: 68px; width: 68px; object-fit: cover; border-radius: 50%;
+            border: 2px solid var(--accent-gold); box-shadow: 0 0 18px rgba(245, 158, 11, 0.45);
+            margin: 0 auto 8px; display: block;
+        }
+
         .lang-switch-btn {
             background: var(--bg-card); color: var(--accent-gold); border: 1px solid var(--accent-gold);
             padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: 700;
@@ -90,6 +101,7 @@
             transition: opacity 0.15s;
         }
         .auth-btn:hover { opacity: 0.9; }
+        .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .auth-link-row { display: flex; justify-content: flex-end; margin-top: -4px; margin-bottom: 12px; }
         .auth-link { background: none; border: none; color: var(--text-secondary); font-size: 0.72rem; cursor: pointer; text-decoration: underline; }
         .auth-link:hover { color: var(--accent-gold); }
@@ -208,6 +220,15 @@
             background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd;
         }
 
+        .analyze-result-box {
+            display: none; margin-top: 10px; padding: 12px; background: var(--bg-primary);
+            border: 1px solid var(--border-color); border-radius: 6px;
+        }
+        .analyze-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px;
+            background: var(--bg-card); padding: 8px; border-radius: 6px; text-align: center; font-size: 0.78rem;
+        }
+
         .log-box {
             flex: 1; background: var(--bg-primary); border-radius: 6px; padding: 10px;
             font-size: 0.74rem; color: var(--text-secondary); overflow-y: auto; max-height: 240px; border: 1px solid var(--border-color); line-height: 1.45;
@@ -255,6 +276,7 @@
         </div>
 
         <div class="auth-box" id="authFormBox">
+            <img src="logo.png" alt="Mr. Trader AI Logo" class="brand-logo-lg" onerror="this.style.display='none'">
             <h2>Mr. Trader AI</h2>
             <p id="authSubtitle" data-i18n="authSub">Sign in or create a free account to view live stats, trade history & VIP signals</p>
             <div class="auth-tabs" id="authTabsRow">
@@ -368,6 +390,7 @@
     <div class="header">
         <div class="header-left">
             <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
+            <img src="logo.png" alt="Mr. Trader AI Logo" class="brand-logo" onerror="this.style.display='none'">
             <div class="title-group">
                 <h1>Mr. Trader AI</h1>
                 <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals (GMT Time)</p>
@@ -420,6 +443,21 @@
                 <div class="metric-value" id="uiHomeWinRate" style="color: var(--accent-green);">0.0%</div>
                 <div class="metric-sub" id="uiHomeRecord">0W - 0L (0)</div>
             </div>
+        </div>
+
+        <!-- AI MANUAL MARKET ANALYZER -->
+        <div class="panel-box" style="border-color: rgba(245, 158, 11, 0.45);">
+            <div class="box-header" style="margin-bottom:6px;">
+                <span style="color:var(--accent-gold);" data-i18n="manualAnalyzerTitle">⚡ AI Manual Market Analyzer</span>
+                <span style="font-size:0.72rem; color:var(--text-secondary);" data-i18n="manualAnalyzerSub">SMC & Engulfing Real-time Scan</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <p style="font-size:0.76rem; color:var(--text-secondary);" data-i18n="manualAnalyzerDesc">Analyze current XAU/USD market structure instantly on demand.</p>
+                <button type="button" id="analyzeBtn" class="auth-btn" style="width:auto; padding:8px 16px; font-size:0.78rem;" onclick="triggerManualAnalyze()">
+                    🔍 <span data-i18n="runAnalysisBtn">Run Instant Analysis</span>
+                </button>
+            </div>
+            <div id="analyzeResult" class="analyze-result-box"></div>
         </div>
 
         <!-- Admin Only: Session Filters & Risk Guardrails Control Panel -->
@@ -612,9 +650,9 @@
                 <span data-i18n="stratTitle">📊 Mr. Trader AI Engine Overview</span>
             </div>
             <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;" data-i18n="stratDesc">
-                • <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
-                • <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>
-                • <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
+- <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
+- <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>
+- <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
             </p>
         </div>
     </div>
@@ -845,6 +883,10 @@ const I18N = {
         lblTrendBias: 'Market Bias & Sessions',
         lblSignalSummary: 'Signal Status',
         lblWinRate: 'Live Win Rate',
+        manualAnalyzerTitle: '⚡ AI Manual Market Analyzer',
+        manualAnalyzerSub: 'SMC & Engulfing Real-time Scan',
+        manualAnalyzerDesc: 'Analyze current XAU/USD market structure instantly on demand.',
+        runAnalysisBtn: 'Run Instant Analysis',
         riskRemarkTitle: 'Risk Note:',
         riskRemarkText: '$400 cap = 0.04 lot (Institutional Risk).',
         chartTitle: 'XAU/USD M5 Live Chart',
@@ -939,6 +981,10 @@ const I18N = {
         lblTrendBias: 'اتجاه السوق والجلسات',
         lblSignalSummary: 'حالة التوصية',
         lblWinRate: 'نسبة النجاح',
+        manualAnalyzerTitle: '⚡ المحلل اليدوي الفوري بالذكاء الاصطناعي',
+        manualAnalyzerSub: 'مسح فوري لهيكل السوق SMC والشموع الابتلاعية',
+        manualAnalyzerDesc: 'افحص حركة الذهب XAU/USD الحالية واحصل على مستويات الدخول والأهداف فوراً.',
+        runAnalysisBtn: 'تشغيل التحليل الفوري',
         riskRemarkTitle: 'ملاحظة المخاطر:',
         riskRemarkText: 'رأس مال 400$ = إدارة مخاطر مؤسسية.',
         chartTitle: 'شارت الذهب M5',
@@ -1025,12 +1071,61 @@ function toggleLanguage() {
 }
 
 // ============================================================================
-// 1. NOTIFICATIONS & AUDIO ALERTS
+// 1. AI MANUAL MARKET ANALYZER
+// ============================================================================
+async function triggerManualAnalyze() {
+    if (!hasValidVipAccess(currentUserProfile)) {
+        switchTerminalTab('account');
+        alert(currentLang === 'ar' ? '🔒 يرجى تفعيل باقة VIP لاستخدام المحلل الفوري.' : '🔒 Please activate a VIP plan to use the AI Manual Analyzer.');
+        return;
+    }
+
+    const btn = document.getElementById('analyzeBtn');
+    const resultDiv = document.getElementById('analyzeResult');
+    btn.disabled = true;
+    btn.innerHTML = currentLang === 'ar' ? '⏳ جاري فحص هيكل السوق...' : '⏳ Scanning Market Structure...';
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `<span style="color:var(--accent-gold); font-size:0.78rem;">${currentLang === 'ar' ? 'جاري الاتصال بمحرك Mr. Trader AI...' : 'Connecting to Mr. Trader AI engine...'}</span>`;
+
+    try {
+        const response = await fetch('/api/manual-analyze');
+        const data = await response.json();
+        if (data.success) {
+            const isBuy = data.signal === 'BUY';
+            resultDiv.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h4 style="color:${isBuy ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size:0.95rem;">
+                        ${isBuy ? '🟢' : '🔴'} SIGNAL: ${data.signal}
+                    </h4>
+                    <span style="font-size:0.72rem; color:var(--text-secondary);">XAU/USD (1H SMC)</span>
+                </div>
+                <div class="analyze-grid">
+                    <div><span style="color:var(--text-secondary); font-size:0.68rem;">Entry</span><br><strong style="color:var(--accent-gold);">${data.entry}</strong></div>
+                    <div><span style="color:var(--text-secondary); font-size:0.68rem;">SL</span><br><strong style="color:var(--accent-red);">${data.sl}</strong></div>
+                    <div><span style="color:var(--text-secondary); font-size:0.68rem;">TP1</span><br><strong style="color:var(--accent-green);">${data.tp1}</strong></div>
+                    <div><span style="color:var(--text-secondary); font-size:0.68rem;">TP2</span><br><strong style="color:var(--accent-green);">${data.tp2}</strong></div>
+                </div>
+                <p style="font-size:0.72rem; color:var(--text-secondary); margin-top:8px;">${data.message}</p>
+            `;
+            logEvent(`🔍 Manual AI Scan: ${data.signal} @ ${data.entry}`);
+        } else {
+            resultDiv.innerHTML = `<span style="color:var(--accent-red); font-size:0.78rem;">❌ ${data.message}</span>`;
+        }
+    } catch (e) {
+        resultDiv.innerHTML = `<span style="color:var(--accent-red); font-size:0.78rem;">❌ ${currentLang === 'ar' ? 'تعذر الاتصال بالسيرفر، تأكد من تشغيل server.js.' : 'Connection error with trading server. Ensure server.js is running.'}</span>`;
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `🔍 <span data-i18n="runAnalysisBtn">${t('runAnalysisBtn')}</span>`;
+    }
+}
+
+// ============================================================================
+// 2. NOTIFICATIONS & AUDIO ALERTS
 // ============================================================================
 function requestPushNotificationPermission() {
     playBeepSound();
     if (!("Notification" in window)) {
-        alert(currentLang === 'ar' ? '✅ تم تفعيل التنبيه الصوتى بنجاح.' : '✅ Sound alerts enabled!');
+        alert(currentLang === 'ar' ? '✅ تم تفعيل التنبيه الصوتي بنجاح.' : '✅ Sound alerts enabled!');
         return;
     }
     Notification.requestPermission().then(permission => {
@@ -1063,13 +1158,13 @@ function triggerClientPushAlert(title, message) {
     playBeepSound();
     if ("Notification" in window && Notification.permission === "granted") {
         try {
-            new Notification(title, { body: message, icon: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=192&q=80' });
+            new Notification(title, { body: message, icon: 'logo.png' });
         } catch (e) {}
     }
 }
 
 // ============================================================================
-// 2. SUPABASE AUTH & STATE
+// 3. SUPABASE AUTH & STATE
 // ============================================================================
 const SUPABASE_URL = 'https://wdexwfoplycblaxmrfws.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_6U7d-ihEr1ivc362mhkDeQ_2suPM3gy';
@@ -1127,6 +1222,7 @@ function verifyAwPin() {
 function hasValidVipAccess(profile) {
     if (!profile) return false;
     if (profile.role === 'admin' || (profile.email || '').toLowerCase() === ADMIN_EMAIL) return true;
+    if (state.betaMode === true || masterConfig.beta_mode === true) return true;
     if (!profile.is_approved) return false;
     if (!profile.vip_expires_at) return true;
     return new Date(profile.vip_expires_at).getTime() > Date.now();
@@ -1337,6 +1433,9 @@ async function checkUserSession() {
     }
 
     const isAdmin = isCurrentUserAdmin();
+    await loadMasterConfig(isAdmin);
+    await loadSharedTerminalState();
+
     const vipActive = hasValidVipAccess(currentUserProfile);
 
     document.getElementById('authOverlay').style.display = 'none';
@@ -1368,8 +1467,6 @@ async function checkUserSession() {
         document.getElementById('vipBadgeText').innerText = `${currentUserProfile.vip_plan} • Exp: ${formatDateShort(currentUserProfile.vip_expires_at)}`;
     }
 
-    await loadMasterConfig(isAdmin);
-    await loadSharedTerminalState();
     await loadMt5AccountStatus();
     subscribeToRealtimeState();
     startTerminalEngine(isAdmin);
@@ -1555,11 +1652,13 @@ function logEvent(msg) {
     const timeStr = new Date().toLocaleTimeString('en-GB', { timeZone: 'UTC' }) + ` (GMT+${tzVal})`;
     const entryHtml = `<span class="log-time">[${timeStr}]</span>${msg}`;
     const logBox = document.getElementById('systemLogs');
-    const div = document.createElement('div');
-    div.className = 'log-entry';
-    div.innerHTML = maskLogLineForNonVip(entryHtml);
-    logBox.prepend(div);
-    if (logBox.children.length > 50) logBox.removeChild(logBox.lastChild);
+    if (logBox) {
+        const div = document.createElement('div');
+        div.className = 'log-entry';
+        div.innerHTML = maskLogLineForNonVip(entryHtml);
+        logBox.prepend(div);
+        if (logBox.children.length > 50) logBox.removeChild(logBox.lastChild);
+    }
 
     if (isCurrentUserAdmin()) {
         state.recentLogs = [entryHtml, ...(state.recentLogs || [])].slice(0, 25);
@@ -1844,6 +1943,7 @@ async function resetLiveAccountState() {
 
 function initChart() {
     const container = document.getElementById('chart');
+    if (!container || chart) return;
     chart = LightweightCharts.createChart(container, {
         layout: { background: { color: '#131722' }, textColor: '#94a3b8' },
         grid: { vertLines: { color: '#1e2536' }, horzLines: { color: '#1e2536' } },
