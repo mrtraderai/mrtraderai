@@ -745,6 +745,35 @@
             </div>
         </div>
 
+        <!-- CLIENT CUSTOM RISK PREFERENCES CARD -->
+        <div class="panel-box" style="margin-top: 12px; border-color: rgba(245, 158, 11, 0.4);">
+            <div class="box-header">
+                <span style="color:var(--accent-gold);">⚙️ Your Custom Risk Preferences</span>
+                <span id="clientPrefStatus" style="font-size:0.72rem; color:var(--accent-green);">Synced</span>
+            </div>
+            <div class="setting-grid">
+                <div class="setting-card">
+                    <div class="setting-row"><span>Lot Size</span></div>
+                    <input type="number" id="clientLotSize" class="setting-input" step="0.01" value="0.01">
+                </div>
+                <div class="setting-card">
+                    <div class="setting-row"><span>Max Drawdown ($)</span></div>
+                    <input type="number" id="clientMaxDd" class="setting-input" value="100">
+                </div>
+                <div class="setting-card">
+                    <div class="setting-row"><span>Max SL (Pips)</span></div>
+                    <input type="number" id="clientMaxSl" class="setting-input" value="120">
+                </div>
+                <div class="setting-card">
+                    <div class="setting-row"><span>News Filter</span></div>
+                    <input type="checkbox" id="clientNewsFilter" checked>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+                <button type="button" class="auth-btn" style="width:auto; padding:6px 14px; font-size:0.76rem;" onclick="saveClientPreferences()">💾 Save My Preferences</button>
+            </div>
+        </div>
+
         <div class="panel-box">
             <div class="box-header">
                 <span data-i18n="vipPlansHeader">💎 VIP Membership Plans</span>
@@ -1122,6 +1151,7 @@ function switchTerminalTab(tabName) {
     }
     if (tabName === 'account') {
         loadMt5AccountStatus();
+        loadClientPreferences();
     }
 }
 
@@ -1330,6 +1360,7 @@ async function checkUserSession() {
     }
 
     bindTelegramActivationLinks(shortId, currentUserProfile.email);
+    loadClientPreferences();
 
     if (isAdmin) {
         document.getElementById('openAdminBtn').style.display = 'inline-block';
@@ -2223,12 +2254,48 @@ async function adminSendResetEmail(userEmail) {
 }
 
 // ============================================================================
-// 6. MT5 CLOUD AUTO-TRADE CONNECTION LOGIC
+// 6. MT5 CLOUD AUTO-TRADE & CLIENT PREFERENCES
 // ============================================================================
 function toggleFixedLotField() {
     const mode = document.getElementById('mt5LotModeSelect')?.value;
     const wrap = document.getElementById('mt5FixedLotWrap');
     if (wrap) wrap.style.display = mode === 'FIXED' ? 'block' : 'none';
+}
+
+async function loadClientPreferences() {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    const { data } = await sb.from('client_preferences').select('*').eq('client_email', user.email).maybeSingle();
+    if (data) {
+        document.getElementById('clientLotSize').value = data.lot_size || 0.01;
+        document.getElementById('clientMaxDd').value = data.max_drawdown || 100;
+        document.getElementById('clientMaxSl').value = data.max_sl_pips || 120;
+        document.getElementById('clientNewsFilter').checked = data.news_filter !== false;
+    }
+}
+
+async function saveClientPreferences() {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    const lotSize = parseFloat(document.getElementById('clientLotSize').value) || 0.01;
+    const maxDrawdown = parseFloat(document.getElementById('clientMaxDd').value) || 100;
+    const maxSlPips = parseFloat(document.getElementById('clientMaxSl').value) || 120;
+    const newsFilter = document.getElementById('clientNewsFilter').checked;
+
+    const { error } = await sb.from('client_preferences').upsert({
+        client_email: user.email,
+        lot_size: lotSize,
+        max_drawdown: maxDrawdown,
+        max_sl_pips: maxSlPips,
+        news_filter: newsFilter,
+        updated_at: new Date().toISOString()
+    }, { onConflict: 'client_email' });
+
+    if (!error) {
+        alert(currentLang === 'ar' ? '✅ تم حفظ إعدادات المخاطر الخاصة بك بنجاح!' : '✅ Your custom risk preferences saved successfully!');
+    } else {
+        alert('❌ Error saving preferences: ' + error.message);
+    }
 }
 
 async function loadMt5AccountStatus() {
