@@ -176,8 +176,8 @@
 
         .nav-tabs { display: flex; gap: 8px; flex-wrap: wrap; background: var(--bg-secondary); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); }
         .nav-tab {
-            flex: 1; min-width: 110px; padding: 10px 14px; background: var(--bg-primary); border: 1px solid var(--border-color);
-            color: var(--text-secondary); border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.78rem; text-align: center; transition: all 0.15s;
+            flex: 1; min-width: 105px; padding: 10px 12px; background: var(--bg-primary); border: 1px solid var(--border-color);
+            color: var(--text-secondary); border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.76rem; text-align: center; transition: all 0.15s;
         }
         .nav-tab:hover { border-color: var(--accent-gold); color: var(--text-primary); }
         .nav-tab.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
@@ -414,13 +414,14 @@
     <!-- Navigation Tabs -->
     <div class="nav-tabs">
         <button type="button" id="navHome" class="nav-tab active" onclick="switchTerminalTab('home')">🏠 <span data-i18n="tabHome">Home</span></button>
+        <button type="button" id="navMydash" class="nav-tab" onclick="switchTerminalTab('mydash')">💎 <span data-i18n="tabMyDash">My Dashboard</span></button>
         <button type="button" id="navActive" class="nav-tab" onclick="switchTerminalTab('active')">⚡ <span data-i18n="tabActive">Active</span></button>
         <button type="button" id="navClosed" class="nav-tab" onclick="switchTerminalTab('closed')">📜 <span data-i18n="tabClosed">History</span></button>
         <button type="button" id="navWinrate" class="nav-tab" onclick="switchTerminalTab('winrate')">📊 <span data-i18n="tabWinrate">Stats</span></button>
         <button type="button" id="navAccount" class="nav-tab" onclick="switchTerminalTab('account')">👤 <span data-i18n="tabAccount">Account</span></button>
     </div>
 
-    <!-- ==================== TAB 1: HOME ==================== -->
+    <!-- ==================== TAB 1: HOME (GENERAL) ==================== -->
     <div id="viewHome" class="tab-view active">
         <div class="metrics-grid">
             <div class="metric-card">
@@ -439,9 +440,9 @@
                 <div class="metric-sub" id="uiTopSignalLevels">No active order</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label" data-i18n="lblWinRate">Live Win Rate</div>
+                <div class="metric-label" data-i18n="lblWinRate">Monthly General Win Rate</div>
                 <div class="metric-value" id="uiHomeWinRate" style="color: var(--accent-green);">0.0%</div>
-                <div class="metric-sub" id="uiHomeRecord">0W - 0L (0)</div>
+                <div class="metric-sub" id="uiHomeRecord">0W - 0L (Current Month)</div>
             </div>
         </div>
 
@@ -567,6 +568,64 @@
         </div>
     </div>
 
+    <!-- ==================== TAB 1.5: CLIENT PERSONAL DASHBOARD ==================== -->
+    <div id="viewMydash" class="tab-view">
+        <div class="risk-remark">
+            <span>💎 <strong data-i18n="myDashBannerTitle">My VIP Personal Dashboard</strong> — <span data-i18n="myDashBannerSub">Tracking your real account performance since</span> <strong id="myDashStartDate">VIP Activation</strong></span>
+            <button type="button" class="btn-ui" onclick="loadMyClientDashboard()">🔄 <span data-i18n="refreshMyStatsBtn">Refresh My Stats</span></button>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label" data-i18n="myWinRateLbl">My Personal Win Rate</div>
+                <div class="metric-value" id="myWinRate" style="color: var(--accent-green);">0.0%</div>
+                <div class="metric-sub" id="myWinLossRecord">0W - 0L (Since Join)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label" data-i18n="myNetPnlLbl">My Real Net P&L ($)</div>
+                <div class="metric-value" id="myNetPnl">$0.00</div>
+                <div class="metric-sub" id="myAccountBalanceSub">MT5 Balance: ---</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label" data-i18n="myRiskProfileLbl">My Active Risk Profile</div>
+                <div class="metric-value" id="myRiskSummary" style="font-size:0.9rem; color:var(--accent-gold);">Lot: 0.01 | Max DD: $100</div>
+                <div class="metric-sub" id="myRiskSub">Max SL: 120 Pips | News Filter: ON</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label" data-i18n="myManualScansLbl">Manual Analyze Scans</div>
+                <div class="metric-value" id="myManualCount" style="color: var(--accent-blue);">0</div>
+                <div class="metric-sub" data-i18n="myManualScansSub">On-demand personal scans</div>
+            </div>
+        </div>
+
+        <div class="panel-box">
+            <div class="box-header">
+                <span data-i18n="myTradesHistTitle">📜 My Copied & Manual Trades History (Personal Account)</span>
+                <span id="myTradesCountTag" style="color:var(--accent-gold); font-size:0.74rem;">0 Trades</span>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Trade #</th>
+                            <th data-i18n="thSource">Source</th>
+                            <th data-i18n="thDir">Dir</th>
+                            <th data-i18n="thEntry">Entry</th>
+                            <th>SL / TP</th>
+                            <th data-i18n="thMyLot">My Lot</th>
+                            <th data-i18n="thOutcome">Outcome</th>
+                            <th data-i18n="thMyPnl">My Net P&L</th>
+                            <th data-i18n="thDate">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="myClientTradesBody">
+                        <tr><td colspan="9" style="text-align:center; color:var(--text-secondary); padding:14px;">No personal trades recorded since your VIP activation yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== TAB 2: ACTIVE TRADE ==================== -->
     <div id="viewActive" class="tab-view">
         <div class="panel-box">
@@ -620,11 +679,11 @@
         </div>
     </div>
 
-    <!-- ==================== TAB 4: WIN RATE & PERFORMANCE ==================== -->
+    <!-- ==================== TAB 4: WIN RATE & PERFORMANCE (GENERAL CYCLES) ==================== -->
     <div id="viewWinrate" class="tab-view">
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-label" data-i18n="statWinRateLbl">Live Win Rate</div>
+                <div class="metric-label" data-i18n="statWinRateLbl">All-Time General Win Rate</div>
                 <div class="metric-value" id="statWinRate" style="color: var(--accent-green);">0.0%</div>
                 <div class="metric-sub">R:R = 1:1.5</div>
             </div>
@@ -634,7 +693,7 @@
                 <div class="metric-sub" id="statTotalTrades">0 Total</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label" data-i18n="statNetLbl">Net Profit</div>
+                <div class="metric-label" data-i18n="statNetLbl">Net Profit (0.04 Base)</div>
                 <div class="metric-value" id="statNetProfit">$0.00</div>
                 <div class="metric-sub" data-i18n="riskBaseSub">Institutional Risk</div>
             </div>
@@ -645,14 +704,44 @@
             </div>
         </div>
 
+        <!-- Monthly & Annual Automated Reset Cycles -->
+        <div class="panel-box" style="border-color: rgba(245, 158, 11, 0.35);">
+            <div class="box-header">
+                <span data-i18n="cyclesHeader">📅 General Performance Cycles (Current Month vs Previous Month & Annual)</span>
+                <span style="color:var(--accent-gold); font-size:0.74rem;" data-i18n="cyclesAutoTag">Auto Monthly & Yearly Archive</span>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label" id="lblThisMonthTitle">This Month Win Rate</div>
+                    <div class="metric-value" id="statThisMonthWr" style="color:var(--accent-green);">0.0%</div>
+                    <div class="metric-sub" id="statThisMonthSub">0W / 0L • Auto-archives end of month</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label" id="lblLastMonthTitle">Last Month Closed Win Rate</div>
+                    <div class="metric-value" id="statLastMonthWr" style="color:var(--accent-gold);">—</div>
+                    <div class="metric-sub" id="statLastMonthSub">Previous month archived result</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label" id="lblThisYearTitle">Current Year Win Rate</div>
+                    <div class="metric-value" id="statThisYearWr" style="color:var(--accent-blue);">0.0%</div>
+                    <div class="metric-sub" id="statThisYearSub">Annual cumulative cycle</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label" id="lblLastYearTitle">Previous Year Win Rate</div>
+                    <div class="metric-value" id="statLastYearWr" style="color:var(--text-secondary);">—</div>
+                    <div class="metric-sub" id="statLastYearSub">Archived annual summary</div>
+                </div>
+            </div>
+        </div>
+
         <div class="panel-box">
             <div class="box-header">
                 <span data-i18n="stratTitle">📊 Mr. Trader AI Engine Overview</span>
             </div>
             <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;" data-i18n="stratDesc">
-- <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
-- <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>
-- <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
+• <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
+• <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>
+• <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
             </p>
         </div>
     </div>
@@ -874,6 +963,7 @@ const I18N = {
         syncBtn: 'Sync',
         logoutBtn: 'Logout',
         tabHome: 'Home',
+        tabMyDash: 'My Dashboard',
         tabActive: 'Active',
         tabClosed: 'History',
         tabWinrate: 'Stats',
@@ -882,11 +972,26 @@ const I18N = {
         subSpread: 'Exness Spread Modeled',
         lblTrendBias: 'Market Bias & Sessions',
         lblSignalSummary: 'Signal Status',
-        lblWinRate: 'Live Win Rate',
+        lblWinRate: 'Monthly General Win Rate',
         manualAnalyzerTitle: '⚡ AI Manual Market Analyzer',
         manualAnalyzerSub: 'SMC & Engulfing Real-time Scan',
         manualAnalyzerDesc: 'Analyze current XAU/USD market structure instantly on demand.',
         runAnalysisBtn: 'Run Instant Analysis',
+        myDashBannerTitle: 'My VIP Personal Dashboard',
+        myDashBannerSub: 'Tracking your real account performance since',
+        refreshMyStatsBtn: 'Refresh My Stats',
+        myWinRateLbl: 'My Personal Win Rate',
+        myNetPnlLbl: 'My Real Net P&L ($)',
+        myRiskProfileLbl: 'My Active Risk Profile',
+        myManualScansLbl: 'Manual Analyze Scans',
+        myManualScansSub: 'On-demand personal scans',
+        myTradesHistTitle: '📜 My Copied & Manual Trades History (Personal Account)',
+        thSource: 'Source',
+        thMyLot: 'My Lot',
+        thMyPnl: 'My Net P&L',
+        thDate: 'Date',
+        cyclesHeader: '📅 General Performance Cycles (Current Month vs Previous Month & Annual)',
+        cyclesAutoTag: 'Auto Monthly & Yearly Archive',
         riskRemarkTitle: 'Risk Note:',
         riskRemarkText: '$400 cap = 0.04 lot (Institutional Risk).',
         chartTitle: 'XAU/USD M5 Live Chart',
@@ -906,9 +1011,9 @@ const I18N = {
         thOutcome: 'Outcome',
         thPnl: 'Net P&L',
         thClosed: 'Closed (GMT)',
-        statWinRateLbl: 'Live Win Rate',
+        statWinRateLbl: 'All-Time General Win Rate',
         statWLLbl: 'Wins / Losses',
-        statNetLbl: 'Net Profit',
+        statNetLbl: 'Net Profit (0.04 Base)',
         riskBaseSub: 'Institutional Risk',
         statPfLbl: 'Profit Factor',
         stratTitle: '📊 Mr. Trader AI Engine Overview',
@@ -972,6 +1077,7 @@ const I18N = {
         syncBtn: 'تحديث',
         logoutBtn: 'خروج',
         tabHome: 'الرئيسية',
+        tabMyDash: 'لوحتي الخاصة',
         tabActive: 'النشطة',
         tabClosed: 'السجل',
         tabWinrate: 'الإحصائيات',
@@ -980,11 +1086,26 @@ const I18N = {
         subSpread: 'سبريد Exness',
         lblTrendBias: 'اتجاه السوق والجلسات',
         lblSignalSummary: 'حالة التوصية',
-        lblWinRate: 'نسبة النجاح',
+        lblWinRate: 'نسبة النجاح الشهرية العامة',
         manualAnalyzerTitle: '⚡ المحلل اليدوي الفوري بالذكاء الاصطناعي',
         manualAnalyzerSub: 'مسح فوري لهيكل السوق SMC والشموع الابتلاعية',
         manualAnalyzerDesc: 'افحص حركة الذهب XAU/USD الحالية واحصل على مستويات الدخول والأهداف فوراً.',
         runAnalysisBtn: 'تشغيل التحليل الفوري',
+        myDashBannerTitle: 'لوحة تحكمي الشخصية (VIP)',
+        myDashBannerSub: 'تتبّع أداء حسابك الحقيقي منذ تاريخ تفعيل اشتراكك:',
+        refreshMyStatsBtn: 'تحديث إحصائياتي',
+        myWinRateLbl: 'نسبة نجاحي الشخصية',
+        myNetPnlLbl: 'صافي ربحي الفعلي ($)',
+        myRiskProfileLbl: 'إعدادات مخاطرتي المفعّلة',
+        myManualScansLbl: 'تحليلاتي اليدوية',
+        myManualScansSub: 'فحوصات السوق عند الطلب',
+        myTradesHistTitle: '📜 سجل صفقاتي المنسوخة واليدوية (حسابي الشخصي)',
+        thSource: 'المصدر',
+        thMyLot: 'لوتي',
+        thMyPnl: 'صافي ربحي',
+        thDate: 'التاريخ',
+        cyclesHeader: '📅 الدورات الشهرية والسنوية العامة (الشهر الحالي مقابل السابق والسنوي)',
+        cyclesAutoTag: 'أرشفة شهرية وسنوية تلقائية',
         riskRemarkTitle: 'ملاحظة المخاطر:',
         riskRemarkText: 'رأس مال 400$ = إدارة مخاطر مؤسسية.',
         chartTitle: 'شارت الذهب M5',
@@ -1004,9 +1125,9 @@ const I18N = {
         thOutcome: 'النتيجة',
         thPnl: 'الربح',
         thClosed: 'الإغلاق (GMT)',
-        statWinRateLbl: 'نسبة النجاح الفعلية',
+        statWinRateLbl: 'نسبة النجاح العامة الكلية',
         statWLLbl: 'الربح / الخسارة',
-        statNetLbl: 'صافي الأرباح',
+        statNetLbl: 'صافي الأرباح (مرجع 0.04)',
         riskBaseSub: 'إدارة مخاطر مؤسسية',
         statPfLbl: 'معامل الربح',
         stratTitle: '📊 نظرة عامة على المحرك',
@@ -1108,6 +1229,23 @@ async function triggerManualAnalyze() {
                 <p style="font-size:0.72rem; color:var(--text-secondary); margin-top:8px;">${data.message}</p>
             `;
             logEvent(`🔍 Manual AI Scan: ${data.signal} @ ${data.entry}`);
+
+            // حفظ التحليل اليدوي في سجل العميل الشخصي (My Dashboard)
+            if (currentUserProfile && currentUserProfile.id) {
+                await sb.from('client_trades').insert({
+                    user_id: currentUserProfile.id,
+                    client_email: currentUserProfile.email,
+                    trade_id: 'MAN-' + Date.now().toString().slice(-6),
+                    source: 'MANUAL_ANALYZE',
+                    dir: data.signal,
+                    setup_name: 'Manual AI Scan',
+                    entry: parseFloat(data.entry) || 0,
+                    sl: parseFloat(data.sl) || 0,
+                    tp: parseFloat(data.tp1) || 0,
+                    lot: parseFloat(document.getElementById('clientLotSize')?.value || 0.01),
+                    outcome: 'OPEN'
+                });
+            }
         } else {
             resultDiv.innerHTML = `<span style="color:var(--accent-red); font-size:0.78rem;">❌ ${data.message}</span>`;
         }
@@ -1234,7 +1372,7 @@ function formatDateShort(isoStr) {
 }
 
 function switchTerminalTab(tabName) {
-    ['home', 'active', 'closed', 'winrate', 'account'].forEach(tName => {
+    ['home', 'mydash', 'active', 'closed', 'winrate', 'account'].forEach(tName => {
         const btn = document.getElementById('nav' + tName.charAt(0).toUpperCase() + tName.slice(1));
         const view = document.getElementById('view' + tName.charAt(0).toUpperCase() + tName.slice(1));
         if (btn) btn.classList.toggle('active', tName === tabName);
@@ -1242,6 +1380,9 @@ function switchTerminalTab(tabName) {
     });
     if (tabName === 'home' && chart) {
         setTimeout(() => chart.applyOptions({ width: document.getElementById('chart').clientWidth }), 50);
+    }
+    if (tabName === 'mydash') {
+        loadMyClientDashboard();
     }
     if (tabName === 'account') {
         loadMt5AccountStatus();
@@ -1457,6 +1598,7 @@ async function checkUserSession() {
 
     bindTelegramActivationLinks(shortId, currentUserProfile.email);
     loadClientPreferences();
+    loadMyClientDashboard();
 
     if (isAdmin) {
         document.getElementById('openAdminBtn').style.display = 'inline-block';
@@ -1470,6 +1612,80 @@ async function checkUserSession() {
     await loadMt5AccountStatus();
     subscribeToRealtimeState();
     startTerminalEngine(isAdmin);
+}
+
+// ============================================================================
+// 3.5 CLIENT PERSONAL DASHBOARD LOADER
+// ============================================================================
+async function loadMyClientDashboard() {
+    if (!currentUserProfile) return;
+    const vipStartIso = currentUserProfile.vip_started_at || currentUserProfile.created_at;
+    const startDateLabel = vipStartIso ? formatDateShort(vipStartIso) : 'Active';
+    if (document.getElementById('myDashStartDate')) {
+        document.getElementById('myDashStartDate').innerText = startDateLabel;
+    }
+
+    // 1. تفضيلات المخاطرة المحفوظة للعميل
+    const { data: pref } = await sb.from('client_preferences').select('*').eq('client_email', currentUserProfile.email).maybeSingle();
+    if (pref && document.getElementById('myRiskSummary')) {
+        document.getElementById('myRiskSummary').innerText = `Lot: ${pref.lot_size} | Max DD: $${pref.max_drawdown}`;
+        document.getElementById('myRiskSub').innerText = `Max SL: ${pref.max_sl_pips} Pips | News Filter: ${pref.news_filter ? 'ON' : 'OFF'}`;
+    }
+
+    // 2. رصيد حساب MT5 المربوط
+    const { data: mt5Acc } = await sb.from('mt5_accounts').select('last_balance, connection_status').eq('user_id', currentUserProfile.id).maybeSingle();
+    if (mt5Acc && document.getElementById('myAccountBalanceSub')) {
+        document.getElementById('myAccountBalanceSub').innerText = mt5Acc.last_balance ? `MT5 Balance: $${Number(mt5Acc.last_balance).toFixed(2)}` : 'MT5 Account Linked';
+    }
+
+    // 3. صفقات العميل الشخصية من لحظة دخوله الـ VIP فقط
+    let query = sb.from('client_trades').select('*').eq('user_id', currentUserProfile.id).order('created_at', { ascending: false });
+    if (vipStartIso) query = query.gte('created_at', vipStartIso);
+    const { data: myTrades } = await query;
+
+    const list = myTrades || [];
+    const closed = list.filter(x => x.outcome === 'WIN' || x.outcome === 'LOSS');
+    const wins = closed.filter(x => x.outcome === 'WIN');
+    const losses = closed.filter(x => x.outcome === 'LOSS');
+    const manualScans = list.filter(x => x.source === 'MANUAL_ANALYZE');
+    const totalPnl = closed.reduce((acc, x) => acc + Number(x.net_pnl || 0), 0);
+    const myWr = closed.length > 0 ? ((wins.length / closed.length) * 100).toFixed(1) : '0.0';
+
+    if (document.getElementById('myWinRate')) {
+        document.getElementById('myWinRate').innerText = `${myWr}%`;
+        document.getElementById('myWinLossRecord').innerText = `${wins.length}W - ${losses.length}L (${closed.length} Closed)`;
+        const pnlEl = document.getElementById('myNetPnl');
+        pnlEl.innerText = `${totalPnl >= 0 ? '+' : '-'}$${Math.abs(totalPnl).toFixed(2)}`;
+        pnlEl.style.color = totalPnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+        document.getElementById('myManualCount').innerText = `${manualScans.length}`;
+        document.getElementById('myTradesCountTag').innerText = `${list.length} Trades`;
+    }
+
+    const tbody = document.getElementById('myClientTradesBody');
+    if (!tbody) return;
+
+    if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--text-secondary); padding:14px;">No personal trades recorded since ${startDateLabel}.</td></tr>`;
+    } else {
+        tbody.innerHTML = list.map(tr => {
+            const isWin = tr.outcome === 'WIN';
+            const isOpen = tr.outcome === 'OPEN';
+            const color = isOpen ? 'var(--accent-gold)' : (isWin ? 'var(--accent-green)' : 'var(--accent-red)');
+            const badge = tr.source === 'MANUAL_ANALYZE' ? '🔍 Manual' : '🤖 Auto-Copy';
+            return `
+                <tr>
+                    <td><strong>#${tr.trade_id}</strong></td>
+                    <td>${badge}</td>
+                    <td style="font-weight:700; color:${tr.dir === 'BUY' ? 'var(--accent-green)' : 'var(--accent-red)'};">${tr.dir}</td>
+                    <td>${Number(tr.entry || 0).toFixed(2)}</td>
+                    <td>${Number(tr.sl || 0).toFixed(2)} / ${Number(tr.tp || 0).toFixed(2)}</td>
+                    <td>${Number(tr.lot || 0).toFixed(2)}</td>
+                    <td style="font-weight:700; color:${color};">${tr.outcome}</td>
+                    <td style="font-weight:700; color:${color};">${isOpen ? 'Active' : (tr.net_pnl >= 0 ? '+' : '-') + '$' + Math.abs(tr.net_pnl).toFixed(2)}</td>
+                    <td style="color:var(--text-secondary);">${formatDateShort(tr.created_at)}</td>
+                </tr>`;
+        }).join('');
+    }
 }
 
 const DEFAULT_ENGINE_RULES = {
@@ -2034,8 +2250,36 @@ function updateDashboardUI() {
     const netProfit = grossProfit - grossLoss;
     const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : (grossProfit > 0 ? '∞' : '0.00');
 
-    document.getElementById('uiHomeWinRate').innerText = `${winRatePct}%`;
-    document.getElementById('uiHomeRecord').innerText = `${wins.length}W - ${losses.length}L (${total})`;
+    // التصفية الشهرية والسنوية التلقائية للـ General Dashboard
+    const now = new Date();
+    const curY = now.getUTCFullYear();
+    const curM = now.getUTCMonth();
+    const prevMDate = new Date(Date.UTC(curY, curM - 1, 1));
+    const prevMY = prevMDate.getUTCFullYear();
+    const prevMM = prevMDate.getUTCMonth();
+
+    function calcPeriodStats(arr) {
+        const w = arr.filter(x => x.outcome === 'WIN').length;
+        const l = arr.filter(x => x.outcome === 'LOSS').length;
+        const tot = w + l;
+        return { w, l, tot, wr: tot > 0 ? ((w / tot) * 100).toFixed(1) + '%' : '0.0%' };
+    }
+
+    const withDates = allHist.map(h => ({ ...h, _d: new Date(h.closedTs || Date.now()) }));
+    const thisMonthArr = withDates.filter(x => x._d.getUTCFullYear() === curY && x._d.getUTCMonth() === curM);
+    const lastMonthArr = withDates.filter(x => x._d.getUTCFullYear() === prevMY && x._d.getUTCMonth() === prevMM);
+    const thisYearArr  = withDates.filter(x => x._d.getUTCFullYear() === curY);
+    const lastYearArr  = withDates.filter(x => x._d.getUTCFullYear() === curY - 1);
+
+    const sThisM = calcPeriodStats(thisMonthArr);
+    const sLastM = calcPeriodStats(lastMonthArr);
+    const sThisY = calcPeriodStats(thisYearArr);
+    const sLastY = calcPeriodStats(lastYearArr);
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    // بطاقة Home الرئيسية تعرض نسبة نجاح الشهر الحالي وتتجدد تلقائياً مع بداية كل شهر
+    document.getElementById('uiHomeWinRate').innerText = sThisM.wr;
+    document.getElementById('uiHomeRecord').innerText = `${sThisM.w}W - ${sThisM.l}L (${monthNames[curM]} ${curY})`;
 
     document.getElementById('statWinRate').innerText = `${winRatePct}%`;
     document.getElementById('statWinsLosses').innerText = `${wins.length}W / ${losses.length}L`;
@@ -2044,6 +2288,24 @@ function updateDashboardUI() {
     netEl.innerText = `${netProfit >= 0 ? '+' : '-'}$${Math.abs(netProfit).toFixed(2)}`;
     netEl.style.color = netProfit >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
     document.getElementById('statProfitFactor').innerText = profitFactor;
+
+    if (document.getElementById('statThisMonthWr')) {
+        document.getElementById('lblThisMonthTitle').innerText = `${monthNames[curM]} ${curY} Win Rate (Active)`;
+        document.getElementById('statThisMonthWr').innerText = sThisM.wr;
+        document.getElementById('statThisMonthSub').innerText = `${sThisM.w}W / ${sThisM.l}L • Auto-archives end of month`;
+
+        document.getElementById('lblLastMonthTitle').innerText = `${monthNames[prevMM]} ${prevMY} (Archived)`;
+        document.getElementById('statLastMonthWr').innerText = sLastM.tot > 0 ? sLastM.wr : 'No Data';
+        document.getElementById('statLastMonthSub').innerText = sLastM.tot > 0 ? `${sLastM.w}W / ${sLastM.l}L Closed` : 'Awaiting month close';
+
+        document.getElementById('lblThisYearTitle').innerText = `${curY} Annual Win Rate`;
+        document.getElementById('statThisYearWr').innerText = sThisY.wr;
+        document.getElementById('statThisYearSub').innerText = `${sThisY.w}W / ${sThisY.l}L Year-to-Date`;
+
+        document.getElementById('lblLastYearTitle').innerText = `${curY - 1} Annual Archive`;
+        document.getElementById('statLastYearWr').innerText = sLastY.tot > 0 ? sLastY.wr : 'No Data';
+        document.getElementById('statLastYearSub').innerText = sLastY.tot > 0 ? `${sLastY.w}W / ${sLastY.l}L` : 'Previous year archive';
+    }
 
     const homeSigBox = document.getElementById('homeSignalContainer');
     const activeTabBox = document.getElementById('dedicatedActiveContainer');
@@ -2357,6 +2619,7 @@ async function saveClientPreferences() {
     }, { onConflict: 'client_email' });
 
     if (!error) {
+        loadMyClientDashboard();
         alert(currentLang === 'ar' ? '✅ تم حفظ إعدادات المخاطر الخاصة بك بنجاح!' : '✅ Your custom risk preferences saved successfully!');
     } else {
         alert('❌ Error saving preferences: ' + error.message);
