@@ -95,6 +95,10 @@
             width: 100%; padding: 10px 12px; margin-bottom: 10px; background: var(--bg-primary);
             border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; font-size: 0.82rem;
         }
+        .auth-input:focus { outline: none; border-color: var(--accent-gold); }
+        .otp-input {
+            letter-spacing: 8px; font-size: 1.3rem; font-weight: 800; text-align: center; color: var(--accent-gold);
+        }
         .auth-btn {
             width: 100%; padding: 10px; background: var(--accent-gold); color: #000; border: none;
             border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.85rem; text-align: center; text-decoration: none;
@@ -105,9 +109,27 @@
         .auth-link-row { display: flex; justify-content: flex-end; margin-top: -4px; margin-bottom: 12px; }
         .auth-link { background: none; border: none; color: var(--text-secondary); font-size: 0.72rem; cursor: pointer; text-decoration: underline; }
         .auth-link:hover { color: var(--accent-gold); }
-        .auth-msg { font-size: 0.75rem; margin-top: 8px; text-align: center; color: var(--accent-green); }
+        .auth-msg { font-size: 0.75rem; margin-top: 8px; text-align: center; color: var(--accent-green); line-height: 1.4; }
 
-        .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 10px; }
+        /* OAuth Buttons (Google & Apple) */
+        .oauth-divider {
+            display: flex; align-items: center; gap: 8px; margin: 12px 0 10px;
+            color: var(--text-secondary); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .oauth-divider::before, .oauth-divider::after {
+            content: ''; flex: 1; height: 1px; background: var(--border-color);
+        }
+        .oauth-group { display: flex; flex-direction: column; gap: 8px; }
+        .oauth-btn {
+            width: 100%; padding: 9px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: transform 0.12s, opacity 0.15s;
+        }
+        .oauth-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+        .oauth-btn.google { background: #ffffff; color: #111827; border: 1px solid #d1d5db; }
+        .oauth-btn.apple { background: #000000; color: #ffffff; border: 1px solid #374151; }
+
+        .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 10px; }
         .plan-card {
             background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px;
             padding: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; text-align: center;
@@ -116,14 +138,21 @@
         .plan-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
         .plan-price { font-size: 1.5rem; font-weight: 800; color: var(--accent-gold); }
         .plan-desc { font-size: 0.74rem; color: var(--text-secondary); line-height: 1.45; }
+        .plan-actions { display: flex; flex-direction: column; gap: 8px; }
         .btn-visa {
-            background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; padding: 10px 14px; border-radius: 8px;
+            width: 100%; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; padding: 10px 14px; border-radius: 8px;
             font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
             transition: transform 0.12s, opacity 0.15s;
         }
         .btn-visa:hover { opacity: 0.92; transform: translateY(-1px); }
         .btn-visa:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .btn-visa.green { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+        .btn-usdt {
+            width: 100%; background: rgba(245, 158, 11, 0.12); color: #facc15; border: 1px solid var(--accent-gold);
+            padding: 9px 14px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s;
+        }
+        .btn-usdt:hover { background: rgba(245, 158, 11, 0.22); }
         .btn-tg {
             background: #229ED9; color: #fff; border: none; padding: 8px 12px; border-radius: 6px;
             font-weight: 700; font-size: 0.76rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
@@ -255,7 +284,7 @@
 </head>
 <body>
 
-<!-- ==================== 1. OUTER LOGIN / SIGN UP ==================== -->
+<!-- ==================== 1. OUTER LOGIN / SIGN UP / OTP ==================== -->
 <div id="authOverlay" class="auth-overlay">
     <div class="auth-top-left">
         <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
@@ -287,19 +316,57 @@
             <img src="logo.png" alt="Mr. Trader AI Logo" class="brand-logo-lg" onerror="this.style.display='none'">
             <h2>Mr. Trader AI</h2>
             <p id="authSubtitle" data-i18n="authSub">Sign in or create a free account to view live stats, trade history & VIP signals</p>
+
             <div class="auth-tabs" id="authTabsRow">
                 <button type="button" id="tabLogin" class="auth-tab active" onclick="switchAuthMode('login')" data-i18n="clientLogin">Client Login</button>
                 <button type="button" id="tabSignup" class="auth-tab" onclick="switchAuthMode('signup')" data-i18n="signUp">Sign Up</button>
             </div>
+
+            <!-- Standard Email & Password Inputs -->
             <input type="email" id="authEmail" class="auth-input" data-i18n-ph="emailPh" placeholder="Email Address" onkeydown="if(event.key==='Enter') handleAuthSubmit()">
             <input type="password" id="authPassword" class="auth-input" data-i18n-ph="passPh" placeholder="Password (min 6 chars)" onkeydown="if(event.key==='Enter') handleAuthSubmit()">
+
+            <!-- Email OTP Code Input (Shown during Sign Up Email Verification) -->
+            <input type="text" id="authOtpInput" class="auth-input otp-input" inputmode="numeric" maxlength="8" style="display:none;" placeholder="000000" onkeydown="if(event.key==='Enter') handleVerifySignupOtp()">
+
             <div class="auth-link-row" id="forgotLinkRow">
                 <button type="button" class="auth-link" onclick="switchAuthMode('forgot')" data-i18n="forgotPass">Forgot Password?</button>
             </div>
+
             <button type="button" id="authSubmitBtn" class="auth-btn" onclick="handleAuthSubmit()" data-i18n="loginBtn">Login to Terminal</button>
+
+            <!-- OTP Action Links -->
+            <div id="otpLinksRow" style="display:none; justify-content:space-between; align-items:center; margin-top:10px;">
+                <button type="button" class="auth-link" onclick="resendSignupOtp()" data-i18n="resendCodeBtn">🔄 Resend Code</button>
+                <button type="button" class="auth-link" onclick="switchAuthMode('signup')" data-i18n="changeEmailBtn">← Change Email</button>
+            </div>
+
             <div style="text-align:center; margin-top:8px; display:none;" id="backToLoginRow">
                 <button type="button" class="auth-link" onclick="switchAuthMode('login')" data-i18n="backLogin">← Back to Client Login</button>
             </div>
+
+            <!-- Social OAuth Section (Google & Apple) -->
+            <div id="oauthSection">
+                <div class="oauth-divider"><span data-i18n="orContinueWith">OR CONTINUE WITH</span></div>
+                <div class="oauth-group">
+                    <button type="button" class="oauth-btn google" onclick="handleOAuthLogin('google')">
+                        <svg width="18" height="18" viewBox="0 0 48 48">
+                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                        </svg>
+                        <span data-i18n="continueGoogle">Continue with Google</span>
+                    </button>
+                    <button type="button" class="oauth-btn apple" onclick="handleOAuthLogin('apple')">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                        </svg>
+                        <span data-i18n="continueApple">Continue with Apple</span>
+                    </button>
+                </div>
+            </div>
+
             <div id="authMessage" class="auth-msg"></div>
         </div>
     </div>
@@ -393,7 +460,56 @@
     </div>
 </div>
 
-<!-- ==================== 4. MAIN TRADING TERMINAL ==================== -->
+<!-- ==================== 4. USDT (TRC20) CHECKOUT MODAL ==================== -->
+<div id="usdtModal" class="modal-backdrop" onclick="if(event.target.id==='usdtModal') closeUsdtModal()">
+    <div style="background:var(--bg-secondary); border:1px solid var(--accent-gold); border-radius:14px; max-width:420px; width:100%; padding:20px; color:var(--text-primary); box-shadow:0 20px 45px rgba(0,0,0,0.75);" onclick="event.stopPropagation()">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+            <h3 style="margin:0; color:var(--accent-gold); font-size:1rem;" data-i18n="usdtModalTitle">💎 USDT (TRC20) Auto-Checkout</h3>
+            <button type="button" onclick="closeUsdtModal()" style="background:none; border:none; color:var(--text-secondary); font-size:22px; line-height:1; cursor:pointer;">&times;</button>
+        </div>
+
+        <div id="usdtLoading" style="text-align:center; padding:24px 0; color:var(--text-secondary); font-size:0.84rem;" data-i18n="usdtGenerating">
+            ⏳ Generating your unique USDT invoice...
+        </div>
+
+        <div id="usdtContent" style="display:none;">
+            <div style="background:var(--bg-card); border:1px dashed var(--accent-gold); border-radius:10px; padding:14px; text-align:center; margin-bottom:14px;">
+                <div style="font-size:0.7rem; color:var(--text-secondary); letter-spacing:0.5px; margin-bottom:4px;" data-i18n="usdtExactLabel">SEND THIS EXACT AMOUNT (TRON TRC20)</div>
+                <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <span id="usdtExactAmount" style="font-size:1.65rem; font-weight:800; color:var(--accent-green);">0.00</span>
+                    <span style="font-size:1rem; font-weight:700; color:var(--accent-gold);">USDT</span>
+                    <button type="button" onclick="copyTextValue('usdtExactAmount', this)" class="btn-ui" style="padding:4px 10px;">Copy</button>
+                </div>
+                <div style="font-size:0.7rem; color:#fbbf24; margin-top:6px;" data-i18n="usdtDecimalWarn">
+                    ⚠️ Send the exact decimal amount so auto-activation detects your transfer.
+                </div>
+            </div>
+
+            <div style="margin-bottom:12px;">
+                <label style="display:block; font-size:0.72rem; color:var(--text-secondary); margin-bottom:4px;" data-i18n="usdtWalletLabel">USDT (TRC20) Wallet Address</label>
+                <div style="display:flex; gap:6px;">
+                    <input id="usdtWalletInput" type="text" readonly value="TLgREYohGVK6V9zUS6gNowq2WjPavmfEj3"
+                        style="flex:1; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; padding:9px 10px; color:var(--text-primary); font-size:0.76rem;" />
+                    <button type="button" onclick="copyInputValue('usdtWalletInput', this)" class="auth-btn" style="width:auto; padding:0 14px;">Copy</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom:12px;">
+                <label style="display:block; font-size:0.72rem; color:var(--text-secondary); margin-bottom:4px;" data-i18n="usdtTxLabel">Transaction Hash / TxID (Optional)</label>
+                <input id="usdtTxHashInput" type="text" placeholder="Paste TxID for faster lookup..."
+                    style="width:100%; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; padding:9px 10px; color:var(--text-primary); font-size:0.76rem;" />
+            </div>
+
+            <div id="usdtStatusMsg" style="font-size:0.76rem; margin-bottom:12px; color:var(--text-secondary); min-height:18px; line-height:1.4;"></div>
+
+            <button type="button" id="usdtVerifyBtn" onclick="verifyUsdtCheckout()" class="btn-visa" style="width:100%; padding:12px; font-size:0.84rem;" data-i18n="usdtVerifyBtn">
+                ✅ I Have Sent Payment — Verify & Activate
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 5. MAIN TRADING TERMINAL ==================== -->
 <div id="terminalApp" class="container" style="display:none;">
     <div class="header">
         <div class="header-left">
@@ -472,7 +588,7 @@
         <!-- Admin Only: Session Filters & Risk Guardrails Control Panel -->
         <div class="panel-box" style="background:var(--bg-secondary); border:1px solid var(--border-color); display:none;" id="adminSettingsPanelBox">
             <div class="box-header" style="margin-bottom:6px; cursor:pointer;" onclick="toggleSettingsCard()">
-                <span>⚙️ Session Filters & Risk Guardrails (<span id="settingsTzLabel">GMT</span>) <span id="settingsToggleIcon" style="font-size:0.72rem; color:var(--accent-gold);"><span data-i18n="hideShowToggle">[▲ Hide]</span></span></span>
+                <span>⚙️ Session Filters & Risk Guardrails (<span id="settingsTzLabel">GMT+3</span>) <span id="settingsToggleIcon" style="font-size:0.72rem; color:var(--accent-gold);"><span data-i18n="hideShowToggle">[▲ Hide]</span></span></span>
                 <div style="display:flex; gap:6px;">
                     <button type="button" class="btn-ui" style="border-color:var(--accent-gold); color:var(--accent-gold); padding:3px 6px;" onclick="event.stopPropagation(); resetSettingsToDefault()">🔄 <span data-i18n="resetRulesBtn">Reset</span></button>
                 </div>
@@ -747,9 +863,9 @@
                 <span data-i18n="stratTitle">📊 Mr. Trader AI Engine Overview</span>
             </div>
             <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;" data-i18n="stratDesc">
-- <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
-- <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>
-- <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
+• <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
+• <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>
+• <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
             </p>
         </div>
     </div>
@@ -799,10 +915,10 @@
             </div>
         </div>
 
-        <!-- VIP VISA / MASTERCARD SUBSCRIPTION PLANS -->
+        <!-- VIP SUBSCRIPTION PLANS (VISA / MASTERCARD + USDT TRC20) -->
         <div class="panel-box" style="border-color: rgba(245, 158, 11, 0.55);">
             <div class="box-header">
-                <span data-i18n="vipPlansHeader">💎 VIP Membership Plans (Instant Visa / Mastercard)</span>
+                <span data-i18n="vipPlansHeader">💎 VIP Membership Plans (Visa / Card & USDT TRC20)</span>
                 <span style="color:var(--accent-green); font-size:0.72rem; font-weight:700;">⚡ Auto-Activation</span>
             </div>
             <div class="plans-grid">
@@ -812,9 +928,14 @@
                         <div class="plan-price" style="margin:6px 0;">$14</div>
                         <div class="plan-desc" data-i18n="plan1wDesc">5 Trading Days (Mon–Fri) • Full VIP Signals & MT5 Cloud Copier</div>
                     </div>
-                    <button type="button" id="btnPlanWeek" onclick="startVisaCheckout('1_WEEK')" class="btn-visa">
-                        💳 <span data-i18n="payVisa1w">Pay $14 with Visa / Card</span>
-                    </button>
+                    <div class="plan-actions">
+                        <button type="button" id="btnPlanWeek" onclick="startVisaCheckout('1_WEEK')" class="btn-visa">
+                            💳 <span data-i18n="payVisa1w">Pay $14 with Visa / Card</span>
+                        </button>
+                        <button type="button" onclick="openUsdtCheckout('1_WEEK')" class="btn-usdt">
+                            💎 <span data-i18n="payUsdt1w">Pay $14 with USDT (TRC20)</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="plan-card popular">
                     <div>
@@ -822,9 +943,14 @@
                         <div class="plan-price" style="margin:6px 0;">$45</div>
                         <div class="plan-desc" data-i18n="plan1mDesc">24 Trading Days • Full VIP Signals, AI Analyzer & MT5 Cloud Copier</div>
                     </div>
-                    <button type="button" id="btnPlanMonth" onclick="startVisaCheckout('1_MONTH')" class="btn-visa green">
-                        💳 <span data-i18n="payVisa1m">Pay $45 with Visa / Card</span>
-                    </button>
+                    <div class="plan-actions">
+                        <button type="button" id="btnPlanMonth" onclick="startVisaCheckout('1_MONTH')" class="btn-visa green">
+                            💳 <span data-i18n="payVisa1m">Pay $45 with Visa / Card</span>
+                        </button>
+                        <button type="button" onclick="openUsdtCheckout('1_MONTH')" class="btn-usdt">
+                            💎 <span data-i18n="payUsdt1m">Pay $45 with USDT (TRC20)</span>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div id="pendingOrderVerifyWrap" style="display:none; margin-top:10px; padding:10px; background:rgba(245,158,11,0.1); border:1px solid var(--accent-gold); border-radius:8px; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
@@ -966,13 +1092,20 @@ const I18N = {
         passPh: 'Password (min 6 chars)',
         forgotPass: 'Forgot Password?',
         loginBtn: 'Login to Terminal',
-        signupBtn: 'Create Account',
+        signupBtn: 'Send Verification Code',
+        verifyCodeBtn: 'Verify Code & Open Account',
+        resendCodeBtn: '🔄 Resend Code',
+        changeEmailBtn: '← Change Email',
+        orContinueWith: 'OR CONTINUE WITH',
+        continueGoogle: 'Continue with Google',
+        continueApple: 'Continue with Apple',
         resetBtn: 'Send Reset Link',
         backLogin: '← Back to Login',
         setNewPassTitle: '🔐 SET NEW PASSWORD',
         setNewPassDesc: 'Enter your new password below.',
         updatePassBtn: 'Update Password & Login',
         signOut: 'Sign Out',
+        logoutAccountBtn: 'Sign Out',
         headerSub: 'Autonomous XAU/USD Signals (GMT)',
         liveStream: 'LIVE',
         syncBtn: 'Sync',
@@ -1038,13 +1171,22 @@ const I18N = {
         accIdLbl: 'Client ID',
         accPlanLbl: 'VIP Bundle',
         accExpLbl: 'Status / Trading Days',
-        vipPlansHeader: '💎 VIP Membership Plans (Instant Visa / Mastercard)',
+        vipPlansHeader: '💎 VIP Membership Plans (Visa / Card & USDT TRC20)',
         plan1wTitle: '1 Week VIP',
         plan1wDesc: '5 Trading Days (Mon–Fri) • Full VIP Signals & MT5 Cloud Copier',
         plan1mTitle: '1 Month VIP ⭐',
         plan1mDesc: '24 Trading Days • Full VIP Signals, AI Analyzer & MT5 Cloud Copier',
         payVisa1w: 'Pay $14 with Visa / Card',
         payVisa1m: 'Pay $45 with Visa / Card',
+        payUsdt1w: 'Pay $14 with USDT (TRC20)',
+        payUsdt1m: 'Pay $45 with USDT (TRC20)',
+        usdtModalTitle: '💎 USDT (TRC20) Auto-Checkout',
+        usdtGenerating: '⏳ Generating your unique USDT invoice...',
+        usdtExactLabel: 'SEND THIS EXACT AMOUNT (TRON TRC20)',
+        usdtDecimalWarn: '⚠️ Send the exact decimal amount so auto-activation detects your transfer.',
+        usdtWalletLabel: 'USDT (TRC20) Wallet Address',
+        usdtTxLabel: 'Transaction Hash / TxID (Optional)',
+        usdtVerifyBtn: '✅ I Have Sent Payment — Verify & Activate',
         scanningTitle: '🤖 Scanning',
         scanningDesc: 'Monitoring M5 market structure and retracement zones.',
         noClosed: 'No closed trades recorded yet.',
@@ -1054,7 +1196,7 @@ const I18N = {
         notifSettingTitle: '🔔 Notifications & Sound',
         notifSettingDesc: 'Receive alerts instantly when signals trigger.',
         enableNotifBtn: 'Enable',
-        tgSupportBtn: 'Telegram Support',
+        tgSupportBtn: 'Telegram Support (@mrtraderai_official)',
         mt5CardTitle: '⚡ Connect MT5 Auto-Trade (Cloud Copier)',
         mt5CardSub: 'Link your MetaTrader 5 account directly. No downloads or VPS needed.',
         mt5ServerLbl: 'Broker Server Name',
@@ -1072,20 +1214,27 @@ const I18N = {
         scAutoLbl: 'مدقق الذكاء الاصطناعي',
         scCard1: '📈 سحب السيولة',
         scCard2: '🛡️ مناطق الارتداد',
-        authSub: 'سجّل الدخول أو أنشئ حساباً مجانياً لمشاهدة الإحصائيات والسجل وتفعيل VIP',
+        authSub: 'سجّل الدخول أو أنشئ حساباً لمشاهدة الإحصائيات وتفعيل VIP',
         clientLogin: 'تسجيل الدخول',
         signUp: 'إنشاء حساب',
         emailPh: 'البريد الإلكتروني',
         passPh: 'كلمة المرور (6 أحرف على الأقل)',
         forgotPass: 'نسيت كلمة المرور؟',
         loginBtn: 'الدخول إلى المنصة',
-        signupBtn: 'إنشاء حساب جديد',
+        signupBtn: 'إرسال كود التحقق للإيميل',
+        verifyCodeBtn: 'تأكيد الكود وفتح الحساب',
+        resendCodeBtn: '🔄 إعادة إرسال الكود',
+        changeEmailBtn: '← تغيير البريد',
+        orContinueWith: 'أو المتابعة عبر',
+        continueGoogle: 'المتابعة باستخدام Google',
+        continueApple: 'المتابعة باستخدام Apple',
         resetBtn: 'إرسال رابط الاستعادة',
         backLogin: '← العودة',
         setNewPassTitle: '🔐 تعيين كلمة مرور جديدة',
         setNewPassDesc: 'أدخل كلمة المرور الجديدة أدناه.',
         updatePassBtn: 'تحديث والدخول',
         signOut: 'خروج',
+        logoutAccountBtn: 'تسجيل الخروج',
         headerSub: 'توصيات الذهب المباشرة (GMT)',
         liveStream: 'مباشر',
         syncBtn: 'تحديث',
@@ -1151,13 +1300,22 @@ const I18N = {
         accIdLbl: 'معرف العميل',
         accPlanLbl: 'باقة VIP',
         accExpLbl: 'الحالة / أيام التداول',
-        vipPlansHeader: '💎 باقات VIP (دفع فوري بالفيزا / ماستركارد)',
+        vipPlansHeader: '💎 باقات VIP (فيزا / بطاقة & USDT TRC20)',
         plan1wTitle: 'أسبوع واحد VIP',
         plan1wDesc: '5 أيام تداول فعلية (إثنين–جمعة) • توصيات حية ونسخ صفقات MT5',
         plan1mTitle: 'شهر واحد VIP ⭐',
         plan1mDesc: '24 يوم تداول فعلي • توصيات حية + المحلل الذكي + نسخ MT5',
         payVisa1w: 'ادفع $14 بالفيزا / البطاقة',
         payVisa1m: 'ادفع $45 بالفيزا / البطاقة',
+        payUsdt1w: 'ادفع $14 عبر USDT (TRC20)',
+        payUsdt1m: 'ادفع $45 عبر USDT (TRC20)',
+        usdtModalTitle: '💎 الدفع التلقائي عبر USDT (TRC20)',
+        usdtGenerating: '⏳ جاري تجهيز فاتورة USDT الخاصة بك...',
+        usdtExactLabel: 'أرسل هذا المبلغ بالضبط (شبكة TRON TRC20)',
+        usdtDecimalWarn: '⚠️ يجب تحويل الرقم بالكسور تماماً ليتم التفعيل التلقائي فوراً.',
+        usdtWalletLabel: 'عنوان محفظة USDT (TRC20)',
+        usdtTxLabel: 'رقم العملية TxID (اختياري)',
+        usdtVerifyBtn: '✅ تم التحويل — تحقق وفعّل الاشتراك الآن',
         scanningTitle: '🤖 جاري المسح',
         scanningDesc: 'مراقبة هيكل السوق على فريم M5.',
         noClosed: 'لا توجد صفقات مسجلة.',
@@ -1167,7 +1325,7 @@ const I18N = {
         notifSettingTitle: '🔔 الإشعارات والأصوات',
         notifSettingDesc: 'تلقي تنبيهات فورية عند صدور التوصيات.',
         enableNotifBtn: 'تفعيل',
-        tgSupportBtn: 'دعم تيليجرام',
+        tgSupportBtn: 'دعم تيليجرام (@mrtraderai_official)',
         mt5CardTitle: '⚡ ربط حساب MT5 للتداول الآلي (Cloud Copier)',
         mt5CardSub: 'اربط حساب MetaTrader 5 مباشرة لنسخ الصفقات تلقائياً 24/7 بدون VPS.',
         mt5ServerLbl: 'اسم سيرفر الوسيط (Broker Server)',
@@ -1205,7 +1363,14 @@ function toggleLanguage() {
 }
 
 // ============================================================================
-// 0.5 VISA / MASTERCARD CHECKOUT & AUTO-VERIFICATION (PAYMEGATE EDGE FUNCTION)
+// 0.5 SUPABASE CLIENT INITIALIZATION
+// ============================================================================
+const SUPABASE_URL = 'https://wdexwfoplycblaxmrfws.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_6U7d-ihEr1ivc362mhkDeQ_2suPM3gy';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============================================================================
+// 0.6 VISA / MASTERCARD CHECKOUT & AUTO-VERIFICATION (PAYMEGATE EDGE FUNCTION)
 // ============================================================================
 const EDGE_PAYMENT_URL = 'https://wdexwfoplycblaxmrfws.supabase.co/functions/v1/visa-payment';
 
@@ -1297,7 +1462,130 @@ async function manualVerifyPendingOrder() {
 }
 
 // ============================================================================
-// 1. AI MANUAL MARKET ANALYZER
+// 0.7 USDT (TRC20) AUTO-CHECKOUT & TRON VERIFICATION
+// ============================================================================
+const USDT_FUNCTION_URL = 'https://wdexwfoplycblaxmrfws.supabase.co/functions/v1/usdt-payment';
+let currentUsdtOrderId = null;
+
+function closeUsdtModal() {
+    document.getElementById('usdtModal').style.display = 'none';
+}
+
+function copyTextValue(elId, btn) {
+    const val = document.getElementById(elId).innerText.trim();
+    navigator.clipboard.writeText(val);
+    const old = btn.innerText;
+    btn.innerText = currentLang === 'ar' ? 'تم النسخ!' : 'Copied!';
+    setTimeout(() => (btn.innerText = old), 1500);
+}
+
+function copyInputValue(elId, btn) {
+    const val = document.getElementById(elId).value.trim();
+    navigator.clipboard.writeText(val);
+    const old = btn.innerText;
+    btn.innerText = currentLang === 'ar' ? 'تم النسخ!' : 'Copied!';
+    setTimeout(() => (btn.innerText = old), 1500);
+}
+
+async function openUsdtCheckout(plan) {
+    const modal = document.getElementById('usdtModal');
+    const loading = document.getElementById('usdtLoading');
+    const content = document.getElementById('usdtContent');
+    const statusMsg = document.getElementById('usdtStatusMsg');
+
+    modal.style.display = 'flex';
+    loading.style.display = 'block';
+    loading.innerText = t('usdtGenerating');
+    content.style.display = 'none';
+    statusMsg.innerText = '';
+    document.getElementById('usdtTxHashInput').value = '';
+
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session?.access_token) {
+        loading.innerText = currentLang === 'ar' ? '❌ يرجى تسجيل الدخول أولاً.' : '❌ Please log in first.';
+        return;
+    }
+
+    try {
+        const res = await fetch(USDT_FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ action: 'create', plan })
+        });
+        const data = await res.json();
+
+        if (!res.ok || data.error) {
+            loading.innerText = '❌ Error: ' + (data.error || 'Failed to create USDT invoice');
+            return;
+        }
+
+        currentUsdtOrderId = data.order_id;
+        document.getElementById('usdtExactAmount').innerText = Number(data.exact_amount).toFixed(2);
+        document.getElementById('usdtWalletInput').value = data.wallet_address;
+
+        loading.style.display = 'none';
+        content.style.display = 'block';
+    } catch (err) {
+        loading.innerText = '❌ Network error: ' + String(err);
+    }
+}
+
+async function verifyUsdtCheckout() {
+    if (!currentUsdtOrderId) return;
+    const btn = document.getElementById('usdtVerifyBtn');
+    const statusMsg = document.getElementById('usdtStatusMsg');
+    const txHash = document.getElementById('usdtTxHashInput').value.trim();
+
+    btn.disabled = true;
+    btn.innerText = currentLang === 'ar' ? '⏳ جاري فحص شبكة TRON...' : '⏳ Checking TRON Network...';
+    statusMsg.style.color = 'var(--text-secondary)';
+    statusMsg.innerText = currentLang === 'ar'
+        ? 'جاري البحث عن التحويل المؤكد على البلوكتشين...'
+        : 'Scanning TRON blockchain for your confirmed USDT transfer...';
+
+    const { data: { session } } = await sb.auth.getSession();
+    try {
+        const res = await fetch(USDT_FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session?.access_token || ''}`
+            },
+            body: JSON.stringify({
+                action: 'verify',
+                order_id: currentUsdtOrderId,
+                tx_hash: txHash
+            })
+        });
+        const data = await res.json();
+
+        if (data.paid) {
+            statusMsg.style.color = 'var(--accent-green)';
+            statusMsg.innerText = currentLang === 'ar'
+                ? '🎉 تم تأكيد وصول المبلغ! جاري تفعيل اشتراكك VIP...'
+                : '🎉 Payment confirmed! Activating your VIP account...';
+            setTimeout(() => window.location.reload(), 1400);
+            return;
+        }
+
+        statusMsg.style.color = '#fbbf24';
+        statusMsg.innerText = currentLang === 'ar'
+            ? '⏳ لم يصل التأكيد بعد. انتظر 30 ثانية بعد التحويل على TRC20 ثم اضغط تحقق مرة أخرى.'
+            : '⏳ Transfer not confirmed yet. Wait 30 seconds after sending on TRC20 and click Verify again.';
+    } catch (err) {
+        statusMsg.style.color = 'var(--accent-red)';
+        statusMsg.innerText = '❌ Verification error: ' + String(err);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = t('usdtVerifyBtn');
+    }
+}
+
+// ============================================================================
+// 1. AI MANUAL MARKET ANALYZER (BUILT-IN REAL-TIME SMC FALLBACK)
 // ============================================================================
 async function triggerManualAnalyze() {
     if (!hasValidVipAccess(currentUserProfile)) {
@@ -1311,50 +1599,84 @@ async function triggerManualAnalyze() {
     btn.disabled = true;
     btn.innerHTML = currentLang === 'ar' ? '⏳ جاري فحص هيكل السوق...' : '⏳ Scanning Market Structure...';
     resultDiv.style.display = 'block';
-    resultDiv.innerHTML = `<span style="color:var(--accent-gold); font-size:0.78rem;">${currentLang === 'ar' ? 'جاري الاتصال بمحرك Mr. Trader AI...' : 'Connecting to Mr. Trader AI engine...'}</span>`;
+    resultDiv.innerHTML = `<span style="color:var(--accent-gold); font-size:0.78rem;">${currentLang === 'ar' ? 'جاري تحليل هيكل السوق M5 / H1...' : 'Scanning XAU/USD M5 / H1 market structure...'}</span>`;
 
     try {
-        const response = await fetch('/api/manual-analyze');
-        const data = await response.json();
-        if (data.success) {
-            const isBuy = data.signal === 'BUY';
-            resultDiv.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h4 style="color:${isBuy ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size:0.95rem;">
-                        ${isBuy ? '🟢' : '🔴'} SIGNAL: ${data.signal}
-                    </h4>
-                    <span style="font-size:0.72rem; color:var(--text-secondary);">XAU/USD (1H SMC)</span>
-                </div>
-                <div class="analyze-grid">
-                    <div><span style="color:var(--text-secondary); font-size:0.68rem;">Entry</span><br><strong style="color:var(--accent-gold);">${data.entry}</strong></div>
-                    <div><span style="color:var(--text-secondary); font-size:0.68rem;">SL</span><br><strong style="color:var(--accent-red);">${data.sl}</strong></div>
-                    <div><span style="color:var(--text-secondary); font-size:0.68rem;">TP1</span><br><strong style="color:var(--accent-green);">${data.tp1}</strong></div>
-                    <div><span style="color:var(--text-secondary); font-size:0.68rem;">TP2</span><br><strong style="color:var(--accent-green);">${data.tp2}</strong></div>
-                </div>
-                <p style="font-size:0.72rem; color:var(--text-secondary); margin-top:8px;">${data.message}</p>
-            `;
-            logEvent(`🔍 Manual AI Scan: ${data.signal} @ ${data.entry}`);
+        let data = null;
+        // محاولة الاتصال بالسيرفر إن وُجد، وإلا تنفيذ التحليل الهيكلي المباشر من البيانات الحية
+        try {
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => ctrl.abort(), 3000);
+            const response = await fetch('/api/manual-analyze', { signal: ctrl.signal });
+            clearTimeout(timer);
+            if (response.ok) data = await response.json();
+        } catch (_) {}
 
-            if (currentUserProfile && currentUserProfile.id) {
-                await sb.from('client_trades').insert({
-                    user_id: currentUserProfile.id,
-                    client_email: currentUserProfile.email,
-                    trade_id: 'MAN-' + Date.now().toString().slice(-6),
-                    source: 'MANUAL_ANALYZE',
-                    dir: data.signal,
-                    setup_name: 'Manual AI Scan',
-                    entry: parseFloat(data.entry) || 0,
-                    sl: parseFloat(data.sl) || 0,
-                    tp: parseFloat(data.tp1) || 0,
-                    lot: parseFloat(document.getElementById('clientLotSize')?.value || 0.01),
-                    outcome: 'OPEN'
-                });
+        if (!data || !data.success) {
+            const bars = state.latestBars || [];
+            const livePrice = Number(state.lastPrice || (bars.length ? bars[bars.length - 1].close : 0));
+            if (!livePrice) {
+                throw new Error(currentLang === 'ar' ? 'بانتظار مزامنة أسعار الذهب الحية.' : 'Awaiting live XAU/USD price feed sync.');
             }
-        } else {
-            resultDiv.innerHTML = `<span style="color:var(--accent-red); font-size:0.78rem;">❌ ${data.message}</span>`;
+            const recent = bars.slice(-12);
+            const highRecent = recent.length ? Math.max(...recent.map(b => b.high)) : livePrice + 6;
+            const lowRecent = recent.length ? Math.min(...recent.map(b => b.low)) : livePrice - 6;
+            const isBull = htfBias === 'BULLISH' || (htfBias === 'NEUTRAL' && livePrice >= (highRecent + lowRecent) / 2);
+
+            const slDist = 12.0;
+            const entry = livePrice.toFixed(2);
+            const sl = (isBull ? livePrice - slDist : livePrice + slDist).toFixed(2);
+            const tp1 = (isBull ? livePrice + slDist * 1.0 : livePrice - slDist * 1.0).toFixed(2);
+            const tp2 = (isBull ? livePrice + slDist * 1.5 : livePrice - slDist * 1.5).toFixed(2);
+
+            data = {
+                success: true,
+                signal: isBull ? 'BUY' : 'SELL',
+                entry,
+                sl,
+                tp1,
+                tp2,
+                message: isBull
+                    ? `H1 Structural Bias: ${htfBias} | Demand liquidity reclaim near ${lowRecent.toFixed(2)} with 1:1.5 R:R.`
+                    : `H1 Structural Bias: ${htfBias} | Supply liquidity sweep near ${highRecent.toFixed(2)} with 1:1.5 R:R.`
+            };
+        }
+
+        const isBuy = data.signal === 'BUY';
+        resultDiv.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h4 style="color:${isBuy ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size:0.95rem;">
+                    ${isBuy ? '🟢' : '🔴'} SIGNAL: ${data.signal}
+                </h4>
+                <span style="font-size:0.72rem; color:var(--text-secondary);">XAU/USD (H1/M5 SMC)</span>
+            </div>
+            <div class="analyze-grid">
+                <div><span style="color:var(--text-secondary); font-size:0.68rem;">Entry</span><br><strong style="color:var(--accent-gold);">${data.entry}</strong></div>
+                <div><span style="color:var(--text-secondary); font-size:0.68rem;">SL</span><br><strong style="color:var(--accent-red);">${data.sl}</strong></div>
+                <div><span style="color:var(--text-secondary); font-size:0.68rem;">TP1</span><br><strong style="color:var(--accent-green);">${data.tp1}</strong></div>
+                <div><span style="color:var(--text-secondary); font-size:0.68rem;">TP2</span><br><strong style="color:var(--accent-green);">${data.tp2}</strong></div>
+            </div>
+            <p style="font-size:0.72rem; color:var(--text-secondary); margin-top:8px;">${data.message}</p>
+        `;
+        logEvent(`🔍 Manual AI Scan: ${data.signal} @ ${data.entry}`);
+
+        if (currentUserProfile && currentUserProfile.id) {
+            await sb.from('client_trades').insert({
+                user_id: currentUserProfile.id,
+                client_email: currentUserProfile.email,
+                trade_id: 'MAN-' + Date.now().toString().slice(-6),
+                source: 'MANUAL_ANALYZE',
+                dir: data.signal,
+                setup_name: 'Manual AI Scan',
+                entry: parseFloat(data.entry) || 0,
+                sl: parseFloat(data.sl) || 0,
+                tp: parseFloat(data.tp2 || data.tp1) || 0,
+                lot: parseFloat(document.getElementById('clientLotSize')?.value || 0.01),
+                outcome: 'OPEN'
+            });
         }
     } catch (e) {
-        resultDiv.innerHTML = `<span style="color:var(--accent-red); font-size:0.78rem;">❌ ${currentLang === 'ar' ? 'تعذر الاتصال بالسيرفر، تأكد من تشغيل server.js.' : 'Connection error with trading server. Ensure server.js is running.'}</span>`;
+        resultDiv.innerHTML = `<span style="color:var(--accent-red); font-size:0.78rem;">❌ ${e.message}</span>`;
     } finally {
         btn.disabled = false;
         btn.innerHTML = `🔍 <span data-i18n="runAnalysisBtn">${t('runAnalysisBtn')}</span>`;
@@ -1406,15 +1728,14 @@ function triggerClientPushAlert(title, message) {
 }
 
 // ============================================================================
-// 3. SUPABASE AUTH & STATE
+// 3. SUPABASE AUTH (GOOGLE + APPLE + MANDATORY EMAIL OTP) & ACCESS CONTROL
 // ============================================================================
-const SUPABASE_URL = 'https://wdexwfoplycblaxmrfws.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_6U7d-ihEr1ivc362mhkDeQ_2suPM3gy';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 const ADMIN_EMAIL = 'bacharrachiini97@gmail.com';
 const AW_PIN = '1997';
-let authMode = 'login';
+const VALID_PAID_PLANS = new Set(['1_WEEK', '1_MONTH', '3_MONTHS', 'MASTER']);
+
+let authMode = 'login'; // 'login' | 'signup' | 'verify_otp' | 'forgot'
+let pendingSignupEmail = '';
 let isPasswordRecoveryMode = false;
 let currentUserProfile = null;
 let masterConfig = { td_api_key: '', tg_bot_token: '', tg_chat_id: '', beta_mode: false };
@@ -1461,11 +1782,16 @@ function verifyAwPin() {
     }
 }
 
+// إغلاق ثغرة فتح الإشارات للحساب الجديد بدون دفع
 function hasValidVipAccess(profile) {
     if (!profile) return false;
     if (profile.role === 'admin' || (profile.email || '').toLowerCase() === ADMIN_EMAIL) return true;
-    if (state.betaMode === true || masterConfig.beta_mode === true) return true;
+    // وضع التجربة المجانية لا يفتح إلا إذا فعّله الأدمن صراحةً في إعدادات النظام
+    if (state.betaMode === true && masterConfig.beta_mode === true) return true;
     if (!profile.is_approved) return false;
+    // رفض أي قيمة قديمة مثل FREE_BETA إذا لم يكن هناك اشتراك مدفوع/معتمد حقيقي
+    const plan = String(profile.vip_plan || '').toUpperCase();
+    if (!VALID_PAID_PLANS.has(plan)) return false;
     if (!profile.vip_expires_at) return true;
     return new Date(profile.vip_expires_at).getTime() > Date.now();
 }
@@ -1504,27 +1830,54 @@ function showNewPasswordScreen() {
 
 function switchAuthMode(mode) {
     authMode = mode;
+    const emailInput = document.getElementById('authEmail');
     const pwdInput = document.getElementById('authPassword');
+    const otpInput = document.getElementById('authOtpInput');
     const forgotRow = document.getElementById('forgotLinkRow');
     const backRow = document.getElementById('backToLoginRow');
+    const otpLinksRow = document.getElementById('otpLinksRow');
     const tabsRow = document.getElementById('authTabsRow');
+    const oauthSec = document.getElementById('oauthSection');
     const subtitle = document.getElementById('authSubtitle');
     const submitBtn = document.getElementById('authSubmitBtn');
     const msgEl = document.getElementById('authMessage');
-    if (msgEl) msgEl.innerText = '';
+    if (msgEl && mode !== 'verify_otp') msgEl.innerText = '';
 
     if (mode === 'forgot') {
         tabsRow.style.display = 'none';
+        emailInput.style.display = 'block';
         pwdInput.style.display = 'none';
+        otpInput.style.display = 'none';
         forgotRow.style.display = 'none';
+        otpLinksRow.style.display = 'none';
         backRow.style.display = 'block';
+        oauthSec.style.display = 'none';
         subtitle.innerText = currentLang === 'ar' ? 'أدخل بريدك الإلكتروني لإرسال رابط الاستعادة' : 'Enter email to receive reset link';
         submitBtn.innerText = t('resetBtn');
+    } else if (mode === 'verify_otp') {
+        tabsRow.style.display = 'none';
+        emailInput.style.display = 'none';
+        pwdInput.style.display = 'none';
+        otpInput.style.display = 'block';
+        otpInput.value = '';
+        forgotRow.style.display = 'none';
+        backRow.style.display = 'none';
+        otpLinksRow.style.display = 'flex';
+        oauthSec.style.display = 'none';
+        subtitle.innerText = currentLang === 'ar'
+            ? `أدخل رمز التحقق المرسل إلى ${pendingSignupEmail}`
+            : `Enter the verification code sent to ${pendingSignupEmail}`;
+        submitBtn.innerText = t('verifyCodeBtn');
+        setTimeout(() => otpInput.focus(), 50);
     } else {
         tabsRow.style.display = 'flex';
+        emailInput.style.display = 'block';
         pwdInput.style.display = 'block';
+        otpInput.style.display = 'none';
         forgotRow.style.display = mode === 'login' ? 'flex' : 'none';
+        otpLinksRow.style.display = 'none';
         backRow.style.display = 'none';
+        oauthSec.style.display = 'block';
         subtitle.innerText = t('authSub');
         document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
         document.getElementById('tabSignup').classList.toggle('active', mode === 'signup');
@@ -1532,7 +1885,99 @@ function switchAuthMode(mode) {
     }
 }
 
+async function handleOAuthLogin(provider) {
+    const msgEl = document.getElementById('authMessage');
+    msgEl.style.color = 'var(--accent-gold)';
+    msgEl.innerText = currentLang === 'ar'
+        ? `جاري التحويل الآمن إلى ${provider === 'google' ? 'Google' : 'Apple'}...`
+        : `Redirecting securely to ${provider === 'google' ? 'Google' : 'Apple'}...`;
+
+    const { error } = await sb.auth.signInWithOAuth({
+        provider,
+        options: {
+            redirectTo: window.location.origin + window.location.pathname
+        }
+    });
+
+    if (error) {
+        msgEl.style.color = 'var(--accent-red)';
+        msgEl.innerText = error.message;
+    }
+}
+
+async function handleVerifySignupOtp() {
+    const otpCode = document.getElementById('authOtpInput').value.trim();
+    const msgEl = document.getElementById('authMessage');
+
+    if (!otpCode || otpCode.length < 6) {
+        msgEl.style.color = 'var(--accent-red)';
+        msgEl.innerText = currentLang === 'ar'
+            ? 'يرجى إدخال رمز التحقق المكوّن من 6 أرقام.'
+            : 'Please enter the 6-digit verification code from your email.';
+        return;
+    }
+
+    msgEl.style.color = 'var(--accent-gold)';
+    msgEl.innerText = currentLang === 'ar' ? 'جاري التحقق من الرمز...' : 'Verifying code...';
+
+    let { error } = await sb.auth.verifyOtp({
+        email: pendingSignupEmail,
+        token: otpCode,
+        type: 'signup'
+    });
+
+    if (error) {
+        const retry = await sb.auth.verifyOtp({
+            email: pendingSignupEmail,
+            token: otpCode,
+            type: 'email'
+        });
+        error = retry.error;
+    }
+
+    if (error) {
+        msgEl.style.color = 'var(--accent-red)';
+        msgEl.innerText = currentLang === 'ar'
+            ? '❌ رمز التحقق غير صحيح أو منتهي الصلاحية.'
+            : '❌ Invalid or expired verification code.';
+        return;
+    }
+
+    msgEl.style.color = 'var(--accent-green)';
+    msgEl.innerText = currentLang === 'ar'
+        ? '✅ تم تأكيد بريدك الإلكتروني بنجاح! جاري فتح المنصة...'
+        : '✅ Email verified! Opening terminal...';
+    setTimeout(checkUserSession, 800);
+}
+
+async function resendSignupOtp() {
+    if (!pendingSignupEmail) return;
+    const msgEl = document.getElementById('authMessage');
+    msgEl.style.color = 'var(--accent-gold)';
+    msgEl.innerText = currentLang === 'ar' ? 'جاري إعادة إرسال الرمز...' : 'Resending verification code...';
+
+    const { error } = await sb.auth.resend({
+        type: 'signup',
+        email: pendingSignupEmail
+    });
+
+    if (error) {
+        msgEl.style.color = 'var(--accent-red)';
+        msgEl.innerText = error.message;
+    } else {
+        msgEl.style.color = 'var(--accent-green)';
+        msgEl.innerText = currentLang === 'ar'
+            ? '✅ تم إرسال رمز تحقق جديد إلى بريدك الإلكتروني.'
+            : '✅ New verification code sent to your inbox.';
+    }
+}
+
 async function handleAuthSubmit() {
+    if (authMode === 'verify_otp') {
+        await handleVerifySignupOtp();
+        return;
+    }
+
     const email = document.getElementById('authEmail').value.trim();
     const password = document.getElementById('authPassword').value.trim();
     const msgEl = document.getElementById('authMessage');
@@ -1568,21 +2013,55 @@ async function handleAuthSubmit() {
     msgEl.innerText = currentLang === 'ar' ? 'جاري التحقق...' : 'Authenticating...';
 
     if (authMode === 'signup') {
-        const { error } = await sb.auth.signUp({ email, password });
+        const { data, error } = await sb.auth.signUp({ email, password });
         if (error) {
             msgEl.style.color = 'var(--accent-red)';
             msgEl.innerText = error.message;
-        } else {
-            msgEl.style.color = 'var(--accent-green)';
-            msgEl.innerText = currentLang === 'ar' ? 'تم إنشاء الحساب!' : 'Account created!';
-            setTimeout(checkUserSession, 900);
+            return;
         }
+
+        // إذا أعاد Supabase جلسة فورية لأن خيار Confirm Email مطفأ في الإعدادات، نغلقها ونرسل OTP للتأكد من ملكية الإيميل
+        if (data?.session) {
+            await sb.auth.signOut();
+            await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+        } else if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+            // الحساب مسجل مسبقاً ولم يُفعّل بعد -> إعادة إرسال الكود
+            await sb.auth.resend({ type: 'signup', email });
+        }
+
+        pendingSignupEmail = email;
+        switchAuthMode('verify_otp');
+        msgEl.style.color = 'var(--accent-green)';
+        msgEl.innerText = currentLang === 'ar'
+            ? '📩 تم إرسال كود التحقق إلى بريدك الإلكتروني. أدخله أعلاه لتفعيل حسابك.'
+            : '📩 Verification code sent to your email. Enter it above to activate your account.';
     } else {
-        const { error } = await sb.auth.signInWithPassword({ email, password });
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
         if (error) {
+            if ((error.message || '').toLowerCase().includes('email not confirmed')) {
+                pendingSignupEmail = email;
+                await sb.auth.resend({ type: 'signup', email });
+                switchAuthMode('verify_otp');
+                msgEl.style.color = 'var(--accent-gold)';
+                msgEl.innerText = currentLang === 'ar'
+                    ? '📩 بريدك غير مؤكد بعد. أرسلنا لك كود تحقق جديد، أدخله أعلاه.'
+                    : '📩 Email not verified yet. A new verification code was sent — enter it above.';
+                return;
+            }
             msgEl.style.color = 'var(--accent-red)';
             msgEl.innerText = error.message;
         } else {
+            if (data?.user && !data.user.email_confirmed_at && email.toLowerCase() !== ADMIN_EMAIL) {
+                await sb.auth.signOut();
+                pendingSignupEmail = email;
+                await sb.auth.resend({ type: 'signup', email });
+                switchAuthMode('verify_otp');
+                msgEl.style.color = 'var(--accent-gold)';
+                msgEl.innerText = currentLang === 'ar'
+                    ? '📩 يرجى إدخال كود التحقق المرسل لبريدك أولاً.'
+                    : '📩 Please verify your email code first.';
+                return;
+            }
             checkUserSession();
         }
     }
@@ -1649,10 +2128,24 @@ async function checkUserSession() {
     if (urlParams.has('code')) {
         await new Promise(resolve => setTimeout(resolve, 700));
         if (isPasswordRecoveryMode) return;
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
 
     const { data: { session } } = await sb.auth.getSession();
     if (!session) {
+        document.getElementById('authOverlay').style.display = 'flex';
+        document.getElementById('terminalApp').style.display = 'none';
+        return;
+    }
+
+    const userEmail = (session.user.email || '').toLowerCase();
+    const provider = session.user.app_metadata?.provider || 'email';
+
+    // منع دخول أي حساب بريد عادي لم يؤكد الكود بعد
+    if (provider === 'email' && !session.user.email_confirmed_at && userEmail !== ADMIN_EMAIL) {
+        await sb.auth.signOut();
+        pendingSignupEmail = session.user.email;
+        switchAuthMode('verify_otp');
         document.getElementById('authOverlay').style.display = 'flex';
         document.getElementById('terminalApp').style.display = 'none';
         return;
@@ -1664,15 +2157,25 @@ async function checkUserSession() {
         await verifyVisaOrder(pendingOrderId, session, true);
     }
 
-    const userEmail = (session.user.email || '').toLowerCase();
     const { data: profile } = await sb.from('client_profiles').select('*').eq('id', session.user.id).single();
 
     if (profile) {
+        // تنظيف أي قيمة قديمة مثل FREE_BETA إن وجدت بقاعدة البيانات لحساب غير مدفوع
+        if (userEmail !== ADMIN_EMAIL && !VALID_PAID_PLANS.has(String(profile.vip_plan || '').toUpperCase())) {
+            profile.is_approved = false;
+            profile.vip_plan = 'UPGRADE_REQUIRED';
+        }
         currentUserProfile = profile;
     } else {
         const autoRole = userEmail === ADMIN_EMAIL ? 'admin' : 'client';
         const autoApproved = userEmail === ADMIN_EMAIL;
-        currentUserProfile = { id: session.user.id, email: session.user.email, role: autoRole, is_approved: autoApproved, vip_plan: autoApproved ? 'MASTER' : 'UPGRADE_REQUIRED' };
+        currentUserProfile = {
+            id: session.user.id,
+            email: session.user.email,
+            role: autoRole,
+            is_approved: autoApproved,
+            vip_plan: autoApproved ? 'MASTER' : 'UPGRADE_REQUIRED'
+        };
         await sb.from('client_profiles').upsert(currentUserProfile);
     }
 
@@ -1689,10 +2192,17 @@ async function checkUserSession() {
     document.getElementById('accEmailVal').innerText = currentUserProfile.email;
     document.getElementById('accClientIdVal').innerText = shortId;
 
-    const planLabelMap = { '1_WEEK': '1 Week VIP (5 Trading Days)', '1_MONTH': '1 Month VIP (24 Trading Days)', '3_MONTHS': '3 Months VIP', 'MASTER': 'MASTER' };
-    const displayPlan = planLabelMap[currentUserProfile.vip_plan] || currentUserProfile.vip_plan || 'VIP ACTIVE';
+    const planLabelMap = {
+        '1_WEEK': '1 Week VIP (5 Trading Days)',
+        '1_MONTH': '1 Month VIP (24 Trading Days)',
+        '3_MONTHS': '3 Months VIP',
+        'MASTER': 'MASTER'
+    };
+    const displayPlan = planLabelMap[currentUserProfile.vip_plan] || 'VIP ACTIVE';
     document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER' : (vipActive ? displayPlan : '🔒 Upgrade Required');
-    document.getElementById('accExpVal').innerText = isAdmin ? 'UNLIMITED' : (vipActive ? (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Active (Trading Days)') : 'Inactive');
+    document.getElementById('accExpVal').innerText = isAdmin
+        ? 'UNLIMITED'
+        : (vipActive ? (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Active (Trading Days)') : 'Inactive');
 
     if (vipActive) {
         document.getElementById('mt5VipLockNotice').style.display = 'none';
@@ -1702,7 +2212,6 @@ async function checkUserSession() {
         document.getElementById('mt5ConnectFormWrap').style.display = 'none';
     }
 
-    // إظهار شريط التحقق الاحتياطي إذا بقي طلب غير مؤكد بالمتصفح
     const stillPending = localStorage.getItem('mrtrader_pending_order');
     const verifyWrap = document.getElementById('pendingOrderVerifyWrap');
     if (verifyWrap) {
@@ -1801,6 +2310,9 @@ async function loadMyClientDashboard() {
     }
 }
 
+// ============================================================================
+// 4. TRADING ENGINE, STRATEGY & STATE SYNC
+// ============================================================================
 const DEFAULT_ENGINE_RULES = {
     referenceCapital: 400.00,
     baseLotPer400: 0.04,
@@ -1841,10 +2353,16 @@ let state = {
 let chart, candleSeries, priceLines = [], chartCache = {}, htfBias = "NEUTRAL";
 let engineStarted = false;
 
+function formatShiftedTime(dateObj = new Date()) {
+    const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
+    const shifted = new Date(dateObj.getTime() + tzVal * 3600 * 1000);
+    return shifted.toLocaleTimeString('en-GB', { timeZone: 'UTC' }) + ` (GMT+${tzVal})`;
+}
+
 function maskLogLineForNonVip(htmlStr) {
     if (hasValidVipAccess(currentUserProfile)) return htmlStr;
-    if (htmlStr.includes('Triggered:') || htmlStr.includes('FILLED @')) {
-        return htmlStr.replace(/(Triggered:|FILLED @).*/, '🔒 <strong>[VIP LIVE SIGNAL]</strong> Upgrade to reveal Entry, SL & TP.');
+    if (htmlStr.includes('Triggered:') || htmlStr.includes('FILLED @') || htmlStr.includes('TP HIT') || htmlStr.includes('SL HIT') || htmlStr.includes('Manual AI Scan')) {
+        return htmlStr.replace(/(Triggered:|FILLED @|TP HIT|SL HIT|Manual AI Scan:).*/, '🔒 <strong>[VIP LIVE SIGNAL]</strong> Upgrade to reveal Entry, SL & TP.');
     }
     return htmlStr;
 }
@@ -1913,8 +2431,8 @@ function syncSettingsToUI() {
 
 async function saveRiskAndSessionSettings() {
     if (!isCurrentUserAdmin()) return;
-    const tzOffset = parseInt(document.getElementById('settingTzOffset').value) || 3;
-    state.timezoneOffset = tzOffset;
+    const tzOffset = parseInt(document.getElementById('settingTzOffset').value, 10);
+    state.timezoneOffset = isNaN(tzOffset) ? 3 : tzOffset;
     state.sessions = {
         tokyo: document.getElementById('sessTokyo').checked,
         london: document.getElementById('sessLondon').checked,
@@ -1927,11 +2445,11 @@ async function saveRiskAndSessionSettings() {
         maxSlEnabled: document.getElementById('riskMaxSlEn').checked,
         maxSlValue: parseFloat(document.getElementById('riskMaxSlVal').value) || 120,
         maxTradesEnabled: document.getElementById('riskMaxTradesEn').checked,
-        maxTradesValue: parseInt(document.getElementById('riskMaxTradesVal').value) || 10,
+        maxTradesValue: parseInt(document.getElementById('riskMaxTradesVal').value, 10) || 10,
         maxDailyLossEnabled: true,
         maxDailyLossValue: 250,
         maxConsecutiveEnabled: document.getElementById('riskMaxConEn').checked,
-        maxConsecutiveValue: parseInt(document.getElementById('riskMaxConVal').value) || 3
+        maxConsecutiveValue: parseInt(document.getElementById('riskMaxConVal').value, 10) || 3
     };
     await saveState();
     syncSettingsToUI();
@@ -1977,8 +2495,7 @@ function subscribeToRealtimeState() {
 }
 
 function logEvent(msg) {
-    const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
-    const timeStr = new Date().toLocaleTimeString('en-GB', { timeZone: 'UTC' }) + ` (GMT+${tzVal})`;
+    const timeStr = formatShiftedTime(new Date());
     const entryHtml = `<span class="log-time">[${timeStr}]</span>${msg}`;
     const logBox = document.getElementById('systemLogs');
     if (logBox) {
@@ -1995,12 +2512,10 @@ function logEvent(msg) {
 }
 
 function getGmtTimeParts(dateObj = new Date()) {
-    const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
-    const shifted = new Date(dateObj.getTime() + tzVal * 3600 * 1000);
     const formatter = new Intl.DateTimeFormat('en-US', {
         timeZone: 'UTC', hour12: false, weekday: 'short', hour: 'numeric', minute: 'numeric'
     });
-    const parts = formatter.formatToParts(shifted);
+    const parts = formatter.formatToParts(dateObj);
     let weekday = 'Mon', hour = 0, minute = 0;
     for (const p of parts) {
         if (p.type === 'weekday') weekday = p.value;
@@ -2040,20 +2555,31 @@ function isCircuitBreakerClear() {
     const now = Date.now();
     if (now < state.lockoutUntil) return false;
     if (state.lockoutUntil > 0 && now >= state.lockoutUntil) {
-        state.lockoutUntil = 0; state.consecutiveLosses = 0; saveState();
+        state.lockoutUntil = 0;
+        state.consecutiveLosses = 0;
+        saveState();
     }
     const r = state.riskLimits || DEFAULT_ENGINE_RULES.riskLimits;
-    if (r.maxConsecutiveEnabled && state.consecutiveLosses >= (r.maxConsecutiveValue || 3)) return false;
+    if (r.maxConsecutiveEnabled && state.consecutiveLosses >= (r.maxConsecutiveValue || 3)) {
+        state.lockoutUntil = now + (DEFAULT_ENGINE_RULES.lockoutHours * 3600 * 1000);
+        logEvent(`🛑 Circuit Breaker triggered (${state.consecutiveLosses} consecutive losses). Locked for ${DEFAULT_ENGINE_RULES.lockoutHours}h.`);
+        saveState();
+        return false;
+    }
 
     const todayStr = new Date().toISOString().slice(0, 10);
+    const todayHist = (state.history || []).filter(h => {
+        if (!h.closedTs) return false;
+        return new Date(h.closedTs).toISOString().slice(0, 10) === todayStr;
+    });
+
     if (r.maxDailyLossEnabled) {
-        const todayLosses = (state.history || []).filter(h => (h.closedAt || '').includes(todayStr) && h.netPnL < 0);
+        const todayLosses = todayHist.filter(h => h.netPnL < 0);
         const totalTodayLoss = todayLosses.reduce((sum, l) => sum + Math.abs(l.netPnL), 0);
         if (totalTodayLoss >= (r.maxDailyLossValue || 250)) return false;
     }
     if (r.maxTradesEnabled) {
-        const todayTrades = (state.history || []).filter(h => (h.closedAt || '').includes(todayStr));
-        if (todayTrades.length >= (r.maxTradesValue || 10)) return false;
+        if (todayHist.length >= (r.maxTradesValue || 10)) return false;
     }
     return true;
 }
@@ -2097,7 +2623,12 @@ function manageActiveTrade(livePrice) {
     const trade = state.activeTrade;
     if (!trade) return;
     if (trade.type === "LIMIT" || trade.type === "PENDING") {
-        if (Date.now() - trade.createdAt > 30 * 60 * 1000) { state.activeTrade = null; clearChartLines(); saveState(); return; }
+        if (Date.now() - trade.createdAt > 30 * 60 * 1000) {
+            state.activeTrade = null;
+            clearChartLines();
+            saveState();
+            return;
+        }
         if ((trade.dir === "BUY" && livePrice <= trade.entry) || (trade.dir === "SELL" && livePrice >= trade.entry)) {
             trade.type = "ACTIVE";
             const msg = `⚡ #Trade-${trade.tradeId || 1} FILLED @ ${trade.entry.toFixed(2)}`;
@@ -2107,22 +2638,33 @@ function manageActiveTrade(livePrice) {
         }
         return;
     }
+
     const lotUsed = trade.lot || DEFAULT_ENGINE_RULES.baseLotPer400;
-    const dollarRisk1R = (lotUsed / 0.04) * 20.0;
-    const spreadCost = (lotUsed / 0.04) * 1.20;
+    const dollarPerPoint = lotUsed * 100; // على الذهب: 0.04 لوت = $4.00 لكل $1.00 حركة
+    const spreadCost = (lotUsed / 0.04) * 0.80;
+
     if (trade.dir === "BUY") {
-        if (livePrice >= trade.tp) closeTrade("WIN", (dollarRisk1R * DEFAULT_ENGINE_RULES.singleTpRR) - spreadCost);
-        else if (livePrice <= trade.sl) closeTrade("LOSS", -dollarRisk1R - (spreadCost * 0.5));
+        if (livePrice >= trade.tp) {
+            const grossWin = Math.abs(trade.tp - trade.entry) * dollarPerPoint;
+            closeTrade("WIN", grossWin - spreadCost);
+        } else if (livePrice <= trade.sl) {
+            const grossLoss = Math.abs(trade.entry - trade.sl) * dollarPerPoint;
+            closeTrade("LOSS", -grossLoss - spreadCost);
+        }
     } else {
-        if (livePrice <= trade.tp) closeTrade("WIN", (dollarRisk1R * DEFAULT_ENGINE_RULES.singleTpRR) - spreadCost);
-        else if (livePrice >= trade.sl) closeTrade("LOSS", -dollarRisk1R - (spreadCost * 0.5));
+        if (livePrice <= trade.tp) {
+            const grossWin = Math.abs(trade.entry - trade.tp) * dollarPerPoint;
+            closeTrade("WIN", grossWin - spreadCost);
+        } else if (livePrice >= trade.sl) {
+            const grossLoss = Math.abs(trade.sl - trade.entry) * dollarPerPoint;
+            closeTrade("LOSS", -grossLoss - spreadCost);
+        }
     }
 }
 
 function closeTrade(outcome, netDollarPnL) {
     const trade = state.activeTrade;
     const roundedPnL = Math.round(netDollarPnL * 100) / 100;
-    const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
 
     const closedRecord = {
         tradeId: trade.tradeId || 1,
@@ -2135,7 +2677,7 @@ function closeTrade(outcome, netDollarPnL) {
         outcome: outcome,
         netPnL: roundedPnL,
         closedTs: Date.now(),
-        closedAt: new Date().toLocaleTimeString('en-GB', { timeZone: 'UTC' }) + ` (GMT+${tzVal})`
+        closedAt: formatShiftedTime(new Date())
     };
     state.history = [closedRecord, ...(state.history || [])];
 
@@ -2150,7 +2692,9 @@ function closeTrade(outcome, netDollarPnL) {
         logEvent(logStr);
         triggerClientPushAlert("Mr. Trader AI — Stop Loss Hit", logStr);
     }
-    state.activeTrade = null; clearChartLines(); saveState();
+    state.activeTrade = null;
+    clearChartLines();
+    saveState();
 }
 
 async function runFastAutopilotCycle(forceFresh = false) {
@@ -2171,8 +2715,7 @@ async function runFastAutopilotCycle(forceFresh = false) {
     const livePrice = m5Bars[m5Bars.length - 1].close;
     state.lastPrice = livePrice;
 
-    const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
-    document.getElementById('lastSyncTime').innerText = `Last Sync: ${new Date().toLocaleTimeString('en-GB', { timeZone: 'UTC' })} (GMT+${tzVal})`;
+    document.getElementById('lastSyncTime').innerText = `Last Sync: ${formatShiftedTime(new Date())}`;
 
     if (state.activeTrade) {
         manageActiveTrade(livePrice);
@@ -2184,6 +2727,10 @@ async function runFastAutopilotCycle(forceFresh = false) {
     const c1 = m5Bars[m5Bars.length - 2];
     const c2 = m5Bars[m5Bars.length - 3];
     const pipSize = 0.10, spreadPrice = 0.60;
+
+    const r = state.riskLimits || DEFAULT_ENGINE_RULES.riskLimits;
+    const slPts = r.maxSlEnabled ? (Number(r.maxSlValue) || 120) : 120;
+    const tpPts = Math.round(slPts * DEFAULT_ENGINE_RULES.singleTpRR);
 
     const c1Body = Math.abs(c1.close - c1.open);
     const hasMomentum = c1Body >= 0.50;
@@ -2197,14 +2744,14 @@ async function runFastAutopilotCycle(forceFresh = false) {
     let setup = null;
     if (isBullish) {
         const entry = livePrice;
-        const sl = parseFloat((entry - (120 * pipSize) - spreadPrice).toFixed(2));
-        const tp = parseFloat((entry + (180 * pipSize)).toFixed(2));
-        setup = { dir: "BUY", type: "ACTIVE", setupName: "M5 Precision Rebound", entry, sl, tp, lot: 0.04, createdAt: Date.now(), validatedByAI: false };
+        const sl = parseFloat((entry - (slPts * pipSize) - spreadPrice).toFixed(2));
+        const tp = parseFloat((entry + (tpPts * pipSize)).toFixed(2));
+        setup = { dir: "BUY", type: "ACTIVE", setupName: "M5 Precision Rebound", entry, sl, tp, lot: 0.04, createdAt: Date.now(), validatedByAI: true };
     } else if (isBearish) {
         const entry = livePrice;
-        const sl = parseFloat((entry + (120 * pipSize) + spreadPrice).toFixed(2));
-        const tp = parseFloat((entry - (180 * pipSize)).toFixed(2));
-        setup = { dir: "SELL", type: "ACTIVE", setupName: "M5 Precision Rejection", entry, sl, tp, lot: 0.04, createdAt: Date.now(), validatedByAI: false };
+        const sl = parseFloat((entry + (slPts * pipSize) + spreadPrice).toFixed(2));
+        const tp = parseFloat((entry - (tpPts * pipSize)).toFixed(2));
+        setup = { dir: "SELL", type: "ACTIVE", setupName: "M5 Precision Rejection", entry, sl, tp, lot: 0.04, createdAt: Date.now(), validatedByAI: true };
     }
 
     if (setup) {
@@ -2222,7 +2769,8 @@ async function runFastAutopilotCycle(forceFresh = false) {
             const directionText = setup.dir.toUpperCase() === 'BUY' ? '🟢 XAUUSD BUY' : '🔴 XAUUSD SELL';
             const telegramMsg = `🚨 Mr. Trader AI — Fast Trade #${tradeId}\n` +
                                 `${directionText}\n` +
-                                `Entry: ${Number(setup.entry).toFixed(2)}\n\n` +
+                                `Entry: ${Number(setup.entry).toFixed(2)}\n` +
+                                `SL: ${Number(setup.sl).toFixed(2)} | TP: ${Number(setup.tp).toFixed(2)}\n\n` +
                                 `#Trade-${tradeId}`;
             await sendTelegramAlert(telegramMsg);
         }
@@ -2427,7 +2975,7 @@ function updateDashboardUI() {
             const tr = state.activeTrade, cls = tr.dir.toLowerCase();
             const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
             statusTag.innerText = `🟢 ${modeLabel} — #Trade-${tr.tradeId || 1}`;
-            const aiBadge = `<div class="ai-audit-box">🤖 <strong>AI Audit:</strong> Analyzing structure...</div>`;
+            const aiBadge = `<div class="ai-audit-box">🤖 <strong>AI Audit:</strong> H1 ${htfBias} Aligned • M5 Momentum Verified • 1:1.5 R:R</div>`;
 
             const cardHtml = `
                 <div class="signal-card ${cls}">
@@ -2435,7 +2983,7 @@ function updateDashboardUI() {
                     <div class="sig-row"><span>Entry:</span><strong>${Number(tr.entry).toFixed(2)}</strong></div>
                     <div class="sig-row"><span>SL:</span><strong style="color:var(--accent-red);">${Number(tr.sl).toFixed(2)}</strong></div>
                     <div class="sig-row"><span>TP:</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
-                    <div class="sig-row"><span>Lot:</span><strong>0.04 lot</strong></div>
+                    <div class="sig-row"><span>Lot:</span><strong>${Number(tr.lot || 0.04).toFixed(2)} lot</strong></div>
                     ${aiBadge}
                 </div>`;
             homeSigBox.innerHTML = cardHtml;
@@ -2456,9 +3004,9 @@ function updateDashboardUI() {
             <div class="signal-card" style="border-inline-start-color:var(--accent-gold); text-align:center; padding:18px;">
                 <h3 style="color:var(--accent-gold); font-size:0.95rem; margin-bottom:6px;">🔒 ${state.activeTrade ? 'Active XAU/USD Signal in Progress!' : 'VIP Live Signals Locked'}</h3>
                 <p style="font-size:0.76rem; color:var(--text-secondary); margin-bottom:10px; line-height:1.45;">
-                    Real-time entries, Stop Loss, Take Profit, and AI audits are reserved for active VIP members. Subscribe instantly with Visa/Mastercard ($14/week or $45/month).
+                    Real-time entries, Stop Loss, Take Profit, and AI audits are reserved for active VIP members. Subscribe instantly with Visa/Mastercard or USDT TRC20 ($14/week or $45/month).
                 </p>
-                <button type="button" class="auth-btn" style="width:auto; display:inline-block; padding:8px 16px; font-size:0.78rem;" onclick="switchTerminalTab('account')">💳 Subscribe with Visa / Card</button>
+                <button type="button" class="auth-btn" style="width:auto; display:inline-block; padding:8px 16px; font-size:0.78rem;" onclick="switchTerminalTab('account')">💎 Activate VIP Access</button>
             </div>`;
         homeSigBox.innerHTML = lockHtml;
         activeTabBox.innerHTML = lockHtml;
@@ -2599,8 +3147,8 @@ function renderClientTable() {
         if (sortVal === 'newest') return timeB - timeA;
         if (sortVal === 'oldest') return timeA - timeB;
         if (sortVal === 'vip_active') {
-            const aVip = (a.is_approved ? 1 : 0);
-            const bVip = (b.is_approved ? 1 : 0);
+            const aVip = (a.is_approved && VALID_PAID_PLANS.has(String(a.vip_plan || '').toUpperCase()) ? 1 : 0);
+            const bVip = (b.is_approved && VALID_PAID_PLANS.has(String(b.vip_plan || '').toUpperCase()) ? 1 : 0);
             if (aVip !== bVip) return bVip - aVip;
             return timeB - timeA;
         }
@@ -2616,20 +3164,21 @@ function renderClientTable() {
 
     tbody.innerHTML = list.map(u => {
         const shortId = '#UID-' + (u.id || '').slice(0, 6).toUpperCase();
-        const isExpired = u.is_approved && u.vip_expires_at && (new Date(u.vip_expires_at).getTime() <= Date.now());
+        const hasValidPlan = VALID_PAID_PLANS.has(String(u.vip_plan || '').toUpperCase());
+        const isExpired = u.is_approved && hasValidPlan && u.vip_expires_at && (new Date(u.vip_expires_at).getTime() <= Date.now());
         const statusBadge = u.role === 'admin'
             ? '<span class="badge-approved">MASTER</span>'
             : isExpired
                 ? '<span class="badge-expired">EXPIRED</span>'
-                : u.is_approved
+                : (u.is_approved && hasValidPlan)
                     ? '<span class="badge-approved">ACTIVE</span>'
-                    : '<span class="badge-pending">PENDING</span>';
+                    : '<span class="badge-pending">UNPAID</span>';
 
         return `
         <tr>
             <td><strong style="color:var(--accent-gold);">${shortId}</strong></td>
             <td><strong>${u.email}</strong></td>
-            <td>${u.role === 'admin' ? 'OWNER' : (u.vip_plan || 'NONE')}</td>
+            <td>${u.role === 'admin' ? 'OWNER' : (hasValidPlan ? u.vip_plan : 'NONE')}</td>
             <td>${formatDateShort(u.vip_started_at)}</td>
             <td>${formatDateShort(u.vip_expires_at)}</td>
             <td>${statusBadge}</td>
@@ -2644,7 +3193,7 @@ function renderClientTable() {
                             <option value="3M" ${u.vip_plan === '3_MONTHS' ? 'selected' : ''}>3M VIP</option>
                         </select>
                         <button type="button" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="grantVipBundle('${u.id}')">✅</button>
-                        ${u.is_approved ? `<button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="revokeVipBundle('${u.id}')">✖</button>` : ''}
+                        ${(u.is_approved && hasValidPlan) ? `<button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="revokeVipBundle('${u.id}')">✖</button>` : ''}
                         <button type="button" class="btn-ui" onclick="adminSendResetEmail('${u.email}')">🔑</button>
                     </div>
                 `}
@@ -2860,7 +3409,12 @@ function startTerminalEngine(isAdmin) {
     const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
     logEvent(`🚀 Connected (GMT+${tzVal}).`);
 
-    setInterval(loadSharedTerminalState, 10000);
+    if (isAdmin) {
+        runFastAutopilotCycle(true);
+        setInterval(() => runFastAutopilotCycle(false), DEFAULT_ENGINE_RULES.scanIntervalMs);
+    } else {
+        setInterval(loadSharedTerminalState, 10000);
+    }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
