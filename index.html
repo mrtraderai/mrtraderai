@@ -211,6 +211,25 @@
         .btn-ui:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
         .btn-admin { border-color: var(--accent-gold); color: var(--accent-gold); display: none; }
 
+        .btn-close-trade {
+            width: 100%; margin-top: 8px; padding: 7px 10px;
+            background: rgba(239, 68, 68, 0.14); border: 1px solid var(--accent-red);
+            color: var(--accent-red); border-radius: 6px; font-size: 0.75rem; font-weight: 700;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .btn-close-trade:hover { background: var(--accent-red); color: #fff; }
+        .btn-close-mini {
+            padding: 3px 8px; background: rgba(239, 68, 68, 0.14); border: 1px solid var(--accent-red);
+            color: var(--accent-red); border-radius: 4px; font-size: 0.7rem; font-weight: 700;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .btn-close-mini:hover { background: var(--accent-red); color: #fff; }
+        .manual-tag {
+            display: inline-block; font-size: 0.66rem; padding: 1px 6px; border-radius: 4px;
+            background: rgba(245, 158, 11, 0.14); border: 1px solid rgba(245, 158, 11, 0.4);
+            color: var(--accent-gold); font-weight: 700; margin-inline-start: 4px;
+        }
+
         .nav-tabs { display: flex; gap: 8px; flex-wrap: wrap; background: var(--bg-secondary); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); }
         .nav-tab {
             flex: 1; min-width: 105px; padding: 10px 12px; background: var(--bg-primary); border: 1px solid var(--border-color);
@@ -326,7 +345,7 @@
             <input type="email" id="authEmail" class="auth-input" data-i18n-ph="emailPh" placeholder="Email Address" onkeydown="if(event.key==='Enter') handleAuthSubmit()">
             <input type="password" id="authPassword" class="auth-input" data-i18n-ph="passPh" placeholder="Password (min 6 chars)" onkeydown="if(event.key==='Enter') handleAuthSubmit()">
 
-            <!-- Email OTP Code Input (Shown during Sign Up Email Verification) -->
+            <!-- Email OTP Code Input -->
             <input type="text" id="authOtpInput" class="auth-input otp-input" inputmode="numeric" maxlength="8" style="display:none;" placeholder="000000" onkeydown="if(event.key==='Enter') handleVerifySignupOtp()">
 
             <div class="auth-link-row" id="forgotLinkRow">
@@ -716,9 +735,9 @@
                 <div class="metric-sub" id="myRiskSub">Max SL: 120 Pips | News Filter: ON</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label" data-i18n="myManualScansLbl">Manual Analyze Scans</div>
+                <div class="metric-label" data-i18n="myManualScansLbl">Manual Copied Trades</div>
                 <div class="metric-value" id="myManualCount" style="color: var(--accent-blue);">0</div>
-                <div class="metric-sub" data-i18n="myManualScansSub">On-demand personal scans</div>
+                <div class="metric-sub" data-i18n="myManualScansSub">Personal MT5 copied scans</div>
             </div>
         </div>
 
@@ -740,10 +759,11 @@
                             <th data-i18n="thOutcome">Outcome</th>
                             <th data-i18n="thMyPnl">My Net P&L</th>
                             <th data-i18n="thDate">Date</th>
+                            <th data-i18n="thAction">Action</th>
                         </tr>
                     </thead>
                     <tbody id="myClientTradesBody">
-                        <tr><td colspan="9" style="text-align:center; color:var(--text-secondary); padding:14px;">No personal trades recorded since your VIP activation yet.</td></tr>
+                        <tr><td colspan="10" style="text-align:center; color:var(--text-secondary); padding:14px;">No personal trades recorded since your VIP activation yet.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1125,14 +1145,21 @@ const I18N = {
         manualAnalyzerSub: 'SMC & Engulfing Real-time Scan',
         manualAnalyzerDesc: 'Analyze current XAU/USD market structure instantly on demand.',
         runAnalysisBtn: 'Run Instant Analysis',
+        copyToMt5Btn: 'Copy to MT5',
+        copyLevelsBtn: 'Copy',
+        copiedToMt5Done: 'Sent to MT5',
+        closeTradeBtn: 'Close Trade at Market',
+        closeMasterBtn: 'Close Master Trade at Market',
+        closedManualTag: '✋ Closed Manually',
+        thAction: 'Action',
         myDashBannerTitle: 'My VIP Personal Dashboard',
         myDashBannerSub: 'Tracking your real account performance since',
         refreshMyStatsBtn: 'Refresh My Stats',
         myWinRateLbl: 'My Personal Win Rate',
         myNetPnlLbl: 'My Real Net P&L ($)',
         myRiskProfileLbl: 'My Active Risk Profile',
-        myManualScansLbl: 'Manual Analyze Scans',
-        myManualScansSub: 'On-demand personal scans',
+        myManualScansLbl: 'Manual Copied Trades',
+        myManualScansSub: 'Personal MT5 copied scans',
         myTradesHistTitle: '📜 My Copied & Manual Trades History (Personal Account)',
         thSource: 'Source',
         thMyLot: 'My Lot',
@@ -1254,14 +1281,21 @@ const I18N = {
         manualAnalyzerSub: 'مسح فوري لهيكل السوق SMC والشموع الابتلاعية',
         manualAnalyzerDesc: 'افحص حركة الذهب XAU/USD الحالية واحصل على مستويات الدخول والأهداف فوراً.',
         runAnalysisBtn: 'تشغيل التحليل الفوري',
+        copyToMt5Btn: 'نسخ وفتح على MT5',
+        copyLevelsBtn: 'نسخ',
+        copiedToMt5Done: 'تم الإرسال لـ MT5',
+        closeTradeBtn: 'إغلاق الصفقة يدوياً الآن',
+        closeMasterBtn: 'إغلاق صفقة الماستر يدوياً',
+        closedManualTag: '✋ إغلاق يدوي',
+        thAction: 'إجراء',
         myDashBannerTitle: 'لوحة تحكمي الشخصية (VIP)',
         myDashBannerSub: 'تتبّع أداء حسابك الحقيقي منذ تاريخ تفعيل اشتراكك:',
         refreshMyStatsBtn: 'تحديث إحصائياتي',
         myWinRateLbl: 'نسبة نجاحي الشخصية',
         myNetPnlLbl: 'صافي ربحي الفعلي ($)',
         myRiskProfileLbl: 'إعدادات مخاطرتي المفعّلة',
-        myManualScansLbl: 'تحليلاتي اليدوية',
-        myManualScansSub: 'فحوصات السوق عند الطلب',
+        myManualScansLbl: 'صفقاتي اليدوية المنسوخة',
+        myManualScansSub: 'صفقات الفحص اليدوي على MT5',
         myTradesHistTitle: '📜 سجل صفقاتي المنسوخة واليدوية (حسابي الشخصي)',
         thSource: 'المصدر',
         thMyLot: 'لوتي',
@@ -1585,8 +1619,10 @@ async function verifyUsdtCheckout() {
 }
 
 // ============================================================================
-// 1. AI MANUAL MARKET ANALYZER (BUILT-IN REAL-TIME SMC FALLBACK)
+// 1. AI MANUAL MARKET ANALYZER (ISOLATED PER-CLIENT + COPY TO MT5)
 // ============================================================================
+let lastManualScanResult = null;
+
 async function triggerManualAnalyze() {
     if (!hasValidVipAccess(currentUserProfile)) {
         switchTerminalTab('account');
@@ -1603,7 +1639,6 @@ async function triggerManualAnalyze() {
 
     try {
         let data = null;
-        // محاولة الاتصال بالسيرفر إن وُجد، وإلا تنفيذ التحليل الهيكلي المباشر من البيانات الحية
         try {
             const ctrl = new AbortController();
             const timer = setTimeout(() => ctrl.abort(), 3000);
@@ -1642,13 +1677,25 @@ async function triggerManualAnalyze() {
             };
         }
 
+        lastManualScanResult = { ...data, executed: false };
         const isBuy = data.signal === 'BUY';
+
         resultDiv.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h4 style="color:${isBuy ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size:0.95rem;">
-                    ${isBuy ? '🟢' : '🔴'} SIGNAL: ${data.signal}
-                </h4>
-                <span style="font-size:0.72rem; color:var(--text-secondary);">XAU/USD (H1/M5 SMC)</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <h4 style="color:${isBuy ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size:0.95rem; margin:0;">
+                        ${isBuy ? '🟢' : '🔴'} SIGNAL: ${data.signal}
+                    </h4>
+                    <span style="font-size:0.72rem; color:var(--text-secondary);">XAU/USD (H1/M5 SMC)</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <button type="button" id="btnCopyManualLevels" class="btn-ui" style="padding:5px 10px; font-size:0.74rem;" onclick="copyManualLevelsText()">
+                        📋 ${t('copyLevelsBtn')}
+                    </button>
+                    <button type="button" id="btnCopyManualToMt5" class="auth-btn" style="width:auto; padding:6px 14px; font-size:0.76rem; background:${isBuy ? 'var(--accent-green)' : 'var(--accent-red)'}; color:#fff;" onclick="copyManualTradeToMt5()">
+                        🚀 ${t('copyToMt5Btn')}
+                    </button>
+                </div>
             </div>
             <div class="analyze-grid">
                 <div><span style="color:var(--text-secondary); font-size:0.68rem;">Entry</span><br><strong style="color:var(--accent-gold);">${data.entry}</strong></div>
@@ -1657,29 +1704,115 @@ async function triggerManualAnalyze() {
                 <div><span style="color:var(--text-secondary); font-size:0.68rem;">TP2</span><br><strong style="color:var(--accent-green);">${data.tp2}</strong></div>
             </div>
             <p style="font-size:0.72rem; color:var(--text-secondary); margin-top:8px;">${data.message}</p>
+            <div id="manualCopyStatusMsg" style="font-size:0.74rem; margin-top:6px; font-weight:600;"></div>
         `;
-        logEvent(`🔍 Manual AI Scan: ${data.signal} @ ${data.entry}`);
-
-        if (currentUserProfile && currentUserProfile.id) {
-            await sb.from('client_trades').insert({
-                user_id: currentUserProfile.id,
-                client_email: currentUserProfile.email,
-                trade_id: 'MAN-' + Date.now().toString().slice(-6),
-                source: 'MANUAL_ANALYZE',
-                dir: data.signal,
-                setup_name: 'Manual AI Scan',
-                entry: parseFloat(data.entry) || 0,
-                sl: parseFloat(data.sl) || 0,
-                tp: parseFloat(data.tp2 || data.tp1) || 0,
-                lot: parseFloat(document.getElementById('clientLotSize')?.value || 0.01),
-                outcome: 'OPEN'
-            });
-        }
+        logEvent(`🔍 Manual AI Scan (Personal): ${data.signal} @ ${data.entry}`, true);
     } catch (e) {
         resultDiv.innerHTML = `<span style="color:var(--accent-red); font-size:0.78rem;">❌ ${e.message}</span>`;
     } finally {
         btn.disabled = false;
         btn.innerHTML = `🔍 <span data-i18n="runAnalysisBtn">${t('runAnalysisBtn')}</span>`;
+    }
+}
+
+function copyManualLevelsText() {
+    if (!lastManualScanResult) return;
+    const r = lastManualScanResult;
+    const text = `XAU/USD ${r.signal}\nEntry: ${r.entry}\nSL: ${r.sl}\nTP1: ${r.tp1}\nTP2: ${r.tp2}`;
+    navigator.clipboard.writeText(text);
+    const btn = document.getElementById('btnCopyManualLevels');
+    if (btn) {
+        const old = btn.innerHTML;
+        btn.innerHTML = currentLang === 'ar' ? '✅ تم النسخ' : '✅ Copied';
+        setTimeout(() => { btn.innerHTML = old; }, 1500);
+    }
+}
+
+async function copyManualTradeToMt5() {
+    if (!lastManualScanResult || !currentUserProfile) return;
+    if (lastManualScanResult.executed) return;
+
+    const btn = document.getElementById('btnCopyManualToMt5');
+    const statusEl = document.getElementById('manualCopyStatusMsg');
+    const scan = lastManualScanResult;
+
+    btn.disabled = true;
+    btn.innerHTML = currentLang === 'ar' ? '⏳ جاري التحقق من MT5...' : '⏳ Checking MT5...';
+
+    try {
+        const { data: mt5Acc } = await sb
+            .from('mt5_accounts')
+            .select('mt5_login, broker_server, lot_mode, fixed_lot, last_balance, is_active, connection_status')
+            .eq('user_id', currentUserProfile.id)
+            .maybeSingle();
+
+        if (!mt5Acc || !mt5Acc.is_active) {
+            copyManualLevelsText();
+            statusEl.style.color = 'var(--accent-gold)';
+            statusEl.innerHTML = currentLang === 'ar'
+                ? '⚠️ حساب MT5 غير مربوط بعد. تم نسخ الأرقام للحافظة — <a href="#" onclick="switchTerminalTab(\'account\'); return false;" style="color:var(--accent-green); text-decoration:underline;">اضغط هنا لربط حساب MT5</a>.'
+                : '⚠️ MT5 account not linked yet. Levels copied to clipboard — <a href="#" onclick="switchTerminalTab(\'account\'); return false;" style="color:var(--accent-green); text-decoration:underline;">Click here to connect MT5</a>.';
+            btn.disabled = false;
+            btn.innerHTML = `🚀 ${t('copyToMt5Btn')}`;
+            return;
+        }
+
+        let lotToUse = parseFloat(document.getElementById('clientLotSize')?.value || 0);
+        if (!lotToUse || lotToUse <= 0) {
+            if (mt5Acc.lot_mode === 'FIXED') {
+                lotToUse = Number(mt5Acc.fixed_lot || 0.01);
+            } else {
+                const bal = Number(mt5Acc.last_balance || 400);
+                lotToUse = Math.max(0.01, Math.round((bal / 400) * 0.04 * 100) / 100);
+            }
+        }
+
+        const confirmMsg = currentLang === 'ar'
+            ? `هل تريد فتح صفقة ${scan.signal} على حسابك الشخصي MT5 (${mt5Acc.mt5_login}) بلوت ${lotToUse.toFixed(2)}؟\nالدخول: ${scan.entry} | SL: ${scan.sl} | TP: ${scan.tp2 || scan.tp1}`
+            : `Open ${scan.signal} on YOUR MT5 (#${mt5Acc.mt5_login}) with ${lotToUse.toFixed(2)} lot?\nEntry: ${scan.entry} | SL: ${scan.sl} | TP: ${scan.tp2 || scan.tp1}`;
+
+        if (!confirm(confirmMsg)) {
+            btn.disabled = false;
+            btn.innerHTML = `🚀 ${t('copyToMt5Btn')}`;
+            return;
+        }
+
+        const tradeId = 'MAN-' + Date.now().toString().slice(-6);
+        const { error } = await sb.from('client_trades').insert({
+            user_id: currentUserProfile.id,
+            client_email: currentUserProfile.email,
+            mt5_login: mt5Acc.mt5_login,
+            trade_id: tradeId,
+            source: 'MANUAL_ANALYZE',
+            dir: scan.signal,
+            setup_name: 'Manual AI Scan [MT5_EXEC]',
+            entry: parseFloat(scan.entry) || 0,
+            sl: parseFloat(scan.sl) || 0,
+            tp: parseFloat(scan.tp2 || scan.tp1) || 0,
+            lot: lotToUse,
+            outcome: 'OPEN'
+        });
+
+        if (error) throw error;
+
+        lastManualScanResult.executed = true;
+        btn.style.background = 'var(--bg-card)';
+        btn.style.border = '1px solid var(--accent-green)';
+        btn.style.color = 'var(--accent-green)';
+        btn.innerHTML = `✅ ${t('copiedToMt5Done')} (#${tradeId})`;
+
+        statusEl.style.color = 'var(--accent-green)';
+        statusEl.innerText = currentLang === 'ar'
+            ? `✅ تم إرسال الأمر #${tradeId} لحسابك MT5 (${mt5Acc.mt5_login}) بلوت ${lotToUse.toFixed(2)} — يمكنك متابعتها أو إغلاقها من "لوحتي الخاصة".`
+            : `✅ Order #${tradeId} sent to your MT5 (#${mt5Acc.mt5_login}) with ${lotToUse.toFixed(2)} lot — track or close it in "My Dashboard".`;
+
+        logEvent(`🚀 Copied Personal Manual Scan #${tradeId} (${scan.signal} @ ${scan.entry}) to MT5`, true);
+        loadMyClientDashboard();
+    } catch (err) {
+        statusEl.style.color = 'var(--accent-red)';
+        statusEl.innerText = '❌ Error: ' + err.message;
+        btn.disabled = false;
+        btn.innerHTML = `🚀 ${t('copyToMt5Btn')}`;
     }
 }
 
@@ -1734,7 +1867,7 @@ const ADMIN_EMAIL = 'bacharrachiini97@gmail.com';
 const AW_PIN = '1997';
 const VALID_PAID_PLANS = new Set(['1_WEEK', '1_MONTH', '3_MONTHS', 'MASTER']);
 
-let authMode = 'login'; // 'login' | 'signup' | 'verify_otp' | 'forgot'
+let authMode = 'login';
 let pendingSignupEmail = '';
 let isPasswordRecoveryMode = false;
 let currentUserProfile = null;
@@ -1782,14 +1915,11 @@ function verifyAwPin() {
     }
 }
 
-// إغلاق ثغرة فتح الإشارات للحساب الجديد بدون دفع
 function hasValidVipAccess(profile) {
     if (!profile) return false;
     if (profile.role === 'admin' || (profile.email || '').toLowerCase() === ADMIN_EMAIL) return true;
-    // وضع التجربة المجانية لا يفتح إلا إذا فعّله الأدمن صراحةً في إعدادات النظام
     if (state.betaMode === true && masterConfig.beta_mode === true) return true;
     if (!profile.is_approved) return false;
-    // رفض أي قيمة قديمة مثل FREE_BETA إذا لم يكن هناك اشتراك مدفوع/معتمد حقيقي
     const plan = String(profile.vip_plan || '').toUpperCase();
     if (!VALID_PAID_PLANS.has(plan)) return false;
     if (!profile.vip_expires_at) return true;
@@ -2020,12 +2150,10 @@ async function handleAuthSubmit() {
             return;
         }
 
-        // إذا أعاد Supabase جلسة فورية لأن خيار Confirm Email مطفأ في الإعدادات، نغلقها ونرسل OTP للتأكد من ملكية الإيميل
         if (data?.session) {
             await sb.auth.signOut();
             await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
         } else if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
-            // الحساب مسجل مسبقاً ولم يُفعّل بعد -> إعادة إرسال الكود
             await sb.auth.resend({ type: 'signup', email });
         }
 
@@ -2141,7 +2269,6 @@ async function checkUserSession() {
     const userEmail = (session.user.email || '').toLowerCase();
     const provider = session.user.app_metadata?.provider || 'email';
 
-    // منع دخول أي حساب بريد عادي لم يؤكد الكود بعد
     if (provider === 'email' && !session.user.email_confirmed_at && userEmail !== ADMIN_EMAIL) {
         await sb.auth.signOut();
         pendingSignupEmail = session.user.email;
@@ -2151,7 +2278,6 @@ async function checkUserSession() {
         return;
     }
 
-    // التحقق التلقائي من الدفع بالفيزا إذا رجع العميل من PayMeGate
     const pendingOrderId = urlParams.get('verify_order') || localStorage.getItem('mrtrader_pending_order');
     if (pendingOrderId) {
         await verifyVisaOrder(pendingOrderId, session, true);
@@ -2160,7 +2286,6 @@ async function checkUserSession() {
     const { data: profile } = await sb.from('client_profiles').select('*').eq('id', session.user.id).single();
 
     if (profile) {
-        // تنظيف أي قيمة قديمة مثل FREE_BETA إن وجدت بقاعدة البيانات لحساب غير مدفوع
         if (userEmail !== ADMIN_EMAIL && !VALID_PAID_PLANS.has(String(profile.vip_plan || '').toUpperCase())) {
             profile.is_approved = false;
             profile.vip_plan = 'UPGRADE_REQUIRED';
@@ -2240,8 +2365,10 @@ async function checkUserSession() {
 }
 
 // ============================================================================
-// 3.5 CLIENT PERSONAL DASHBOARD LOADER
+// 3.5 CLIENT PERSONAL DASHBOARD & MANUAL TRADE CLOSING (ISOLATED PER-CLIENT)
 // ============================================================================
+let cachedMyTrades = [];
+
 async function loadMyClientDashboard() {
     if (!currentUserProfile) return;
     const vipStartIso = currentUserProfile.vip_started_at || currentUserProfile.created_at;
@@ -2265,7 +2392,8 @@ async function loadMyClientDashboard() {
     if (vipStartIso) query = query.gte('created_at', vipStartIso);
     const { data: myTrades } = await query;
 
-    const list = myTrades || [];
+    cachedMyTrades = myTrades || [];
+    const list = cachedMyTrades;
     const closed = list.filter(x => x.outcome === 'WIN' || x.outcome === 'LOSS');
     const wins = closed.filter(x => x.outcome === 'WIN');
     const losses = closed.filter(x => x.outcome === 'LOSS');
@@ -2287,13 +2415,18 @@ async function loadMyClientDashboard() {
     if (!tbody) return;
 
     if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--text-secondary); padding:14px;">No personal trades recorded since ${startDateLabel}.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:var(--text-secondary); padding:14px;">No personal trades recorded since ${startDateLabel}.</td></tr>`;
     } else {
         tbody.innerHTML = list.map(tr => {
             const isWin = tr.outcome === 'WIN';
             const isOpen = tr.outcome === 'OPEN';
+            const isManualClosed = (tr.setup_name || '').includes('[MANUAL_CLOSE]');
             const color = isOpen ? 'var(--accent-gold)' : (isWin ? 'var(--accent-green)' : 'var(--accent-red)');
-            const badge = tr.source === 'MANUAL_ANALYZE' ? '🔍 Manual' : '🤖 Auto-Copy';
+            const badge = tr.source === 'MANUAL_ANALYZE' ? '🔍 Manual MT5' : '🤖 Auto-Copy';
+            const manualBadge = isManualClosed ? `<span class="manual-tag">${t('closedManualTag')}</span>` : '';
+            const actionCell = isOpen
+                ? `<button type="button" class="btn-close-mini" onclick="closePersonalTrade('${tr.id}')">✖ ${currentLang === 'ar' ? 'إغلاق' : 'Close'}</button>`
+                : `<span style="color:var(--text-secondary); font-size:0.7rem;">—</span>`;
             return `
                 <tr>
                     <td><strong>#${tr.trade_id}</strong></td>
@@ -2302,12 +2435,58 @@ async function loadMyClientDashboard() {
                     <td>${Number(tr.entry || 0).toFixed(2)}</td>
                     <td>${Number(tr.sl || 0).toFixed(2)} / ${Number(tr.tp || 0).toFixed(2)}</td>
                     <td>${Number(tr.lot || 0).toFixed(2)}</td>
-                    <td style="font-weight:700; color:${color};">${tr.outcome}</td>
+                    <td style="font-weight:700; color:${color};">${tr.outcome} ${manualBadge}</td>
                     <td style="font-weight:700; color:${color};">${isOpen ? 'Active' : (tr.net_pnl >= 0 ? '+' : '-') + '$' + Math.abs(tr.net_pnl).toFixed(2)}</td>
                     <td style="color:var(--text-secondary);">${formatDateShort(tr.created_at)}</td>
+                    <td>${actionCell}</td>
                 </tr>`;
         }).join('');
     }
+}
+
+async function closePersonalTrade(rowId) {
+    if (!currentUserProfile) return;
+    const tr = cachedMyTrades.find(x => String(x.id) === String(rowId));
+    if (!tr || tr.outcome !== 'OPEN') return;
+
+    const livePrice = Number(state.lastPrice || tr.entry || 0);
+    if (!livePrice) {
+        alert(currentLang === 'ar' ? 'بانتظار مزامنة السعر المباشر قبل الإغلاق.' : 'Awaiting live XAU/USD price before closing.');
+        return;
+    }
+
+    const lotUsed = Number(tr.lot || 0.01);
+    const dollarPerPoint = lotUsed * 100;
+    const spreadCost = (lotUsed / 0.04) * 0.80;
+    const priceDiff = tr.dir === 'BUY' ? (livePrice - Number(tr.entry)) : (Number(tr.entry) - livePrice);
+    const estNetPnL = Math.round(((priceDiff * dollarPerPoint) - spreadCost) * 100) / 100;
+    const outcome = estNetPnL >= 0 ? 'WIN' : 'LOSS';
+
+    const confirmText = currentLang === 'ar'
+        ? `هل تريد إغلاق صفقتك الشخصية #${tr.trade_id} (${tr.dir}) يدوياً الآن عند السعر ${livePrice.toFixed(2)}؟\nالنتيجة التقديرية: ${estNetPnL >= 0 ? '+' : '-'}$${Math.abs(estNetPnL).toFixed(2)}`
+        : `Close your personal trade #${tr.trade_id} (${tr.dir}) manually at ${livePrice.toFixed(2)}?\nEstimated Net P&L: ${estNetPnL >= 0 ? '+' : '-'}$${Math.abs(estNetPnL).toFixed(2)}`;
+
+    if (!confirm(confirmText)) return;
+
+    const baseSetup = (tr.setup_name || tr.source || 'Trade').replace('[MT5_EXEC]', '').replace('[MT5_OPENED]', '').trim();
+    const { error } = await sb
+        .from('client_trades')
+        .update({
+            outcome: outcome,
+            net_pnl: estNetPnL,
+            setup_name: `${baseSetup} [MANUAL_CLOSE]`,
+            closed_at: new Date().toISOString()
+        })
+        .eq('id', tr.id)
+        .eq('user_id', currentUserProfile.id);
+
+    if (error) {
+        alert('Error closing trade: ' + error.message);
+        return;
+    }
+
+    logEvent(`✋ Personal Trade #${tr.trade_id} closed manually @ ${livePrice.toFixed(2)} (${estNetPnL >= 0 ? '+' : '-'}$${Math.abs(estNetPnL).toFixed(2)})`, true);
+    await loadMyClientDashboard();
 }
 
 // ============================================================================
@@ -2494,7 +2673,7 @@ function subscribeToRealtimeState() {
         .subscribe();
 }
 
-function logEvent(msg) {
+function logEvent(msg, localOnly = false) {
     const timeStr = formatShiftedTime(new Date());
     const entryHtml = `<span class="log-time">[${timeStr}]</span>${msg}`;
     const logBox = document.getElementById('systemLogs');
@@ -2506,7 +2685,7 @@ function logEvent(msg) {
         if (logBox.children.length > 50) logBox.removeChild(logBox.lastChild);
     }
 
-    if (isCurrentUserAdmin()) {
+    if (isCurrentUserAdmin() && !localOnly) {
         state.recentLogs = [entryHtml, ...(state.recentLogs || [])].slice(0, 25);
     }
 }
@@ -2640,30 +2819,60 @@ function manageActiveTrade(livePrice) {
     }
 
     const lotUsed = trade.lot || DEFAULT_ENGINE_RULES.baseLotPer400;
-    const dollarPerPoint = lotUsed * 100; // على الذهب: 0.04 لوت = $4.00 لكل $1.00 حركة
+    const dollarPerPoint = lotUsed * 100;
     const spreadCost = (lotUsed / 0.04) * 0.80;
 
     if (trade.dir === "BUY") {
         if (livePrice >= trade.tp) {
             const grossWin = Math.abs(trade.tp - trade.entry) * dollarPerPoint;
-            closeTrade("WIN", grossWin - spreadCost);
+            closeTrade("WIN", grossWin - spreadCost, "AUTO");
         } else if (livePrice <= trade.sl) {
             const grossLoss = Math.abs(trade.entry - trade.sl) * dollarPerPoint;
-            closeTrade("LOSS", -grossLoss - spreadCost);
+            closeTrade("LOSS", -grossLoss - spreadCost, "AUTO");
         }
     } else {
         if (livePrice <= trade.tp) {
             const grossWin = Math.abs(trade.entry - trade.tp) * dollarPerPoint;
-            closeTrade("WIN", grossWin - spreadCost);
+            closeTrade("WIN", grossWin - spreadCost, "AUTO");
         } else if (livePrice >= trade.sl) {
             const grossLoss = Math.abs(trade.sl - trade.entry) * dollarPerPoint;
-            closeTrade("LOSS", -grossLoss - spreadCost);
+            closeTrade("LOSS", -grossLoss - spreadCost, "AUTO");
         }
     }
 }
 
-function closeTrade(outcome, netDollarPnL) {
+async function closeActiveTradeManually() {
+    if (!isCurrentUserAdmin() || !state.activeTrade) return;
     const trade = state.activeTrade;
+    const livePrice = Number(state.lastPrice || trade.entry || 0);
+    if (!livePrice) {
+        alert(currentLang === 'ar' ? 'بانتظار مزامنة السعر المباشر.' : 'Awaiting live XAU/USD price.');
+        return;
+    }
+
+    const lotUsed = trade.lot || DEFAULT_ENGINE_RULES.baseLotPer400;
+    const dollarPerPoint = lotUsed * 100;
+    const spreadCost = (lotUsed / 0.04) * 0.80;
+    const priceDiff = trade.dir === 'BUY' ? (livePrice - trade.entry) : (trade.entry - livePrice);
+    const estNetPnL = (priceDiff * dollarPerPoint) - spreadCost;
+    const outcome = estNetPnL >= 0 ? 'WIN' : 'LOSS';
+
+    const confirmMsg = currentLang === 'ar'
+        ? `هل تريد إغلاق صفقة الماستر #Trade-${trade.tradeId || 1} (${trade.dir}) يدوياً عند ${livePrice.toFixed(2)}؟\nالنتيجة: ${estNetPnL >= 0 ? '+' : '-'}$${Math.abs(estNetPnL).toFixed(2)}`
+        : `Close Master #Trade-${trade.tradeId || 1} (${trade.dir}) manually at ${livePrice.toFixed(2)}?\nEstimated P&L: ${estNetPnL >= 0 ? '+' : '-'}$${Math.abs(estNetPnL).toFixed(2)}`;
+
+    if (!confirm(confirmMsg)) return;
+
+    closeTrade(outcome, estNetPnL, "MANUAL", livePrice);
+    await sendTelegramAlert(
+        `✋ Mr. Trader AI — #Trade-${trade.tradeId || 1} CLOSED MANUALLY\n` +
+        `Exit: ${livePrice.toFixed(2)} | Result: ${estNetPnL >= 0 ? '+' : '-'}$${Math.abs(estNetPnL).toFixed(2)}`
+    );
+}
+
+function closeTrade(outcome, netDollarPnL, closedBy = "AUTO", closePrice = null) {
+    const trade = state.activeTrade;
+    if (!trade) return;
     const roundedPnL = Math.round(netDollarPnL * 100) / 100;
 
     const closedRecord = {
@@ -2675,13 +2884,21 @@ function closeTrade(outcome, netDollarPnL) {
         tp: trade.tp,
         lot: trade.lot || DEFAULT_ENGINE_RULES.baseLotPer400,
         outcome: outcome,
+        closedBy: closedBy,
+        closePrice: closePrice,
         netPnL: roundedPnL,
         closedTs: Date.now(),
         closedAt: formatShiftedTime(new Date())
     };
     state.history = [closedRecord, ...(state.history || [])];
 
-    if (outcome === "WIN") {
+    if (closedBy === "MANUAL") {
+        if (outcome === "WIN") state.consecutiveLosses = 0;
+        const signStr = roundedPnL >= 0 ? `+$${roundedPnL.toFixed(2)}` : `-$${Math.abs(roundedPnL).toFixed(2)}`;
+        const logStr = `✋ #Trade-${closedRecord.tradeId} CLOSED MANUALLY @ ${Number(closePrice || trade.entry).toFixed(2)} (${signStr})`;
+        logEvent(logStr);
+        triggerClientPushAlert("Mr. Trader AI — Trade Closed Manually", logStr);
+    } else if (outcome === "WIN") {
         state.consecutiveLosses = 0;
         const logStr = "✅ #Trade-" + closedRecord.tradeId + " TP HIT (+$" + roundedPnL.toFixed(2) + ")";
         logEvent(logStr);
@@ -2976,6 +3193,9 @@ function updateDashboardUI() {
             const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
             statusTag.innerText = `🟢 ${modeLabel} — #Trade-${tr.tradeId || 1}`;
             const aiBadge = `<div class="ai-audit-box">🤖 <strong>AI Audit:</strong> H1 ${htfBias} Aligned • M5 Momentum Verified • 1:1.5 R:R</div>`;
+            const closeBtnHtml = isCurrentUserAdmin()
+                ? `<button type="button" class="btn-close-trade" onclick="closeActiveTradeManually()">✖ ${t('closeMasterBtn')}</button>`
+                : '';
 
             const cardHtml = `
                 <div class="signal-card ${cls}">
@@ -2985,6 +3205,7 @@ function updateDashboardUI() {
                     <div class="sig-row"><span>TP:</span><strong style="color:var(--accent-green);">${Number(tr.tp).toFixed(2)}</strong></div>
                     <div class="sig-row"><span>Lot:</span><strong>${Number(tr.lot || 0.04).toFixed(2)} lot</strong></div>
                     ${aiBadge}
+                    ${closeBtnHtml}
                 </div>`;
             homeSigBox.innerHTML = cardHtml;
             activeTabBox.innerHTML = cardHtml;
@@ -3034,6 +3255,7 @@ function updateDashboardUI() {
             const isWin = h.outcome === 'WIN';
             const pnlColor = isWin ? 'var(--accent-green)' : 'var(--accent-red)';
             const dirColor = h.dir === 'BUY' ? 'var(--accent-green)' : 'var(--accent-red)';
+            const manualTag = h.closedBy === 'MANUAL' ? `<span class="manual-tag">${t('closedManualTag')}</span>` : '';
             return `
                 <tr>
                     <td><strong>#${h.tradeId}</strong></td>
@@ -3043,7 +3265,7 @@ function updateDashboardUI() {
                     <td>${Number(h.sl).toFixed(2)}</td>
                     <td>${Number(h.tp).toFixed(2)}</td>
                     <td>${Number(h.lot || 0.04).toFixed(2)}</td>
-                    <td style="color:${pnlColor}; font-weight:700;">${h.outcome}</td>
+                    <td style="color:${pnlColor}; font-weight:700;">${h.outcome} ${manualTag}</td>
                     <td style="color:${pnlColor}; font-weight:700;">${h.netPnL >= 0 ? '+' : '-'}$${Math.abs(h.netPnL).toFixed(2)}</td>
                     <td style="color:var(--text-secondary);">${h.closedAt}</td>
                 </tr>
