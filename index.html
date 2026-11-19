@@ -107,15 +107,23 @@
         .auth-link:hover { color: var(--accent-gold); }
         .auth-msg { font-size: 0.75rem; margin-top: 8px; text-align: center; color: var(--accent-green); }
 
-        .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 10px; }
+        .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 10px; }
         .plan-card {
-            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px;
-            padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; text-align: center;
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px;
+            padding: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; text-align: center;
         }
-        .plan-card.popular { border: 1.5px solid var(--accent-gold); box-shadow: 0 0 18px rgba(245, 158, 11, 0.12); }
-        .plan-title { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
-        .plan-price { font-size: 1.35rem; font-weight: 800; color: var(--accent-gold); }
-        .plan-desc { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.4; }
+        .plan-card.popular { border: 1.5px solid var(--accent-gold); box-shadow: 0 0 20px rgba(245, 158, 11, 0.15); }
+        .plan-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+        .plan-price { font-size: 1.5rem; font-weight: 800; color: var(--accent-gold); }
+        .plan-desc { font-size: 0.74rem; color: var(--text-secondary); line-height: 1.45; }
+        .btn-visa {
+            background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; padding: 10px 14px; border-radius: 8px;
+            font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            transition: transform 0.12s, opacity 0.15s;
+        }
+        .btn-visa:hover { opacity: 0.92; transform: translateY(-1px); }
+        .btn-visa:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-visa.green { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
         .btn-tg {
             background: #229ED9; color: #fff; border: none; padding: 8px 12px; border-radius: 6px;
             font-weight: 700; font-size: 0.76rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
@@ -739,9 +747,9 @@
                 <span data-i18n="stratTitle">📊 Mr. Trader AI Engine Overview</span>
             </div>
             <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;" data-i18n="stratDesc">
-• <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
-• <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>
-• <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
+- <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
+- <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>
+- <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
             </p>
         </div>
     </div>
@@ -767,8 +775,8 @@
                     <div class="metric-value" id="accPlanVal" style="color:var(--accent-gold);">🔒 Upgrade Required</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-label" data-i18n="accExpLbl">Expires</div>
-                    <div class="metric-value" id="accExpVal" style="font-size:0.85rem;">—</div>
+                    <div class="metric-label" data-i18n="accExpLbl">Status / Trading Days</div>
+                    <div class="metric-value" id="accExpVal" style="font-size:0.85rem;">Inactive</div>
                 </div>
             </div>
 
@@ -791,6 +799,40 @@
             </div>
         </div>
 
+        <!-- VIP VISA / MASTERCARD SUBSCRIPTION PLANS -->
+        <div class="panel-box" style="border-color: rgba(245, 158, 11, 0.55);">
+            <div class="box-header">
+                <span data-i18n="vipPlansHeader">💎 VIP Membership Plans (Instant Visa / Mastercard)</span>
+                <span style="color:var(--accent-green); font-size:0.72rem; font-weight:700;">⚡ Auto-Activation</span>
+            </div>
+            <div class="plans-grid">
+                <div class="plan-card">
+                    <div>
+                        <div class="plan-title" data-i18n="plan1wTitle">1 Week VIP</div>
+                        <div class="plan-price" style="margin:6px 0;">$14</div>
+                        <div class="plan-desc" data-i18n="plan1wDesc">5 Trading Days (Mon–Fri) • Full VIP Signals & MT5 Cloud Copier</div>
+                    </div>
+                    <button type="button" id="btnPlanWeek" onclick="startVisaCheckout('1_WEEK')" class="btn-visa">
+                        💳 <span data-i18n="payVisa1w">Pay $14 with Visa / Card</span>
+                    </button>
+                </div>
+                <div class="plan-card popular">
+                    <div>
+                        <div class="plan-title" data-i18n="plan1mTitle">1 Month VIP ⭐</div>
+                        <div class="plan-price" style="margin:6px 0;">$45</div>
+                        <div class="plan-desc" data-i18n="plan1mDesc">24 Trading Days • Full VIP Signals, AI Analyzer & MT5 Cloud Copier</div>
+                    </div>
+                    <button type="button" id="btnPlanMonth" onclick="startVisaCheckout('1_MONTH')" class="btn-visa green">
+                        💳 <span data-i18n="payVisa1m">Pay $45 with Visa / Card</span>
+                    </button>
+                </div>
+            </div>
+            <div id="pendingOrderVerifyWrap" style="display:none; margin-top:10px; padding:10px; background:rgba(245,158,11,0.1); border:1px solid var(--accent-gold); border-radius:8px; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <span style="font-size:0.76rem; color:var(--accent-gold);" id="pendingOrderLabel">⏳ Pending Visa payment detected...</span>
+                <button type="button" id="btnVerifyPendingOrder" onclick="manualVerifyPendingOrder()" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);">🔄 Verify Payment</button>
+            </div>
+        </div>
+
         <!-- CONNECT MT5 CLOUD AUTO-TRADE CARD -->
         <div class="panel-box" id="mt5ConnectCard" style="border-color: rgba(245, 158, 11, 0.4);">
             <div class="box-header">
@@ -808,7 +850,7 @@
             <!-- Locked Notice for Non-VIP Users -->
             <div id="mt5VipLockNotice" style="display:none; text-align:center; padding:12px; background:var(--bg-card); border:1px dashed var(--accent-gold); border-radius:6px;">
                 <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:6px;">
-                    🔒 <strong style="color:var(--accent-gold);">VIP Feature:</strong> Activate any VIP plan below to connect your MT5 account for 24/7 hands-free trade copying.
+                    🔒 <strong style="color:var(--accent-gold);">VIP Feature:</strong> Activate any VIP plan above to connect your MT5 account for 24/7 hands-free trade copying.
                 </p>
             </div>
 
@@ -896,33 +938,6 @@
             </div>
             <div style="display:flex; justify-content:flex-end; margin-top:10px;">
                 <button type="button" class="auth-btn" style="width:auto; padding:6px 14px; font-size:0.76rem;" onclick="saveClientPreferences()">💾 Save My Preferences</button>
-            </div>
-        </div>
-
-        <div class="panel-box">
-            <div class="box-header">
-                <span data-i18n="vipPlansHeader">💎 VIP Membership Plans</span>
-                <span style="color:var(--accent-gold); font-size:0.72rem;">@mrtraderai_official</span>
-            </div>
-            <div class="plans-grid">
-                <div class="plan-card">
-                    <div class="plan-title" data-i18n="plan3dTitle">3-Day Trial</div>
-                    <div class="plan-price">$15</div>
-                    <div class="plan-desc" data-i18n="plan3dDesc">Full live XAU/USD signals for 3 days</div>
-                    <a id="btnPlan3D" href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate</span></a>
-                </div>
-                <div class="plan-card popular">
-                    <div class="plan-title" data-i18n="plan1mTitle">1 Month VIP</div>
-                    <div class="plan-price">$99</div>
-                    <div class="plan-desc" data-i18n="plan1mDesc">30 days full terminal access & real-time alerts</div>
-                    <a id="btnPlan1M" href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate</span></a>
-                </div>
-                <div class="plan-card">
-                    <div class="plan-title" data-i18n="plan3mTitle">3 Months VIP</div>
-                    <div class="plan-price">$250</div>
-                    <div class="plan-desc" data-i18n="plan3mDesc">90 days priority VIP access (Save $47)</div>
-                    <a id="btnPlan3M" href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">✈️ <span data-i18n="orderTg">Activate</span></a>
-                </div>
             </div>
         </div>
     </div>
@@ -1022,15 +1037,14 @@ const I18N = {
         accEmailLbl: 'Email',
         accIdLbl: 'Client ID',
         accPlanLbl: 'VIP Bundle',
-        accExpLbl: 'Expires',
-        vipPlansHeader: '💎 VIP Membership Plans',
-        plan3dTitle: '3-Day Trial',
-        plan3dDesc: 'Full live XAU/USD signals for 3 days',
-        plan1mTitle: '1 Month VIP',
-        plan1mDesc: '30 days full terminal access & alerts',
-        plan3mTitle: '3 Months VIP',
-        plan3mDesc: '90 days priority VIP access (Save $47)',
-        orderTg: 'Activate',
+        accExpLbl: 'Status / Trading Days',
+        vipPlansHeader: '💎 VIP Membership Plans (Instant Visa / Mastercard)',
+        plan1wTitle: '1 Week VIP',
+        plan1wDesc: '5 Trading Days (Mon–Fri) • Full VIP Signals & MT5 Cloud Copier',
+        plan1mTitle: '1 Month VIP ⭐',
+        plan1mDesc: '24 Trading Days • Full VIP Signals, AI Analyzer & MT5 Cloud Copier',
+        payVisa1w: 'Pay $14 with Visa / Card',
+        payVisa1m: 'Pay $45 with Visa / Card',
         scanningTitle: '🤖 Scanning',
         scanningDesc: 'Monitoring M5 market structure and retracement zones.',
         noClosed: 'No closed trades recorded yet.',
@@ -1136,15 +1150,14 @@ const I18N = {
         accEmailLbl: 'البريد',
         accIdLbl: 'معرف العميل',
         accPlanLbl: 'باقة VIP',
-        accExpLbl: 'الانتهاء',
-        vipPlansHeader: '💎 باقات VIP الرسمية',
-        plan3dTitle: 'تجربة 3 أيام',
-        plan3dDesc: 'توصيات الذهب الحية لمدة 3 أيام',
-        plan1mTitle: 'شهر واحد VIP',
-        plan1mDesc: '30 يوماً وصول كامل وتنبيهات فورية',
-        plan3mTitle: '3 أشهر VIP',
-        plan3mDesc: '90 يوماً وصول مميز (وفر $47)',
-        orderTg: 'تفعيل',
+        accExpLbl: 'الحالة / أيام التداول',
+        vipPlansHeader: '💎 باقات VIP (دفع فوري بالفيزا / ماستركارد)',
+        plan1wTitle: 'أسبوع واحد VIP',
+        plan1wDesc: '5 أيام تداول فعلية (إثنين–جمعة) • توصيات حية ونسخ صفقات MT5',
+        plan1mTitle: 'شهر واحد VIP ⭐',
+        plan1mDesc: '24 يوم تداول فعلي • توصيات حية + المحلل الذكي + نسخ MT5',
+        payVisa1w: 'ادفع $14 بالفيزا / البطاقة',
+        payVisa1m: 'ادفع $45 بالفيزا / البطاقة',
         scanningTitle: '🤖 جاري المسح',
         scanningDesc: 'مراقبة هيكل السوق على فريم M5.',
         noClosed: 'لا توجد صفقات مسجلة.',
@@ -1192,6 +1205,98 @@ function toggleLanguage() {
 }
 
 // ============================================================================
+// 0.5 VISA / MASTERCARD CHECKOUT & AUTO-VERIFICATION (PAYMEGATE EDGE FUNCTION)
+// ============================================================================
+const EDGE_PAYMENT_URL = 'https://wdexwfoplycblaxmrfws.supabase.co/functions/v1/visa-payment';
+
+async function startVisaCheckout(plan) {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+        alert(currentLang === 'ar' ? 'يرجى تسجيل الدخول أولاً.' : 'Please log in first to subscribe.');
+        return;
+    }
+
+    const btn = document.getElementById(plan === '1_WEEK' ? 'btnPlanWeek' : 'btnPlanMonth');
+    const originalHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = currentLang === 'ar' ? '⏳ جاري تجهيز رابط الدفع...' : '⏳ Preparing Visa Checkout...';
+    }
+
+    try {
+        const res = await fetch(EDGE_PAYMENT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ action: 'create', plan })
+        });
+
+        const data = await res.json();
+        if (data.payment_url) {
+            localStorage.setItem('mrtrader_pending_order', data.order_id);
+            window.location.href = data.payment_url;
+        } else {
+            alert((currentLang === 'ar' ? 'خطأ في إنشاء رابط الدفع: ' : 'Payment error: ') + (data.error || 'Please try again'));
+        }
+    } catch (e) {
+        alert(currentLang === 'ar' ? 'خطأ في الاتصال بالخادم.' : 'Network error creating payment link.');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
+    }
+}
+
+async function verifyVisaOrder(orderId, session, silent = true) {
+    if (!orderId || !session) return false;
+    try {
+        const res = await fetch(EDGE_PAYMENT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ action: 'verify', order_id: orderId })
+        });
+
+        const result = await res.json();
+        if (result.paid) {
+            localStorage.removeItem('mrtrader_pending_order');
+            if (window.location.search.includes('verify_order')) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            alert(currentLang === 'ar'
+                ? '✅ تم تأكيد الدفع بنجاح! اشتراكك VIP مفعّل الآن ويمكنك ربط حساب MT5.'
+                : '✅ Payment Confirmed! Your VIP subscription is now active.');
+            return true;
+        } else if (!silent) {
+            alert(currentLang === 'ar'
+                ? '⏳ الدفعة قيد المعالجة بعد، انتظر دقيقة وجرّب مرة ثانية.'
+                : '⏳ Payment not confirmed yet. If you just paid, wait 30 seconds and click Verify again.');
+        }
+    } catch (e) {
+        if (!silent) alert('Verification error: ' + e.message);
+    }
+    return false;
+}
+
+async function manualVerifyPendingOrder() {
+    const orderId = localStorage.getItem('mrtrader_pending_order');
+    if (!orderId) return;
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+
+    const btn = document.getElementById('btnVerifyPendingOrder');
+    if (btn) { btn.disabled = true; btn.innerText = '⏳ Checking...'; }
+    const ok = await verifyVisaOrder(orderId, session, false);
+    if (btn) { btn.disabled = false; btn.innerText = '🔄 Verify Payment'; }
+    if (ok) location.reload();
+}
+
+// ============================================================================
 // 1. AI MANUAL MARKET ANALYZER
 // ============================================================================
 async function triggerManualAnalyze() {
@@ -1230,7 +1335,6 @@ async function triggerManualAnalyze() {
             `;
             logEvent(`🔍 Manual AI Scan: ${data.signal} @ ${data.entry}`);
 
-            // حفظ التحليل اليدوي في سجل العميل الشخصي (My Dashboard)
             if (currentUserProfile && currentUserProfile.id) {
                 await sb.from('client_trades').insert({
                     user_id: currentUserProfile.id,
@@ -1530,14 +1634,7 @@ async function logoutClient() {
 
 function bindTelegramActivationLinks(shortId, email) {
     const base = "https://t.me/mrtraderai_official?text=";
-    const msg3D = encodeURIComponent(`Hello Admin, I want to activate 3-Day Trial ($15)\nClient ID: ${shortId}\nEmail: ${email}`);
-    const msg1M = encodeURIComponent(`Hello Admin, I want to activate 1 Month VIP ($99)\nClient ID: ${shortId}\nEmail: ${email}`);
-    const msg3M = encodeURIComponent(`Hello Admin, I want to activate 3 Months VIP ($250)\nClient ID: ${shortId}\nEmail: ${email}`);
     const msgSup = encodeURIComponent(`Hello Mr. Trader AI Support,\nClient ID: ${shortId}\nEmail: ${email}`);
-
-    if (document.getElementById('btnPlan3D')) document.getElementById('btnPlan3D').href = base + msg3D;
-    if (document.getElementById('btnPlan1M')) document.getElementById('btnPlan1M').href = base + msg1M;
-    if (document.getElementById('btnPlan3M')) document.getElementById('btnPlan3M').href = base + msg3M;
     if (document.getElementById('tgSupportDirectLink')) document.getElementById('tgSupportDirectLink').href = base + msgSup;
 }
 
@@ -1559,6 +1656,12 @@ async function checkUserSession() {
         document.getElementById('authOverlay').style.display = 'flex';
         document.getElementById('terminalApp').style.display = 'none';
         return;
+    }
+
+    // التحقق التلقائي من الدفع بالفيزا إذا رجع العميل من PayMeGate
+    const pendingOrderId = urlParams.get('verify_order') || localStorage.getItem('mrtrader_pending_order');
+    if (pendingOrderId) {
+        await verifyVisaOrder(pendingOrderId, session, true);
     }
 
     const userEmail = (session.user.email || '').toLowerCase();
@@ -1585,8 +1688,11 @@ async function checkUserSession() {
     const shortId = '#UID-' + (currentUserProfile.id || '').slice(0, 6).toUpperCase();
     document.getElementById('accEmailVal').innerText = currentUserProfile.email;
     document.getElementById('accClientIdVal').innerText = shortId;
-    document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER' : (vipActive ? (currentUserProfile.vip_plan || 'VIP ACTIVE') : '🔒 Upgrade Required');
-    document.getElementById('accExpVal').innerText = isAdmin ? 'UNLIMITED' : (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Inactive');
+
+    const planLabelMap = { '1_WEEK': '1 Week VIP (5 Trading Days)', '1_MONTH': '1 Month VIP (24 Trading Days)', '3_MONTHS': '3 Months VIP', 'MASTER': 'MASTER' };
+    const displayPlan = planLabelMap[currentUserProfile.vip_plan] || currentUserProfile.vip_plan || 'VIP ACTIVE';
+    document.getElementById('accPlanVal').innerText = isAdmin ? 'MASTER' : (vipActive ? displayPlan : '🔒 Upgrade Required');
+    document.getElementById('accExpVal').innerText = isAdmin ? 'UNLIMITED' : (vipActive ? (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Active (Trading Days)') : 'Inactive');
 
     if (vipActive) {
         document.getElementById('mt5VipLockNotice').style.display = 'none';
@@ -1594,6 +1700,14 @@ async function checkUserSession() {
     } else {
         document.getElementById('mt5VipLockNotice').style.display = 'block';
         document.getElementById('mt5ConnectFormWrap').style.display = 'none';
+    }
+
+    // إظهار شريط التحقق الاحتياطي إذا بقي طلب غير مؤكد بالمتصفح
+    const stillPending = localStorage.getItem('mrtrader_pending_order');
+    const verifyWrap = document.getElementById('pendingOrderVerifyWrap');
+    if (verifyWrap) {
+        verifyWrap.style.display = stillPending ? 'flex' : 'none';
+        if (stillPending) document.getElementById('pendingOrderLabel').innerText = `⏳ Pending Order (${stillPending}) — Click Verify after paying`;
     }
 
     bindTelegramActivationLinks(shortId, currentUserProfile.email);
@@ -1604,9 +1718,11 @@ async function checkUserSession() {
         document.getElementById('openAdminBtn').style.display = 'inline-block';
         document.getElementById('clearHistoryBtn').style.display = 'inline-block';
         document.getElementById('adminSettingsPanelBox').style.display = 'flex';
-    } else if (vipActive && currentUserProfile.vip_expires_at) {
+    } else if (vipActive) {
         document.getElementById('vipBadgePill').style.display = 'flex';
-        document.getElementById('vipBadgeText').innerText = `${currentUserProfile.vip_plan} • Exp: ${formatDateShort(currentUserProfile.vip_expires_at)}`;
+        document.getElementById('vipBadgeText').innerText = currentUserProfile.vip_expires_at
+            ? `${displayPlan} • Exp: ${formatDateShort(currentUserProfile.vip_expires_at)}`
+            : `${displayPlan}`;
     }
 
     await loadMt5AccountStatus();
@@ -1625,20 +1741,17 @@ async function loadMyClientDashboard() {
         document.getElementById('myDashStartDate').innerText = startDateLabel;
     }
 
-    // 1. تفضيلات المخاطرة المحفوظة للعميل
     const { data: pref } = await sb.from('client_preferences').select('*').eq('client_email', currentUserProfile.email).maybeSingle();
     if (pref && document.getElementById('myRiskSummary')) {
         document.getElementById('myRiskSummary').innerText = `Lot: ${pref.lot_size} | Max DD: $${pref.max_drawdown}`;
         document.getElementById('myRiskSub').innerText = `Max SL: ${pref.max_sl_pips} Pips | News Filter: ${pref.news_filter ? 'ON' : 'OFF'}`;
     }
 
-    // 2. رصيد حساب MT5 المربوط
     const { data: mt5Acc } = await sb.from('mt5_accounts').select('last_balance, connection_status').eq('user_id', currentUserProfile.id).maybeSingle();
     if (mt5Acc && document.getElementById('myAccountBalanceSub')) {
         document.getElementById('myAccountBalanceSub').innerText = mt5Acc.last_balance ? `MT5 Balance: $${Number(mt5Acc.last_balance).toFixed(2)}` : 'MT5 Account Linked';
     }
 
-    // 3. صفقات العميل الشخصية من لحظة دخوله الـ VIP فقط
     let query = sb.from('client_trades').select('*').eq('user_id', currentUserProfile.id).order('created_at', { ascending: false });
     if (vipStartIso) query = query.gte('created_at', vipStartIso);
     const { data: myTrades } = await query;
@@ -2250,7 +2363,6 @@ function updateDashboardUI() {
     const netProfit = grossProfit - grossLoss;
     const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : (grossProfit > 0 ? '∞' : '0.00');
 
-    // التصفية الشهرية والسنوية التلقائية للـ General Dashboard
     const now = new Date();
     const curY = now.getUTCFullYear();
     const curM = now.getUTCMonth();
@@ -2277,7 +2389,6 @@ function updateDashboardUI() {
     const sLastY = calcPeriodStats(lastYearArr);
     const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-    // بطاقة Home الرئيسية تعرض نسبة نجاح الشهر الحالي وتتجدد تلقائياً مع بداية كل شهر
     document.getElementById('uiHomeWinRate').innerText = sThisM.wr;
     document.getElementById('uiHomeRecord').innerText = `${sThisM.w}W - ${sThisM.l}L (${monthNames[curM]} ${curY})`;
 
@@ -2345,9 +2456,9 @@ function updateDashboardUI() {
             <div class="signal-card" style="border-inline-start-color:var(--accent-gold); text-align:center; padding:18px;">
                 <h3 style="color:var(--accent-gold); font-size:0.95rem; margin-bottom:6px;">🔒 ${state.activeTrade ? 'Active XAU/USD Signal in Progress!' : 'VIP Live Signals Locked'}</h3>
                 <p style="font-size:0.76rem; color:var(--text-secondary); margin-bottom:10px; line-height:1.45;">
-                    Real-time entries, Stop Loss, Take Profit, and AI audits are reserved for approved VIP members. You can freely inspect our verified <strong>History</strong> & <strong>Stats</strong>.
+                    Real-time entries, Stop Loss, Take Profit, and AI audits are reserved for active VIP members. Subscribe instantly with Visa/Mastercard ($14/week or $45/month).
                 </p>
-                <button type="button" class="auth-btn" style="width:auto; display:inline-block; padding:7px 14px; font-size:0.76rem;" onclick="switchTerminalTab('account')">💎 Activate VIP Access</button>
+                <button type="button" class="auth-btn" style="width:auto; display:inline-block; padding:8px 16px; font-size:0.78rem;" onclick="switchTerminalTab('account')">💳 Subscribe with Visa / Card</button>
             </div>`;
         homeSigBox.innerHTML = lockHtml;
         activeTabBox.innerHTML = lockHtml;
@@ -2528,9 +2639,9 @@ function renderClientTable() {
                 ` : `
                     <div style="display:flex; gap:4px; flex-wrap:wrap; align-items:center;">
                         <select id="bundleSel_${u.id}" class="bundle-select">
-                            <option value="3D" ${u.vip_plan === '3_DAYS_TRIAL' ? 'selected' : ''}>3D ($15)</option>
-                            <option value="1M" ${u.vip_plan === '1_MONTH' ? 'selected' : ''}>1M ($99)</option>
-                            <option value="3M" ${u.vip_plan === '3_MONTHS' ? 'selected' : ''}>3M ($250)</option>
+                            <option value="1W" ${u.vip_plan === '1_WEEK' ? 'selected' : ''}>1W ($14)</option>
+                            <option value="1M" ${u.vip_plan === '1_MONTH' ? 'selected' : ''}>1M ($45)</option>
+                            <option value="3M" ${u.vip_plan === '3_MONTHS' ? 'selected' : ''}>3M VIP</option>
                         </select>
                         <button type="button" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="grantVipBundle('${u.id}')">✅</button>
                         ${u.is_approved ? `<button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="revokeVipBundle('${u.id}')">✖</button>` : ''}
@@ -2545,13 +2656,11 @@ function renderClientTable() {
 async function grantVipBundle(userId) {
     const sel = document.getElementById('bundleSel_' + userId);
     const choice = sel ? sel.value : '1M';
-    const days = choice === '3D' ? 3 : (choice === '3M' ? 90 : 30);
-    const planLabel = choice === '3D' ? '3_DAYS_TRIAL' : (choice === '3M' ? '3_MONTHS' : '1_MONTH');
+    const planLabel = choice === '1W' ? '1_WEEK' : (choice === '3M' ? '3_MONTHS' : '1_MONTH');
     const startDate = new Date();
-    const expireDate = new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
 
     const { error } = await sb.from('client_profiles').update({
-        is_approved: true, vip_plan: planLabel, vip_started_at: startDate.toISOString(), vip_expires_at: expireDate.toISOString()
+        is_approved: true, vip_plan: planLabel, vip_started_at: startDate.toISOString(), vip_expires_at: null
     }).eq('id', userId);
 
     const msgEl = document.getElementById('adminUserActionMsg');
