@@ -20,7 +20,7 @@
             --border-color: #2a3142;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Roboto, sans-serif; }
-        body { background: var(--bg-primary); color: var(--text-primary); padding: 14px; }
+        body { background: var(--bg-primary); color: var(--text-primary); padding: 14px; overflow-x: hidden; }
         .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
 
         .brand-logo {
@@ -44,10 +44,10 @@
 
         .auth-overlay {
             position: fixed; inset: 0; background: radial-gradient(circle at top right, #1b2234 0%, #0b0e14 65%);
-            z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 16px; overflow-y: auto;
+            z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 16px; overflow-y: auto;
         }
         .auth-wrapper { width: 100%; max-width: 980px; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 20px; align-items: stretch; }
-        @media (max-width: 860px) { .auth-wrapper { grid-template-columns: 1fr; max-width: 420px; } }
+        @media (max-width: 860px) { .auth-wrapper { grid-template-columns: 1fr; max-width: 440px; } }
 
         .showcase-panel {
             background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px;
@@ -78,6 +78,14 @@
         }
         .sc-img-1 { background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.1)), url('https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=600&q=80') center/cover; }
         .sc-img-2 { background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.1)), url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=600&q=80') center/cover; }
+
+        .free-channel-banner {
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            background: rgba(34, 158, 217, 0.12); border: 1px solid rgba(34, 158, 217, 0.45);
+            border-radius: 8px; padding: 10px 12px; text-decoration: none; color: var(--text-primary);
+            transition: background 0.15s;
+        }
+        .free-channel-banner:hover { background: rgba(34, 158, 217, 0.22); }
 
         .auth-box {
             width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 22px 18px;
@@ -154,8 +162,8 @@
         }
         .btn-usdt:hover { background: rgba(245, 158, 11, 0.22); }
         .btn-tg {
-            background: #229ED9; color: #fff; border: none; padding: 8px 12px; border-radius: 6px;
-            font-weight: 700; font-size: 0.76rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+            background: #229ED9; color: #fff; border: none; padding: 9px 14px; border-radius: 8px;
+            font-weight: 700; font-size: 0.78rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
         }
         .btn-tg:hover { background: #1d8ec4; }
 
@@ -179,10 +187,10 @@
         .admin-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; }
         .admin-section h4 { color: var(--accent-gold); font-size: 0.82rem; margin-bottom: 8px; }
 
-        .setting-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 6px; }
+        .setting-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; margin-top: 6px; }
         .setting-card { background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
         .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 600; }
-        .setting-input { width: 100%; padding: 5px 6px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--accent-gold); border-radius: 4px; font-size: 0.78rem; font-weight: 700; text-align: center; }
+        .setting-input { width: 100%; padding: 6px 8px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--accent-gold); border-radius: 4px; font-size: 0.78rem; font-weight: 700; text-align: center; }
 
         .data-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
         .data-table th, .data-table td { padding: 8px 6px; border-bottom: 1px solid var(--border-color); text-align: start; vertical-align: middle; }
@@ -207,7 +215,7 @@
         .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.6s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        .btn-ui { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.76rem; font-weight: 600; }
+        .btn-ui { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.76rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
         .btn-ui:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
         .btn-admin { border-color: var(--accent-gold); color: var(--accent-gold); display: none; }
 
@@ -299,6 +307,84 @@
             border: 1px solid var(--border-color); color: var(--text-primary); font-size: 0.8rem;
         }
         .mt5-input:focus { outline: none; border-color: var(--accent-gold); }
+
+        /* FAQ Accordion Styling */
+        .faq-list { display: flex; flex-direction: column; gap: 8px; }
+        .faq-item {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;
+        }
+        .faq-item summary {
+            padding: 12px 14px; font-size: 0.82rem; font-weight: 700; color: var(--text-primary);
+            cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 8px;
+        }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::after { content: '+'; color: var(--accent-gold); font-size: 1.1rem; font-weight: 800; }
+        .faq-item[open] summary::after { content: '−'; }
+        .faq-item[open] summary { border-bottom: 1px solid var(--border-color); color: var(--accent-gold); }
+        .faq-answer {
+            padding: 11px 14px; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.55;
+            background: rgba(11, 14, 20, 0.45);
+        }
+
+        /* =====================================================================
+           MOBILE RESPONSIVE REFINEMENTS (iPhone 15 Pro / <= 768px)
+           Preserves Desktop layout 100% untouched
+           ===================================================================== */
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            .container { gap: 10px; }
+
+            /* Fix language button overlapping title on mobile */
+            .auth-overlay { justify-content: flex-start; padding: 12px; }
+            .auth-top-left {
+                position: static; width: 100%; max-width: 440px;
+                justify-content: flex-end; margin-bottom: 8px;
+            }
+            .showcase-hero { height: 145px; padding: 12px; }
+            .showcase-hero h1 { font-size: 1.1rem; }
+
+            /* Compact Header */
+            .header { padding: 10px 12px; gap: 8px; }
+            .header-left { gap: 8px; width: 100%; justify-content: space-between; }
+            .brand-logo { height: 36px; width: 36px; }
+            .title-group h1 { font-size: 1rem; }
+            .title-group p { font-size: 0.7rem; }
+            .controls { width: 100%; justify-content: space-between; gap: 6px; }
+            .status-pill { padding: 4px 9px; font-size: 0.7rem; }
+
+            /* Crisp 3x2 Navigation Grid on iPhone */
+            .nav-tabs {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+                padding: 6px;
+            }
+            .nav-tab {
+                min-width: 0;
+                padding: 9px 4px;
+                font-size: 0.72rem;
+                border-radius: 8px;
+            }
+
+            /* Clean 2x2 KPI Cards instead of long vertical stack */
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .metric-card { padding: 10px 10px; }
+            .metric-label { font-size: 0.64rem; }
+            .metric-value { font-size: 0.98rem; word-break: break-word; }
+            .metric-sub { font-size: 0.65rem; }
+
+            /* Compact Chart & Live Feed */
+            #chart { height: 260px; }
+            .log-box { max-height: 150px; font-size: 0.71rem; }
+            .analyze-grid { grid-template-columns: repeat(2, 1fr); }
+            .setting-grid { grid-template-columns: repeat(2, 1fr); }
+
+            /* Prevent iOS Safari input auto-zoom */
+            .auth-input, .mt5-input, .setting-input { font-size: 16px; }
+        }
     </style>
 </head>
 <body>
@@ -326,8 +412,17 @@
                 </div>
                 <div class="showcase-gallery">
                     <div class="sc-img-card sc-img-1"><span data-i18n="scCard1">📈 Liquidity Sweep & Reclaim</span></div>
-                    <div class="sc-img-card sc-img-2"><span data-i18n="scCard2">🛡️ Precision Retracement Zones</span></div>
+                    <div class="sc-img-2 sc-img-card"><span data-i18n="scCard2">🛡️ Precision Retracement Zones</span></div>
                 </div>
+
+                <!-- Free Trial Signals Channel Banner -->
+                <a href="https://t.me/mrtraderaisiganalsfree" target="_blank" rel="noopener" class="free-channel-banner">
+                    <div>
+                        <div style="font-size:0.78rem; font-weight:800; color:#38bdf8;" data-i18n="freeTgBannerTitle">📢 Join Free AI Gold Signals Channel</div>
+                        <div style="font-size:0.68rem; color:var(--text-secondary); margin-top:2px;" data-i18n="freeTgBannerSub">Follow live daily XAU/USD trades free on Telegram before upgrading to MT5 Auto-Copy</div>
+                    </div>
+                    <span style="font-size:0.82rem; font-weight:800; color:#38bdf8;">↗</span>
+                </a>
             </div>
         </div>
 
@@ -532,12 +627,14 @@
 <div id="terminalApp" class="container" style="display:none;">
     <div class="header">
         <div class="header-left">
-            <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
-            <img src="logo.png" alt="Mr. Trader AI Logo" class="brand-logo" onerror="this.style.display='none'">
-            <div class="title-group">
-                <h1>Mr. Trader AI</h1>
-                <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals (GMT Time)</p>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img src="logo.png" alt="Mr. Trader AI Logo" class="brand-logo" onerror="this.style.display='none'">
+                <div class="title-group">
+                    <h1>Mr. Trader AI</h1>
+                    <p id="headerRoleSub" data-i18n="headerSub">Autonomous XAU/USD Signals (GMT)</p>
+                </div>
             </div>
+            <button type="button" class="lang-switch-btn" onclick="toggleLanguage()">🌐 <span class="langBtnLabel">العربية</span></button>
         </div>
 
         <div class="controls">
@@ -554,14 +651,14 @@
         </div>
     </div>
 
-    <!-- Navigation Tabs -->
+    <!-- Navigation Tabs (Clean 6-Tab Bar -> 3x2 Grid on iPhone) -->
     <div class="nav-tabs">
         <button type="button" id="navHome" class="nav-tab active" onclick="switchTerminalTab('home')">🏠 <span data-i18n="tabHome">Home</span></button>
         <button type="button" id="navMydash" class="nav-tab" onclick="switchTerminalTab('mydash')">💎 <span data-i18n="tabMyDash">My Dashboard</span></button>
-        <button type="button" id="navActive" class="nav-tab" onclick="switchTerminalTab('active')">⚡ <span data-i18n="tabActive">Active</span></button>
         <button type="button" id="navClosed" class="nav-tab" onclick="switchTerminalTab('closed')">📜 <span data-i18n="tabClosed">History</span></button>
         <button type="button" id="navWinrate" class="nav-tab" onclick="switchTerminalTab('winrate')">📊 <span data-i18n="tabWinrate">Stats</span></button>
         <button type="button" id="navAccount" class="nav-tab" onclick="switchTerminalTab('account')">👤 <span data-i18n="tabAccount">Account</span></button>
+        <button type="button" id="navMore" class="nav-tab" onclick="switchTerminalTab('more')">✨ <span data-i18n="tabMore">More</span></button>
     </div>
 
     <!-- ==================== TAB 1: HOME (GENERAL) ==================== -->
@@ -718,13 +815,14 @@
         </div>
     </div>
 
-    <!-- ==================== TAB 1.5: CLIENT PERSONAL DASHBOARD ==================== -->
+    <!-- ==================== TAB 2: MY DASHBOARD (MT5 COPIER + RISK + PERSONAL TRADES) ==================== -->
     <div id="viewMydash" class="tab-view">
         <div class="risk-remark">
             <span>💎 <strong data-i18n="myDashBannerTitle">My VIP Personal Dashboard</strong> — <span data-i18n="myDashBannerSub">Tracking your real account performance since</span> <strong id="myDashStartDate">VIP Activation</strong></span>
             <button type="button" class="btn-ui" onclick="loadMyClientDashboard()">🔄 <span data-i18n="refreshMyStatsBtn">Refresh My Stats</span></button>
         </div>
 
+        <!-- 1. Personal KPI Summary (2x2 on Mobile) -->
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-label" data-i18n="myWinRateLbl">My Personal Win Rate</div>
@@ -748,6 +846,116 @@
             </div>
         </div>
 
+        <!-- 2. CONNECT MT5 CLOUD AUTO-TRADE CARD (Moved directly into My Dashboard) -->
+        <div class="panel-box" id="mt5ConnectCard" style="border-color: rgba(245, 158, 11, 0.5);">
+            <div class="box-header">
+                <div>
+                    <span style="color:var(--accent-gold); font-size:0.88rem;" data-i18n="mt5CardTitle">⚡ Connect MT5 Auto-Trade (Cloud Copier)</span>
+                    <div style="font-size:0.72rem; color:var(--text-secondary); font-weight:400; margin-top:2px;" data-i18n="mt5CardSub">
+                        Link your MetaTrader 5 account directly. No downloads or VPS needed.
+                    </div>
+                </div>
+                <span id="mt5StatusBadge" style="padding:4px 10px; border-radius:16px; font-size:0.72rem; font-weight:700; background:rgba(148,163,184,0.15); color:#cbd5e1;">
+                    ⚪ Not Connected
+                </span>
+            </div>
+
+            <!-- Locked Notice for Non-VIP Users -->
+            <div id="mt5VipLockNotice" style="display:none; text-align:center; padding:14px; background:var(--bg-card); border:1px dashed var(--accent-gold); border-radius:8px;">
+                <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:8px;">
+                    🔒 <strong style="color:var(--accent-gold);">VIP Feature:</strong> <span data-i18n="mt5VipLockText">Activate any VIP plan to connect your MT5 account for 24/7 hands-free trade copying.</span>
+                </p>
+                <button type="button" class="auth-btn" style="width:auto; padding:8px 16px; font-size:0.78rem;" onclick="switchTerminalTab('account')" data-i18n="goActivateVipBtn">💎 Activate VIP Plan</button>
+            </div>
+
+            <!-- MT5 Connection Form -->
+            <div id="mt5ConnectFormWrap">
+                <div class="mt5-grid">
+                    <div>
+                        <label class="mt5-label" data-i18n="mt5ServerLbl">Broker Server Name</label>
+                        <input list="brokerServersList" id="mt5ServerInput" class="mt5-input" placeholder="e.g. Exness-MT5Real">
+                        <datalist id="brokerServersList">
+                            <option value="Exness-MT5Real">
+                            <option value="Exness-MT5Real2">
+                            <option value="Exness-MT5Real5">
+                            <option value="Exness-MT5Trial">
+                            <option value="ICMarketsSC-MT5">
+                            <option value="ICMarketsSC-MT5-2">
+                            <option value="XMGlobal-MT5">
+                            <option value="EquitiBrokerage-Live">
+                            <option value="Pepperstone-MT5-Live01">
+                        </datalist>
+                    </div>
+
+                    <div>
+                        <label class="mt5-label" data-i18n="mt5LoginLbl">MT5 Account Number (Login)</label>
+                        <input type="number" id="mt5LoginInput" class="mt5-input" placeholder="e.g. 15849201">
+                    </div>
+
+                    <div>
+                        <label class="mt5-label" data-i18n="mt5PassLbl">MT5 Trading Password</label>
+                        <input type="password" id="mt5PassInput" class="mt5-input" placeholder="Main Trading Password">
+                    </div>
+
+                    <div>
+                        <label class="mt5-label" data-i18n="mt5LotModeLbl">Lot Size Mode</label>
+                        <select id="mt5LotModeSelect" class="mt5-input" onchange="toggleFixedLotField()">
+                            <option value="AUTO">Auto-Lot (0.04 per $400 Balance)</option>
+                            <option value="FIXED">Fixed Lot Size</option>
+                        </select>
+                    </div>
+
+                    <div id="mt5FixedLotWrap" style="display:none;">
+                        <label class="mt5-label" data-i18n="mt5FixedLotLbl">Fixed Lot (e.g. 0.04)</label>
+                        <input type="number" step="0.01" min="0.01" id="mt5FixedLotInput" class="mt5-input" value="0.04">
+                    </div>
+                </div>
+
+                <div id="mt5StatusDetail" style="margin-top:10px; font-size:0.74rem; color:var(--text-secondary);">
+                    🔒 Encrypted with AES-256 Vault. Only trade execution permissions are used.
+                </div>
+
+                <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+                    <button type="button" onclick="connectMt5Account()" id="btnConnectMt5" class="auth-btn" style="width:auto; padding:8px 16px; font-size:0.78rem;">
+                        🔗 Connect & Start Auto-Trade
+                    </button>
+                    <button type="button" onclick="disconnectMt5Account()" id="btnDisconnectMt5" class="btn-ui" style="display:none; border-color:var(--accent-red); color:var(--accent-red); padding:8px 14px;">
+                        Disconnect
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. CLIENT CUSTOM RISK PREFERENCES CARD (Grouped with MT5 Copier) -->
+        <div class="panel-box" style="border-color: rgba(245, 158, 11, 0.35);">
+            <div class="box-header">
+                <span style="color:var(--accent-gold);" data-i18n="riskPrefTitle">⚙️ Your Custom Risk Preferences</span>
+                <span id="clientPrefStatus" style="font-size:0.72rem; color:var(--accent-green);">Synced</span>
+            </div>
+            <div class="setting-grid">
+                <div class="setting-card">
+                    <div class="setting-row"><span data-i18n="prefLotLbl">Override Lot Size</span></div>
+                    <input type="number" id="clientLotSize" class="setting-input" step="0.01" value="0.01">
+                </div>
+                <div class="setting-card">
+                    <div class="setting-row"><span data-i18n="prefMaxDdLbl">Max Drawdown ($)</span></div>
+                    <input type="number" id="clientMaxDd" class="setting-input" value="100">
+                </div>
+                <div class="setting-card">
+                    <div class="setting-row"><span data-i18n="prefMaxSlLbl">Max SL (Pips)</span></div>
+                    <input type="number" id="clientMaxSl" class="setting-input" value="120">
+                </div>
+                <div class="setting-card">
+                    <div class="setting-row"><span data-i18n="prefNewsLbl">News Filter</span></div>
+                    <input type="checkbox" id="clientNewsFilter" checked style="width:18px; height:18px; margin:4px auto 0;">
+                </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+                <button type="button" class="auth-btn" style="width:auto; padding:7px 14px; font-size:0.76rem;" onclick="saveClientPreferences()" data-i18n="saveMyPrefBtn">💾 Save My Preferences</button>
+            </div>
+        </div>
+
+        <!-- 4. Personal Copied & Manual Trades History -->
         <div class="panel-box">
             <div class="box-header">
                 <span data-i18n="myTradesHistTitle">📜 My Copied & Manual Trades History (Personal Account)</span>
@@ -774,17 +982,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-
-    <!-- ==================== TAB 2: ACTIVE TRADE ==================== -->
-    <div id="viewActive" class="tab-view">
-        <div class="panel-box">
-            <div class="box-header">
-                <span data-i18n="activeBoxTitle">⚡ Live Active / Limit Signal Details</span>
-                <span id="activeTradeStatusTag" style="color: var(--accent-gold); font-size: 0.74rem;">Scanning...</span>
-            </div>
-            <div id="dedicatedActiveContainer"></div>
         </div>
     </div>
 
@@ -897,7 +1094,7 @@
         </div>
     </div>
 
-    <!-- ==================== TAB 5: ACCOUNT & VIP BUNDLES ==================== -->
+    <!-- ==================== TAB 5: ACCOUNT & VIP SUBSCRIPTION (CLEANED) ==================== -->
     <div id="viewAccount" class="tab-view">
         <div class="panel-box">
             <div class="box-header">
@@ -907,7 +1104,7 @@
             <div class="metrics-grid">
                 <div class="metric-card">
                     <div class="metric-label" data-i18n="accEmailLbl">Email</div>
-                    <div class="metric-value" id="accEmailVal" style="font-size:0.85rem;">---</div>
+                    <div class="metric-value" id="accEmailVal" style="font-size:0.82rem;">---</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label" data-i18n="accIdLbl">Client ID</div>
@@ -915,7 +1112,7 @@
                 </div>
                 <div class="metric-card">
                     <div class="metric-label" data-i18n="accPlanLbl">VIP Bundle</div>
-                    <div class="metric-value" id="accPlanVal" style="color:var(--accent-gold);">🔒 Upgrade Required</div>
+                    <div class="metric-value" id="accPlanVal" style="color:var(--accent-gold); font-size:0.9rem;">🔒 Upgrade Required</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label" data-i18n="accExpLbl">Status / Trading Days</div>
@@ -924,173 +1121,149 @@
             </div>
 
             <!-- Push Notification Settings Card -->
-            <div style="margin-top: 10px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; padding:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="margin-top: 10px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                 <div>
                     <div style="font-size:0.82rem; font-weight:700; color:var(--accent-gold);" data-i18n="notifSettingTitle">🔔 Notifications & Sound</div>
                     <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:1px;" data-i18n="notifSettingDesc">Receive alerts instantly when signals trigger.</div>
                 </div>
-                <button type="button" class="auth-btn" style="width:auto; padding:6px 12px; font-size:0.76rem;" onclick="requestPushNotificationPermission()"><span data-i18n="enableNotifBtn">Enable</span></button>
+                <button type="button" class="auth-btn" style="width:auto; padding:6px 14px; font-size:0.76rem;" onclick="requestPushNotificationPermission()"><span data-i18n="enableNotifBtn">Enable</span></button>
             </div>
 
-            <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
-                <a id="tgSupportDirectLink" href="https://t.me/mrtraderai_official" target="_blank" rel="noopener" class="btn-tg">
-                    ✈️ <span data-i18n="tgSupportBtn">Telegram Support (@mrtraderai_official)</span>
-                </a>
-                <button type="button" class="btn-ui" style="border-color:var(--accent-red); color:var(--accent-red); padding:7px 12px;" onclick="logoutClient()">
-                    🚪 <span data-i18n="logoutAccountBtn">Sign Out</span>
-                </button>
+            <!-- Quick Shortcut to MT5 Setup in My Dashboard -->
+            <div style="margin-top: 10px; background:rgba(245, 158, 11, 0.08); border:1px solid rgba(245, 158, 11, 0.35); border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div>
+                    <div style="font-size:0.8rem; font-weight:700; color:var(--accent-gold);" data-i18n="mt5ShortcutTitle">⚡ MT5 Auto-Trade & Risk Settings</div>
+                    <div style="font-size:0.7rem; color:var(--text-secondary);" data-i18n="mt5ShortcutDesc">Connect your MT5 account & manage your lot size in My Dashboard.</div>
+                </div>
+                <button type="button" class="btn-ui" style="border-color:var(--accent-gold); color:var(--accent-gold);" onclick="switchTerminalTab('mydash')" data-i18n="openMyDashBtn">💎 Open My Dashboard</button>
             </div>
         </div>
 
-        <!-- VIP SUBSCRIPTION PLANS (VISA / MASTERCARD + USDT TRC20) -->
+        <!-- VIP SUBSCRIPTION PLANS (Collapsible when already VIP) -->
         <div class="panel-box" style="border-color: rgba(245, 158, 11, 0.55);">
-            <div class="box-header">
+            <div class="box-header" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">
                 <span data-i18n="vipPlansHeader">💎 VIP Membership Plans (Visa / Card & USDT TRC20)</span>
-                <span style="color:var(--accent-green); font-size:0.72rem; font-weight:700;">⚡ Auto-Activation</span>
+                <button type="button" id="togglePlansBtn" class="btn-ui" style="border-color:var(--accent-gold); color:var(--accent-gold); display:none;" onclick="toggleVipPlansWrap()">
+                    <span data-i18n="togglePlansLabel">💎 Renew / Upgrade Plan</span>
+                </button>
             </div>
-            <div class="plans-grid">
-                <div class="plan-card">
-                    <div>
-                        <div class="plan-title" data-i18n="plan1wTitle">1 Week VIP</div>
-                        <div class="plan-price" style="margin:6px 0;">$14</div>
-                        <div class="plan-desc" data-i18n="plan1wDesc">5 Trading Days (Mon–Fri) • Full VIP Signals & MT5 Cloud Copier</div>
+
+            <div id="vipPlansCollapsibleWrap" style="margin-top:10px; border-top:1px solid var(--border-color); padding-top:10px;">
+                <div style="font-size:0.72rem; color:var(--accent-green); font-weight:700; margin-bottom:6px;">⚡ Instant Auto-Activation upon payment</div>
+                <div class="plans-grid">
+                    <div class="plan-card">
+                        <div>
+                            <div class="plan-title" data-i18n="plan1wTitle">1 Week VIP</div>
+                            <div class="plan-price" style="margin:6px 0;">$14</div>
+                            <div class="plan-desc" data-i18n="plan1wDesc">5 Trading Days (Mon–Fri) • Full VIP Signals & MT5 Cloud Copier</div>
+                        </div>
+                        <div class="plan-actions">
+                            <button type="button" id="btnPlanWeek" onclick="startVisaCheckout('1_WEEK')" class="btn-visa">
+                                💳 <span data-i18n="payVisa1w">Pay $14 with Visa / Card</span>
+                            </button>
+                            <button type="button" onclick="openUsdtCheckout('1_WEEK')" class="btn-usdt">
+                                💎 <span data-i18n="payUsdt1w">Pay $14 with USDT (TRC20)</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="plan-actions">
-                        <button type="button" id="btnPlanWeek" onclick="startVisaCheckout('1_WEEK')" class="btn-visa">
-                            💳 <span data-i18n="payVisa1w">Pay $14 with Visa / Card</span>
-                        </button>
-                        <button type="button" onclick="openUsdtCheckout('1_WEEK')" class="btn-usdt">
-                            💎 <span data-i18n="payUsdt1w">Pay $14 with USDT (TRC20)</span>
-                        </button>
+                    <div class="plan-card popular">
+                        <div>
+                            <div class="plan-title" data-i18n="plan1mTitle">1 Month VIP ⭐</div>
+                            <div class="plan-price" style="margin:6px 0;">$45</div>
+                            <div class="plan-desc" data-i18n="plan1mDesc">24 Trading Days • Full VIP Signals, AI Analyzer & MT5 Cloud Copier</div>
+                        </div>
+                        <div class="plan-actions">
+                            <button type="button" id="btnPlanMonth" onclick="startVisaCheckout('1_MONTH')" class="btn-visa green">
+                                💳 <span data-i18n="payVisa1m">Pay $45 with Visa / Card</span>
+                            </button>
+                            <button type="button" onclick="openUsdtCheckout('1_MONTH')" class="btn-usdt">
+                                💎 <span data-i18n="payUsdt1m">Pay $45 with USDT (TRC20)</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="plan-card popular">
-                    <div>
-                        <div class="plan-title" data-i18n="plan1mTitle">1 Month VIP ⭐</div>
-                        <div class="plan-price" style="margin:6px 0;">$45</div>
-                        <div class="plan-desc" data-i18n="plan1mDesc">24 Trading Days • Full VIP Signals, AI Analyzer & MT5 Cloud Copier</div>
-                    </div>
-                    <div class="plan-actions">
-                        <button type="button" id="btnPlanMonth" onclick="startVisaCheckout('1_MONTH')" class="btn-visa green">
-                            💳 <span data-i18n="payVisa1m">Pay $45 with Visa / Card</span>
-                        </button>
-                        <button type="button" onclick="openUsdtCheckout('1_MONTH')" class="btn-usdt">
-                            💎 <span data-i18n="payUsdt1m">Pay $45 with USDT (TRC20)</span>
-                        </button>
-                    </div>
-                </div>
             </div>
+
             <div id="pendingOrderVerifyWrap" style="display:none; margin-top:10px; padding:10px; background:rgba(245,158,11,0.1); border:1px solid var(--accent-gold); border-radius:8px; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                 <span style="font-size:0.76rem; color:var(--accent-gold);" id="pendingOrderLabel">⏳ Pending Visa payment detected...</span>
                 <button type="button" id="btnVerifyPendingOrder" onclick="manualVerifyPendingOrder()" class="btn-ui" style="border-color:var(--accent-green); color:var(--accent-green);">🔄 Verify Payment</button>
             </div>
         </div>
+    </div>
 
-        <!-- CONNECT MT5 CLOUD AUTO-TRADE CARD -->
-        <div class="panel-box" id="mt5ConnectCard" style="border-color: rgba(245, 158, 11, 0.4);">
+    <!-- ==================== TAB 6: MORE (FREE TELEGRAM CHANNEL + FAQ + CONTACT US) ==================== -->
+    <div id="viewMore" class="tab-view">
+        <!-- 1. Free Signals Telegram Channel -->
+        <div class="panel-box" style="border-color: rgba(34, 158, 217, 0.5);">
             <div class="box-header">
-                <div>
-                    <span style="color:var(--accent-gold); font-size:0.88rem;" data-i18n="mt5CardTitle">⚡ Connect MT5 Auto-Trade (Cloud Copier)</span>
-                    <div style="font-size:0.72rem; color:var(--text-secondary); font-weight:400; margin-top:2px;" data-i18n="mt5CardSub">
-                        Link your MetaTrader 5 account directly. No downloads or VPS needed.
-                    </div>
-                </div>
-                <span id="mt5StatusBadge" style="padding:4px 10px; border-radius:16px; font-size:0.72rem; font-weight:700; background:rgba(148,163,184,0.15); color:#cbd5e1;">
-                    ⚪ Not Connected
-                </span>
+                <span style="color:#38bdf8;" data-i18n="moreFreeTgTitle">📢 AI Bot Free Signals Channel (Free Trial)</span>
+                <span style="font-size:0.7rem; color:var(--accent-green); font-weight:700;">FREE ACCESS</span>
             </div>
+            <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.55; margin-bottom:12px;" data-i18n="moreFreeTgDesc">
+                Want to watch our AI Gold engine in action first? Join our public Telegram channel to receive live daily XAU/USD signals and transparent performance reports for free. Upgrade to VIP anytime to unlock hands-free MT5 auto-copying.
+            </p>
+            <a href="https://t.me/mrtraderaisiganalsfree" target="_blank" rel="noopener" class="btn-tg" style="width:100%; padding:11px;">
+                ✈️ <span data-i18n="moreJoinFreeTgBtn">Join AI Bot Free Signals on Telegram</span>
+            </a>
+        </div>
 
-            <!-- Locked Notice for Non-VIP Users -->
-            <div id="mt5VipLockNotice" style="display:none; text-align:center; padding:12px; background:var(--bg-card); border:1px dashed var(--accent-gold); border-radius:6px;">
-                <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:6px;">
-                    🔒 <strong style="color:var(--accent-gold);">VIP Feature:</strong> Activate any VIP plan above to connect your MT5 account for 24/7 hands-free trade copying.
-                </p>
+        <!-- 2. Frequently Asked Questions (FAQ) -->
+        <div class="panel-box">
+            <div class="box-header">
+                <span style="color:var(--accent-gold);" data-i18n="faqHeader">❓ Frequently Asked Questions (FAQ)</span>
             </div>
-
-            <!-- MT5 Connection Form -->
-            <div id="mt5ConnectFormWrap">
-                <div class="mt5-grid">
-                    <div>
-                        <label class="mt5-label" data-i18n="mt5ServerLbl">Broker Server Name</label>
-                        <input list="brokerServersList" id="mt5ServerInput" class="mt5-input" placeholder="e.g. Exness-MT5Real">
-                        <datalist id="brokerServersList">
-                            <option value="Exness-MT5Real">
-                            <option value="Exness-MT5Real2">
-                            <option value="Exness-MT5Real5">
-                            <option value="Exness-MT5Trial">
-                            <option value="ICMarketsSC-MT5">
-                            <option value="ICMarketsSC-MT5-2">
-                            <option value="XMGlobal-MT5">
-                            <option value="EquitiBrokerage-Live">
-                            <option value="Pepperstone-MT5-Live01">
-                        </datalist>
+            <div class="faq-list">
+                <details class="faq-item" open>
+                    <summary data-i18n="faqQ1">Do I need to rent a VPS or keep my computer running?</summary>
+                    <div class="faq-answer" data-i18n="faqA1">
+                        No. Mr. Trader AI runs 24/7 on our dedicated cloud infrastructure. Once you link your MT5 account in My Dashboard, trades are copied and managed automatically even when your phone or PC is turned off.
                     </div>
+                </details>
 
-                    <div>
-                        <label class="mt5-label" data-i18n="mt5LoginLbl">MT5 Account Number (Login)</label>
-                        <input type="number" id="mt5LoginInput" class="mt5-input" placeholder="e.g. 15849201">
+                <details class="faq-item">
+                    <summary data-i18n="faqQ2">Are my funds safe? Can the platform withdraw my money?</summary>
+                    <div class="faq-answer" data-i18n="faqA2">
+                        Your funds remain 100% in your personal broker account. The MT5 connection only has permission to open and close XAU/USD trades—it has zero ability to withdraw, transfer, or modify your account funds.
                     </div>
+                </details>
 
-                    <div>
-                        <label class="mt5-label" data-i18n="mt5PassLbl">MT5 Trading Password</label>
-                        <input type="password" id="mt5PassInput" class="mt5-input" placeholder="Main Trading Password">
+                <details class="faq-item">
+                    <summary data-i18n="faqQ3">What is the minimum capital and recommended lot size?</summary>
+                    <div class="faq-answer" data-i18n="faqA3">
+                        You can start with as little as $100 (using 0.01 lot). Our institutional benchmark is $400 with 0.04 lot, and you can choose Auto-Lot or set your own Fixed Lot and Max Stop Loss anytime in My Dashboard.
                     </div>
+                </details>
 
-                    <div>
-                        <label class="mt5-label" data-i18n="mt5LotModeLbl">Lot Size Mode</label>
-                        <select id="mt5LotModeSelect" class="mt5-input" onchange="toggleFixedLotField()">
-                            <option value="AUTO">Auto-Lot (0.04 per $400 Balance)</option>
-                            <option value="FIXED">Fixed Lot Size</option>
-                        </select>
+                <details class="faq-item">
+                    <summary data-i18n="faqQ4">How does the AI protect my account during news and rollover?</summary>
+                    <div class="faq-answer" data-i18n="faqA4">
+                        Every setup is audited across H1/M5 timeframes before execution. High-impact USD news windows are blocked, and an enforced Night Cutoff (21:00–02:00 GMT+2) pauses new entries during low-liquidity spread spikes.
                     </div>
+                </details>
 
-                    <div id="mt5FixedLotWrap" style="display:none;">
-                        <label class="mt5-label" data-i18n="mt5FixedLotLbl">Fixed Lot (e.g. 0.04)</label>
-                        <input type="number" step="0.01" min="0.01" id="mt5FixedLotInput" class="mt5-input" value="0.04">
+                <details class="faq-item">
+                    <summary data-i18n="faqQ5">Which brokers are supported?</summary>
+                    <div class="faq-answer" data-i18n="faqA5">
+                        Any broker supporting MetaTrader 5 (MT5) and XAU/USD (Gold) works seamlessly, including Exness, IC Markets, Vantage, Equiti, XM, and Pepperstone.
                     </div>
-                </div>
-
-                <div id="mt5StatusDetail" style="margin-top:10px; font-size:0.74rem; color:var(--text-secondary);">
-                    🔒 Encrypted with AES-256 Vault. Only trade execution permissions are used.
-                </div>
-
-                <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
-                    <button type="button" onclick="connectMt5Account()" id="btnConnectMt5" class="auth-btn" style="width:auto; padding:8px 16px; font-size:0.78rem;">
-                        🔗 Connect & Start Auto-Trade
-                    </button>
-                    <button type="button" onclick="disconnectMt5Account()" id="btnDisconnectMt5" class="btn-ui" style="display:none; border-color:var(--accent-red); color:var(--accent-red); padding:8px 14px;">
-                        Disconnect
-                    </button>
-                </div>
+                </details>
             </div>
         </div>
 
-        <!-- CLIENT CUSTOM RISK PREFERENCES CARD -->
-        <div class="panel-box" style="margin-top: 12px; border-color: rgba(245, 158, 11, 0.4);">
+        <!-- 3. Private Email Contact Us -->
+        <div class="panel-box" style="border-color: rgba(245, 158, 11, 0.4);">
             <div class="box-header">
-                <span style="color:var(--accent-gold);">⚙️ Your Custom Risk Preferences</span>
-                <span id="clientPrefStatus" style="font-size:0.72rem; color:var(--accent-green);">Synced</span>
+                <span style="color:var(--accent-gold);" data-i18n="contactHeader">✉️ Contact Us & Private Support</span>
             </div>
-            <div class="setting-grid">
-                <div class="setting-card">
-                    <div class="setting-row"><span>Lot Size</span></div>
-                    <input type="number" id="clientLotSize" class="setting-input" step="0.01" value="0.01">
+            <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.55; margin-bottom:10px;" data-i18n="contactDesc">
+                Need help with your VIP subscription, MT5 broker server setup, or billing? Reach our support desk directly via email:
+            </p>
+            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <span id="supportEmailText" style="font-size:0.86rem; font-weight:700; color:var(--accent-gold);">support@mrtraderai.com</span>
+                <div style="display:flex; gap:6px;">
+                    <button type="button" class="btn-ui" onclick="copyTextValue('supportEmailText', this)" data-i18n="copyEmailBtn">📋 Copy Email</button>
+                    <a href="mailto:support@mrtraderai.com?subject=Mr.%20Trader%20AI%20Support" class="auth-btn" style="width:auto; padding:7px 14px; font-size:0.76rem;" data-i18n="sendEmailBtn">✉️ Send Email</a>
                 </div>
-                <div class="setting-card">
-                    <div class="setting-row"><span>Max Drawdown ($)</span></div>
-                    <input type="number" id="clientMaxDd" class="setting-input" value="100">
-                </div>
-                <div class="setting-card">
-                    <div class="setting-row"><span>Max SL (Pips)</span></div>
-                    <input type="number" id="clientMaxSl" class="setting-input" value="120">
-                </div>
-                <div class="setting-card">
-                    <div class="setting-row"><span>News Filter</span></div>
-                    <input type="checkbox" id="clientNewsFilter" checked>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:flex-end; margin-top:10px;">
-                <button type="button" class="auth-btn" style="width:auto; padding:6px 14px; font-size:0.76rem;" onclick="saveClientPreferences()">💾 Save My Preferences</button>
             </div>
         </div>
     </div>
@@ -1112,6 +1285,8 @@ const I18N = {
         scAutoLbl: 'AI Supervisor',
         scCard1: '📈 Liquidity Sweep',
         scCard2: '🛡️ Retracement Zones',
+        freeTgBannerTitle: '📢 Join Free AI Gold Signals Channel',
+        freeTgBannerSub: 'Follow live daily XAU/USD trades free on Telegram before upgrading to MT5 Auto-Copy',
         authSub: 'Sign in or create a free account to view live stats, trade history & VIP signals',
         clientLogin: 'Client Login',
         signUp: 'Sign Up',
@@ -1139,10 +1314,10 @@ const I18N = {
         logoutBtn: 'Logout',
         tabHome: 'Home',
         tabMyDash: 'My Dashboard',
-        tabActive: 'Active',
         tabClosed: 'History',
         tabWinrate: 'Stats',
         tabAccount: 'Account',
+        tabMore: 'More',
         lblLivePrice: 'Live XAU/USD',
         subSpread: 'Exness Spread Modeled',
         lblTrendBias: 'Market Bias & Sessions',
@@ -1179,7 +1354,6 @@ const I18N = {
         chartTitle: 'XAU/USD M5 Live Chart',
         latestSigTitle: 'Latest Signal',
         liveAlertsTitle: 'Live Feed',
-        activeBoxTitle: '⚡ Live Active / Limit Signal Details',
         closedBoxTitle: '📜 Closed Trades History',
         filterAll: 'All Time',
         filterToday: 'Today (24h)',
@@ -1206,6 +1380,7 @@ const I18N = {
         accPlanLbl: 'VIP Bundle',
         accExpLbl: 'Status / Trading Days',
         vipPlansHeader: '💎 VIP Membership Plans (Visa / Card & USDT TRC20)',
+        togglePlansLabel: '💎 Renew / Upgrade Plan',
         plan1wTitle: '1 Week VIP',
         plan1wDesc: '5 Trading Days (Mon–Fri) • Full VIP Signals & MT5 Cloud Copier',
         plan1mTitle: '1 Month VIP ⭐',
@@ -1230,14 +1405,42 @@ const I18N = {
         notifSettingTitle: '🔔 Notifications & Sound',
         notifSettingDesc: 'Receive alerts instantly when signals trigger.',
         enableNotifBtn: 'Enable',
-        tgSupportBtn: 'Telegram Support (@mrtraderai_official)',
+        mt5ShortcutTitle: '⚡ MT5 Auto-Trade & Risk Settings',
+        mt5ShortcutDesc: 'Connect your MT5 account & manage your lot size in My Dashboard.',
+        openMyDashBtn: '💎 Open My Dashboard',
         mt5CardTitle: '⚡ Connect MT5 Auto-Trade (Cloud Copier)',
         mt5CardSub: 'Link your MetaTrader 5 account directly. No downloads or VPS needed.',
+        mt5VipLockText: 'Activate any VIP plan to connect your MT5 account for 24/7 hands-free trade copying.',
+        goActivateVipBtn: '💎 Activate VIP Plan',
         mt5ServerLbl: 'Broker Server Name',
         mt5LoginLbl: 'MT5 Account Number (Login)',
         mt5PassLbl: 'MT5 Trading Password',
         mt5LotModeLbl: 'Lot Size Mode',
-        mt5FixedLotLbl: 'Fixed Lot (e.g. 0.04)'
+        mt5FixedLotLbl: 'Fixed Lot (e.g. 0.04)',
+        riskPrefTitle: '⚙️ Your Custom Risk Preferences',
+        prefLotLbl: 'Override Lot Size',
+        prefMaxDdLbl: 'Max Drawdown ($)',
+        prefMaxSlLbl: 'Max SL (Pips)',
+        prefNewsLbl: 'News Filter',
+        saveMyPrefBtn: '💾 Save My Preferences',
+        moreFreeTgTitle: '📢 AI Bot Free Signals Channel (Free Trial)',
+        moreFreeTgDesc: 'Want to watch our AI Gold engine in action first? Join our public Telegram channel to receive live daily XAU/USD signals and transparent performance reports for free. Upgrade to VIP anytime to unlock hands-free MT5 auto-copying.',
+        moreJoinFreeTgBtn: 'Join AI Bot Free Signals on Telegram',
+        faqHeader: '❓ Frequently Asked Questions (FAQ)',
+        faqQ1: 'Do I need to rent a VPS or keep my computer running?',
+        faqA1: 'No. Mr. Trader AI runs 24/7 on our dedicated cloud infrastructure. Once you link your MT5 account in My Dashboard, trades are copied and managed automatically even when your phone or PC is turned off.',
+        faqQ2: 'Are my funds safe? Can the platform withdraw my money?',
+        faqA2: 'Your funds remain 100% in your personal broker account. The MT5 connection only has permission to open and close XAU/USD trades—it has zero ability to withdraw, transfer, or modify your account funds.',
+        faqQ3: 'What is the minimum capital and recommended lot size?',
+        faqA3: 'You can start with as little as $100 (using 0.01 lot). Our institutional benchmark is $400 with 0.04 lot, and you can choose Auto-Lot or set your own Fixed Lot and Max Stop Loss anytime in My Dashboard.',
+        faqQ4: 'How does the AI protect my account during news and rollover?',
+        faqA4: 'Every setup is audited across H1/M5 timeframes before execution. High-impact USD news windows are blocked, and an enforced Night Cutoff (21:00–02:00 GMT+2) pauses new entries during low-liquidity spread spikes.',
+        faqQ5: 'Which brokers are supported?',
+        faqA5: 'Any broker supporting MetaTrader 5 (MT5) and XAU/USD (Gold) works seamlessly, including Exness, IC Markets, Vantage, Equiti, XM, and Pepperstone.',
+        contactHeader: '✉️ Contact Us & Private Support',
+        contactDesc: 'Need help with your VIP subscription, MT5 broker server setup, or billing? Reach our support desk directly via email:',
+        copyEmailBtn: '📋 Copy Email',
+        sendEmailBtn: '✉️ Send Email'
     },
     ar: {
         langBtn: 'English',
@@ -1248,6 +1451,8 @@ const I18N = {
         scAutoLbl: 'مدقق الذكاء الاصطناعي',
         scCard1: '📈 سحب السيولة',
         scCard2: '🛡️ مناطق الارتداد',
+        freeTgBannerTitle: '📢 انضم لقناة الإشارات المجانية على تيليجرام',
+        freeTgBannerSub: 'تابع صفقات الذهب اليومية مجاناً قبل الاشتراك بالنسخ الآلي على MT5',
         authSub: 'سجّل الدخول أو أنشئ حساباً لمشاهدة الإحصائيات وتفعيل VIP',
         clientLogin: 'تسجيل الدخول',
         signUp: 'إنشاء حساب',
@@ -1275,10 +1480,10 @@ const I18N = {
         logoutBtn: 'خروج',
         tabHome: 'الرئيسية',
         tabMyDash: 'لوحتي الخاصة',
-        tabActive: 'النشطة',
         tabClosed: 'السجل',
         tabWinrate: 'الإحصائيات',
         tabAccount: 'الحساب',
+        tabMore: 'المزيد',
         lblLivePrice: 'سعر الذهب المباشر',
         subSpread: 'سبريد Exness',
         lblTrendBias: 'اتجاه السوق والجلسات',
@@ -1315,7 +1520,6 @@ const I18N = {
         chartTitle: 'شارت الذهب M5',
         latestSigTitle: 'أحدث توصية',
         liveAlertsTitle: 'التنبيهات المباشرة',
-        activeBoxTitle: '⚡ تفاصيل الصفقة النشطة / المعلقة',
         closedBoxTitle: '📜 سجل الصفقات المغلقة',
         filterAll: 'كل الأوقات',
         filterToday: 'اليوم (24 ساعة)',
@@ -1342,6 +1546,7 @@ const I18N = {
         accPlanLbl: 'باقة VIP',
         accExpLbl: 'الحالة / أيام التداول',
         vipPlansHeader: '💎 باقات VIP (فيزا / بطاقة & USDT TRC20)',
+        togglePlansLabel: '💎 تجديد أو ترقية الباقة',
         plan1wTitle: 'أسبوع واحد VIP',
         plan1wDesc: '5 أيام تداول فعلية (إثنين–جمعة) • توصيات حية ونسخ صفقات MT5',
         plan1mTitle: 'شهر واحد VIP ⭐',
@@ -1366,14 +1571,42 @@ const I18N = {
         notifSettingTitle: '🔔 الإشعارات والأصوات',
         notifSettingDesc: 'تلقي تنبيهات فورية عند صدور التوصيات.',
         enableNotifBtn: 'تفعيل',
-        tgSupportBtn: 'دعم تيليجرام (@mrtraderai_official)',
+        mt5ShortcutTitle: '⚡ ربط MT5 وإعدادات المخاطرة',
+        mt5ShortcutDesc: 'اربط حساب MT5 واضبط اللوت من تبويب لوحتي الخاصة.',
+        openMyDashBtn: '💎 فتح لوحتي الخاصة',
         mt5CardTitle: '⚡ ربط حساب MT5 للتداول الآلي (Cloud Copier)',
         mt5CardSub: 'اربط حساب MetaTrader 5 مباشرة لنسخ الصفقات تلقائياً 24/7 بدون VPS.',
+        mt5VipLockText: 'فعّل أي باقة VIP لربط حساب MT5 الخاص بك ونسخ الصفقات آلياً 24/7.',
+        goActivateVipBtn: '💎 تفعيل باقة VIP',
         mt5ServerLbl: 'اسم سيرفر الوسيط (Broker Server)',
         mt5LoginLbl: 'رقم حساب MT5 (Login)',
         mt5PassLbl: 'كلمة مرور التداول (Trading Password)',
         mt5LotModeLbl: 'نظام حجم اللوت',
-        mt5FixedLotLbl: 'اللوت الثابت (مثلاً 0.04)'
+        mt5FixedLotLbl: 'اللوت الثابت (مثلاً 0.04)',
+        riskPrefTitle: '⚙️ إعدادات المخاطرة الخاصة بك',
+        prefLotLbl: 'تحديد اللوت المخصص',
+        prefMaxDdLbl: 'أقصى تراجع يومي ($)',
+        prefMaxSlLbl: 'أقصى ستوب (Pips)',
+        prefNewsLbl: 'فلتر الأخبار',
+        saveMyPrefBtn: '💾 حفظ إعداداتي',
+        moreFreeTgTitle: '📢 قناة الإشارات المجانية على تيليجرام (تجربة حية)',
+        moreFreeTgDesc: 'حابب تتابع أداء الذكاء الاصطناعي على الذهب أولاً؟ انضم لقناتنا المجانية على تيليجرام لمشاهدة الصفقات اليومية والتقارير بكل شفافية قبل الاشتراك بالنسخ الآلي على MT5.',
+        moreJoinFreeTgBtn: 'الدخول إلى قناة الإشارات المجانية على تيليجرام',
+        faqHeader: '❓ الأسئلة الشائعة (FAQ)',
+        faqQ1: 'هل أحتاج إلى استئجار VPS أو إبقاء جهازي مفتوحاً؟',
+        faqA1: 'لا أبداً. نظام Mr. Trader AI يعمل سحابياً على سيرفراتنا الخاصة 24/7. بمجرد ربط حساب MT5 في لوحتي الخاصة، يتم نسخ الصفقات وإدارتها تلقائياً حتى لو كان هاتفك أو حاسوبك مغلقاً.',
+        faqQ2: 'هل أموالي بأمان؟ وهل يملك الموقع صلاحية سحب الأرباح؟',
+        faqA2: 'أموالك تبقى 100% في حسابك الشخصي لدى شركة التداول. الربط يتم لتنفيذ وإغلاق صفقات الذهب فقط، ولا يملك النظام أي صلاحية للسحب أو التحويل أو تعديل بيانات حسابك.',
+        faqQ3: 'ما هو أقل رأس مال للبدء وكيف يتم حساب اللوت؟',
+        faqA3: 'يمكنك البدء برأس مال $100 (بلوت 0.01). المرجع المؤسسي لدينا هو $400 بلوت 0.04، ويمكنك اختيار اللوت التلقائي أو تحديد لوت ثابت وأقصى ستوب من لوحتي الخاصة.',
+        faqQ4: 'كيف يحمي الذكاء الاصطناعي حسابي وقت الأخبار والإغلاق الليلي؟',
+        faqA4: 'كل إشارة تمر بتدقيق متعدد الفريمات (H1/M5) قبل التنفيذ، مع حظر التداول وقت الأخبار القوية وتفعيل التوقف الليلي الإجباري (21:00–02:00 GMT+2) لتفادي اتساع السبريد.',
+        faqQ5: 'ما هي شركات التداول (Brokers) المدعومة؟',
+        faqA5: 'جميع شركات التداول التي توفر منصة MetaTrader 5 (MT5) وزوج الذهب XAU/USD مدعومة بالكامل مثل Exness وIC Markets وVantage وEquiti وXM وPepperstone.',
+        contactHeader: '✉️ تواصل معنا (الدعم الخاص)',
+        contactDesc: 'لأي استفسار بخصوص اشتراك VIP أو ربط سيرفر MT5 أو الفواتير، تواصل معنا مباشرة عبر البريد الإلكتروني الرسمي:',
+        copyEmailBtn: '📋 نسخ الإيميل',
+        sendEmailBtn: '✉️ إرسال إيميل'
     }
 };
 
@@ -1411,7 +1644,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_6U7d-ihEr1ivc362mhkDeQ_2suPM3gy';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================================================
-// 0.6 VISA / MASTERCARD CHECKOUT & AUTO-VERIFICATION (PAYMEGATE EDGE FUNCTION)
+// 0.6 VISA / MASTERCARD CHECKOUT & AUTO-VERIFICATION
 // ============================================================================
 const EDGE_PAYMENT_URL = 'https://wdexwfoplycblaxmrfws.supabase.co/functions/v1/visa-payment';
 
@@ -1757,8 +1990,8 @@ async function copyManualTradeToMt5() {
             copyManualLevelsText();
             statusEl.style.color = 'var(--accent-gold)';
             statusEl.innerHTML = currentLang === 'ar'
-                ? '⚠️ حساب MT5 غير مربوط بعد. تم نسخ الأرقام للحافظة — <a href="#" onclick="switchTerminalTab(\'account\'); return false;" style="color:var(--accent-green); text-decoration:underline;">اضغط هنا لربط حساب MT5</a>.'
-                : '⚠️ MT5 account not linked yet. Levels copied to clipboard — <a href="#" onclick="switchTerminalTab(\'account\'); return false;" style="color:var(--accent-green); text-decoration:underline;">Click here to connect MT5</a>.';
+                ? '⚠️ حساب MT5 غير مربوط بعد. تم نسخ الأرقام للحافظة — <a href="#" onclick="switchTerminalTab(\'mydash\'); return false;" style="color:var(--accent-green); text-decoration:underline;">اضغط هنا لربط حساب MT5</a>.'
+                : '⚠️ MT5 account not linked yet. Levels copied to clipboard — <a href="#" onclick="switchTerminalTab(\'mydash\'); return false;" style="color:var(--accent-green); text-decoration:underline;">Click here to connect MT5</a>.';
             btn.disabled = false;
             btn.innerHTML = `🚀 ${t('copyToMt5Btn')}`;
             return;
@@ -1868,7 +2101,7 @@ function triggerClientPushAlert(title, message) {
 }
 
 // ============================================================================
-// 3. SUPABASE AUTH (GOOGLE + APPLE + MANDATORY EMAIL OTP) & ACCESS CONTROL
+// 3. SUPABASE AUTH & ACCESS CONTROL
 // ============================================================================
 const ADMIN_EMAIL = 'bacharrachiini97@gmail.com';
 const AW_PIN = '1997';
@@ -1881,6 +2114,13 @@ let currentUserProfile = null;
 let masterConfig = { td_api_key: '', tg_bot_token: '', tg_chat_id: '', beta_mode: false };
 let cachedClientList = [];
 let settingsVisible = true;
+let vipPlansExpanded = false;
+
+function toggleVipPlansWrap() {
+    vipPlansExpanded = !vipPlansExpanded;
+    const wrap = document.getElementById('vipPlansCollapsibleWrap');
+    if (wrap) wrap.style.display = vipPlansExpanded ? 'block' : 'none';
+}
 
 function toggleSettingsCard() {
     settingsVisible = !settingsVisible;
@@ -1939,7 +2179,7 @@ function formatDateShort(isoStr) {
 }
 
 function switchTerminalTab(tabName) {
-    ['home', 'mydash', 'active', 'closed', 'winrate', 'account'].forEach(tName => {
+    ['home', 'mydash', 'closed', 'winrate', 'account', 'more'].forEach(tName => {
         const btn = document.getElementById('nav' + tName.charAt(0).toUpperCase() + tName.slice(1));
         const view = document.getElementById('view' + tName.charAt(0).toUpperCase() + tName.slice(1));
         if (btn) btn.classList.toggle('active', tName === tabName);
@@ -1950,8 +2190,6 @@ function switchTerminalTab(tabName) {
     }
     if (tabName === 'mydash') {
         loadMyClientDashboard();
-    }
-    if (tabName === 'account') {
         loadMt5AccountStatus();
         loadClientPreferences();
     }
@@ -2246,12 +2484,6 @@ async function logoutClient() {
     location.reload();
 }
 
-function bindTelegramActivationLinks(shortId, email) {
-    const base = "https://t.me/mrtraderai_official?text=";
-    const msgSup = encodeURIComponent(`Hello Mr. Trader AI Support,\nClient ID: ${shortId}\nEmail: ${email}`);
-    if (document.getElementById('tgSupportDirectLink')) document.getElementById('tgSupportDirectLink').href = base + msgSup;
-}
-
 async function checkUserSession() {
     applyLanguage();
     const urlParams = new URLSearchParams(window.location.search);
@@ -2336,6 +2568,19 @@ async function checkUserSession() {
         ? 'UNLIMITED'
         : (vipActive ? (currentUserProfile.vip_expires_at ? formatDateShort(currentUserProfile.vip_expires_at) : 'Active (Trading Days)') : 'Inactive');
 
+    // Collapse pricing cards if already VIP so Account stays clean on iPhone
+    const togglePlansBtn = document.getElementById('togglePlansBtn');
+    const plansWrap = document.getElementById('vipPlansCollapsibleWrap');
+    if (vipActive) {
+        vipPlansExpanded = false;
+        if (togglePlansBtn) togglePlansBtn.style.display = 'inline-flex';
+        if (plansWrap) plansWrap.style.display = 'none';
+    } else {
+        vipPlansExpanded = true;
+        if (togglePlansBtn) togglePlansBtn.style.display = 'none';
+        if (plansWrap) plansWrap.style.display = 'block';
+    }
+
     if (vipActive) {
         document.getElementById('mt5VipLockNotice').style.display = 'none';
         document.getElementById('mt5ConnectFormWrap').style.display = 'block';
@@ -2351,7 +2596,6 @@ async function checkUserSession() {
         if (stillPending) document.getElementById('pendingOrderLabel').innerText = `⏳ Pending Order (${stillPending}) — Click Verify after paying`;
     }
 
-    bindTelegramActivationLinks(shortId, currentUserProfile.email);
     loadClientPreferences();
     loadMyClientDashboard();
 
@@ -2372,7 +2616,7 @@ async function checkUserSession() {
 }
 
 // ============================================================================
-// 3.5 CLIENT PERSONAL DASHBOARD & MANUAL TRADE CLOSING (ISOLATED PER-CLIENT)
+// 3.5 CLIENT PERSONAL DASHBOARD & MANUAL TRADE CLOSING
 // ============================================================================
 let cachedMyTrades = [];
 
@@ -2497,7 +2741,7 @@ async function closePersonalTrade(rowId) {
 }
 
 // ============================================================================
-// 4. TRADING ENGINE, STRATEGY & STATE SYNC (WITH 21:00–02:00 GMT+2 NIGHT CUTOFF)
+// 4. TRADING ENGINE, STRATEGY & STATE SYNC
 // ============================================================================
 const DEFAULT_ENGINE_RULES = {
     referenceCapital: 400.00,
@@ -2712,7 +2956,6 @@ function getGmtTimeParts(dateObj = new Date()) {
 }
 
 function isNightCutoffActive(dateObj = new Date()) {
-    // 21:00 to 02:00 GMT+2 == 19:00 to 00:00 UTC (GMT)
     const { hour } = getGmtTimeParts(dateObj);
     return (hour >= 19.0 && hour < 24.0);
 }
@@ -3140,9 +3383,9 @@ function updateDashboardUI() {
             topSigLevels.innerText = currentLang === 'ar' ? 'بانتظار إشارة دخول' : 'No active signal';
         }
     } else {
-        topSigDir.innerText = state.activeTrade ? '🔒 LIVE SIGNAL ACTIVE' : '🔒 VIP LOCKED';
+        topSigDir.innerText = state.activeTrade ? '🔒 LIVE SIGNAL' : '🔒 VIP LOCKED';
         topSigDir.style.color = 'var(--accent-gold)';
-        topSigLevels.innerHTML = `<a href="#" onclick="switchTerminalTab('account'); return false;" style="color:var(--accent-gold); text-decoration:underline;">Activate VIP to reveal Entry / SL / TP</a>`;
+        topSigLevels.innerHTML = `<a href="#" onclick="switchTerminalTab('account'); return false;" style="color:var(--accent-gold); text-decoration:underline;">Activate VIP to reveal levels</a>`;
     }
 
     const allHist = state.history || [];
@@ -3211,20 +3454,16 @@ function updateDashboardUI() {
     }
 
     const homeSigBox = document.getElementById('homeSignalContainer');
-    const activeTabBox = document.getElementById('dedicatedActiveContainer');
-    const statusTag = document.getElementById('activeTradeStatusTag');
 
     if (hasVip) {
         if (state.activeTrade) {
             const tr = state.activeTrade, cls = tr.dir.toLowerCase();
-            const modeLabel = (tr.type === 'LIMIT' || tr.type === 'PENDING') ? 'LIMIT' : 'ACTIVE';
-            statusTag.innerText = `🟢 ${modeLabel} — #Trade-${tr.tradeId || 1}`;
             const aiBadge = `<div class="ai-audit-box">🤖 <strong>AI Audit:</strong> H1 ${htfBias} Aligned • M5 Momentum Verified • 1:1.5 R:R</div>`;
             const closeBtnHtml = isCurrentUserAdmin()
                 ? `<button type="button" class="btn-close-trade" onclick="closeActiveTradeManually()">✖ ${t('closeMasterBtn')}</button>`
                 : '';
 
-            const cardHtml = `
+            homeSigBox.innerHTML = `
                 <div class="signal-card ${cls}">
                     <div class="sig-row"><strong>#Trade-${tr.tradeId || 1} — ${tr.setupName}</strong><span class="sig-badge ${cls}">${tr.dir}</span></div>
                     <div class="sig-row"><span>Entry:</span><strong>${Number(tr.entry).toFixed(2)}</strong></div>
@@ -3234,39 +3473,31 @@ function updateDashboardUI() {
                     ${aiBadge}
                     ${closeBtnHtml}
                 </div>`;
-            homeSigBox.innerHTML = cardHtml;
-            activeTabBox.innerHTML = cardHtml;
         } else if (sess.nightCutoff) {
-            statusTag.innerText = '🌙 NIGHT CUTOFF';
-            const cutoffHtml = `
+            homeSigBox.innerHTML = `
                 <div class="signal-card">
                     <div class="sig-row"><strong>🌙 ${currentLang === 'ar' ? 'فترة التوقف الليلي' : 'Night Session Cutoff'}</strong><span class="sig-badge">21:00–02:00 GMT+2</span></div>
                     <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 4px; line-height:1.4;">${currentLang === 'ar' ? 'تم إيقاف فتح الصفقات الجديدة مؤقتاً خلال فترة انخفاض السيولة (21:00–02:00 GMT+2).' : 'New signal scanning is paused during low-liquidity night hours (21:00–02:00 GMT+2). Existing open trades remain protected.'}</p>
                 </div>`;
-            homeSigBox.innerHTML = cutoffHtml;
-            activeTabBox.innerHTML = cutoffHtml;
         } else {
-            statusTag.innerText = '🟡 STANDBY';
-            const standbyHtml = `
+            homeSigBox.innerHTML = `
                 <div class="signal-card">
                     <div class="sig-row"><strong>${t('scanningTitle')}</strong><span class="sig-badge">STANDBY</span></div>
                     <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 4px; line-height:1.4;">${t('scanningDesc')}</p>
                 </div>`;
-            homeSigBox.innerHTML = standbyHtml;
-            activeTabBox.innerHTML = standbyHtml;
         }
     } else {
-        statusTag.innerText = '🔒 VIP ONLY';
-        const lockHtml = `
-            <div class="signal-card" style="border-inline-start-color:var(--accent-gold); text-align:center; padding:18px;">
-                <h3 style="color:var(--accent-gold); font-size:0.95rem; margin-bottom:6px;">🔒 ${state.activeTrade ? 'Active XAU/USD Signal in Progress!' : 'VIP Live Signals Locked'}</h3>
-                <p style="font-size:0.76rem; color:var(--text-secondary); margin-bottom:10px; line-height:1.45;">
-                    Real-time entries, Stop Loss, Take Profit, and AI audits are reserved for active VIP members. Subscribe instantly with Visa/Mastercard or USDT TRC20 ($14/week or $45/month).
+        homeSigBox.innerHTML = `
+            <div class="signal-card" style="border-inline-start-color:var(--accent-gold); text-align:center; padding:16px;">
+                <h3 style="color:var(--accent-gold); font-size:0.92rem; margin-bottom:6px;">🔒 ${state.activeTrade ? 'Active XAU/USD Signal in Progress!' : 'VIP Live Signals Locked'}</h3>
+                <p style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:10px; line-height:1.45;">
+                    Real-time entries, Stop Loss, Take Profit, and MT5 Cloud Auto-Copy are reserved for active VIP members ($14/week or $45/month).
                 </p>
-                <button type="button" class="auth-btn" style="width:auto; display:inline-block; padding:8px 16px; font-size:0.78rem;" onclick="switchTerminalTab('account')">💎 Activate VIP Access</button>
+                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                    <button type="button" class="auth-btn" style="width:auto; padding:8px 14px; font-size:0.76rem;" onclick="switchTerminalTab('account')">💎 Activate VIP</button>
+                    <a href="https://t.me/mrtraderaisiganalsfree" target="_blank" rel="noopener" class="btn-tg" style="padding:8px 14px; font-size:0.76rem;">✈️ Free Telegram</a>
+                </div>
             </div>`;
-        homeSigBox.innerHTML = lockHtml;
-        activeTabBox.innerHTML = lockHtml;
     }
 
     const filterEl = document.getElementById('closedTimeFilter');
