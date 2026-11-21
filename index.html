@@ -629,7 +629,7 @@
                     </div>
                     <div class="setting-card">
                         <div class="setting-row">
-                            <span>🇯🇵 Tokyo (00-09 GMT)</span>
+                            <span>🇯🇵 Tokyo (02-09 GMT)</span>
                             <input type="checkbox" id="sessTokyo" onchange="saveRiskAndSessionSettings()">
                         </div>
                         <div style="font-size:0.68rem; color:var(--text-secondary);" id="tokyoLiveStatusTag">Checking...</div>
@@ -643,10 +643,17 @@
                     </div>
                     <div class="setting-card">
                         <div class="setting-row">
-                            <span>🇺🇸 New York (12-21 GMT)</span>
+                            <span>🇺🇸 New York (12-19 GMT)</span>
                             <input type="checkbox" id="sessNy" onchange="saveRiskAndSessionSettings()">
                         </div>
                         <div style="font-size:0.68rem; color:var(--text-secondary);" id="nyLiveStatusTag">Checking...</div>
+                    </div>
+                    <div class="setting-card" style="border-color:var(--accent-gold);">
+                        <div class="setting-row">
+                            <span style="color:var(--accent-gold);">🌙 Night Cutoff (21-02 GMT+2)</span>
+                            <span style="font-size:0.68rem; color:var(--accent-green); font-weight:700;">ENFORCED</span>
+                        </div>
+                        <div style="font-size:0.68rem; color:var(--text-secondary);" id="nightCutoffStatusTag">Checking...</div>
                     </div>
                     <div class="setting-card" style="border-color:var(--accent-gold);">
                         <div class="setting-row">
@@ -685,7 +692,7 @@
 
         <div class="risk-remark">
             <span>🛡️ <strong data-i18n="riskRemarkTitle">Risk Note:</strong> <span data-i18n="riskRemarkText">$400 cap = 0.04 lot (Institutional Risk).</span></span>
-            <span style="font-size:0.7rem; color:var(--text-secondary);">🤖 AI Supervisor Active • Spread: 40-80 pts</span>
+            <span style="font-size:0.7rem; color:var(--text-secondary);">🤖 AI Supervisor • 🌙 Cutoff 21:00-02:00 GMT+2 • Spread: 40-80 pts</span>
         </div>
 
         <div class="main-grid">
@@ -883,7 +890,7 @@
                 <span data-i18n="stratTitle">📊 Mr. Trader AI Engine Overview</span>
             </div>
             <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;" data-i18n="stratDesc">
-• <strong>Active Sessions:</strong> Tokyo, London, New York windows set to GMT time.<br>
+• <strong>Active Sessions:</strong> Tokyo, London, New York (Night Cutoff: 21:00–02:00 GMT+2).<br>
 • <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>
 • <strong>Risk Guardrails:</strong> Max SL, Max Trades, Daily Loss limits, and News blackout protection.
             </p>
@@ -1192,7 +1199,7 @@ const I18N = {
         riskBaseSub: 'Institutional Risk',
         statPfLbl: 'Profit Factor',
         stratTitle: '📊 Mr. Trader AI Engine Overview',
-        stratDesc: '• <strong>Active Sessions:</strong> Tokyo, London, New York.<br>• <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>• <strong>Risk:</strong> Max SL, Daily Loss, and News blackout.',
+        stratDesc: '• <strong>Active Sessions:</strong> Tokyo, London, New York (Night Cutoff: 21:00–02:00 GMT+2).<br>• <strong>Execution:</strong> M5 institutional analysis aligned with H1 trend & AI Supervisor.<br>• <strong>Risk:</strong> Max SL, Daily Loss, and News blackout.',
         accProfileTitle: '👤 Account Details & Subscription',
         accEmailLbl: 'Email',
         accIdLbl: 'Client ID',
@@ -1328,7 +1335,7 @@ const I18N = {
         riskBaseSub: 'إدارة مخاطر مؤسسية',
         statPfLbl: 'معامل الربح',
         stratTitle: '📊 نظرة عامة على المحرك',
-        stratDesc: '• <strong>الجلسات:</strong> طوكيو، لندن، نيويورك.<br>• <strong>التنفيذ:</strong> تحليل هيكلي على M5 مع إشراف الذكاء الاصطناعي.<br>• <strong>المخاطر:</strong> حماية ضد الخسارة اليومية والأخبار.',
+        stratDesc: '• <strong>الجلسات:</strong> طوكيو، لندن، نيويورك (توقف ليلي: 21:00–02:00 GMT+2).<br>• <strong>التنفيذ:</strong> تحليل هيكلي على M5 مع إشراف الذكاء الاصطناعي.<br>• <strong>المخاطر:</strong> حماية ضد الخسارة اليومية والأخبار.',
         accProfileTitle: '👤 تفاصيل الحساب والاشتراك',
         accEmailLbl: 'البريد',
         accIdLbl: 'معرف العميل',
@@ -2490,7 +2497,7 @@ async function closePersonalTrade(rowId) {
 }
 
 // ============================================================================
-// 4. TRADING ENGINE, STRATEGY & STATE SYNC
+// 4. TRADING ENGINE, STRATEGY & STATE SYNC (WITH 21:00–02:00 GMT+2 NIGHT CUTOFF)
 // ============================================================================
 const DEFAULT_ENGINE_RULES = {
     referenceCapital: 400.00,
@@ -2704,18 +2711,25 @@ function getGmtTimeParts(dateObj = new Date()) {
     return { weekday, hour: hour + (minute / 60) };
 }
 
+function isNightCutoffActive(dateObj = new Date()) {
+    // 21:00 to 02:00 GMT+2 == 19:00 to 00:00 UTC (GMT)
+    const { hour } = getGmtTimeParts(dateObj);
+    return (hour >= 19.0 && hour < 24.0);
+}
+
 function getSessionStatuses(dateObj = new Date()) {
     const { weekday, hour } = getGmtTimeParts(dateObj);
     const isWeekend = (weekday === 'Sat' || weekday === 'Sun');
-    const tokyoOpen = !isWeekend && (hour >= 0.0 && hour < 9.0);
-    const londonOpen = !isWeekend && (hour >= 7.0 && hour < 16.0);
-    const nyOpen = !isWeekend && (hour >= 12.0 && hour < 21.0);
-    return { tokyoOpen, londonOpen, nyOpen, isWeekend };
+    const nightCutoff = isNightCutoffActive(dateObj);
+    const tokyoOpen = !isWeekend && !nightCutoff && (hour >= 0.0 && hour < 9.0);
+    const londonOpen = !isWeekend && !nightCutoff && (hour >= 7.0 && hour < 16.0);
+    const nyOpen = !isWeekend && !nightCutoff && (hour >= 12.0 && hour < 19.0);
+    return { tokyoOpen, londonOpen, nyOpen, isWeekend, nightCutoff };
 }
 
 function isSessionAllowedByFilter() {
     const sess = getSessionStatuses();
-    if (sess.isWeekend) return false;
+    if (sess.isWeekend || sess.nightCutoff) return false;
     const sf = state.sessions || DEFAULT_ENGINE_RULES.sessions;
     return (sf.tokyo && sess.tokyoOpen) || (sf.london && sess.londonOpen) || (sf.newYork && sess.nyOpen);
 }
@@ -3082,15 +3096,24 @@ function updateDashboardUI() {
     document.getElementById('uiTrendBias').style.color = htfBias === "BULLISH" ? "var(--accent-green)" : htfBias === "BEARISH" ? "var(--accent-red)" : "var(--accent-gold)";
 
     const sess = getSessionStatuses();
-    const tokyoBadge = sess.tokyoOpen ? `<span style="color:var(--accent-green);">Tokyo: OPEN</span>` : `<span style="color:var(--text-secondary);">Tokyo: CLOSED</span>`;
-    const londonBadge = sess.londonOpen ? `<span style="color:var(--accent-green);">London: OPEN</span>` : `<span style="color:var(--text-secondary);">London: CLOSED</span>`;
-    const nyBadge = sess.nyOpen ? `<span style="color:var(--accent-green);">NY: OPEN</span>` : `<span style="color:var(--text-secondary);">NY: CLOSED</span>`;
-    document.getElementById('uiSessionsStatus').innerHTML = `${tokyoBadge} | ${londonBadge} | ${nyBadge}`;
+    if (sess.nightCutoff) {
+        document.getElementById('uiSessionsStatus').innerHTML = `<span style="color:var(--accent-gold);">🌙 NIGHT CUTOFF (21:00–02:00 GMT+2)</span>`;
+    } else {
+        const tokyoBadge = sess.tokyoOpen ? `<span style="color:var(--accent-green);">Tokyo: OPEN</span>` : `<span style="color:var(--text-secondary);">Tokyo: CLOSED</span>`;
+        const londonBadge = sess.londonOpen ? `<span style="color:var(--accent-green);">London: OPEN</span>` : `<span style="color:var(--text-secondary);">London: CLOSED</span>`;
+        const nyBadge = sess.nyOpen ? `<span style="color:var(--accent-green);">NY: OPEN</span>` : `<span style="color:var(--text-secondary);">NY: CLOSED</span>`;
+        document.getElementById('uiSessionsStatus').innerHTML = `${tokyoBadge} | ${londonBadge} | ${nyBadge}`;
+    }
 
     if (document.getElementById('tokyoLiveStatusTag')) {
         document.getElementById('tokyoLiveStatusTag').innerText = sess.tokyoOpen ? '🟢 RUNNING' : '⚪ CLOSED';
         document.getElementById('londonLiveStatusTag').innerText = sess.londonOpen ? '🟢 RUNNING' : '⚪ CLOSED';
         document.getElementById('nyLiveStatusTag').innerText = sess.nyOpen ? '🟢 RUNNING' : '⚪ CLOSED';
+
+        if (document.getElementById('nightCutoffStatusTag')) {
+            document.getElementById('nightCutoffStatusTag').innerText = sess.nightCutoff ? '🌙 PAUSED NOW (21:00–02:00 GMT+2)' : '🟢 Trading Window Open';
+            document.getElementById('nightCutoffStatusTag').style.color = sess.nightCutoff ? 'var(--accent-gold)' : 'var(--accent-green)';
+        }
 
         const newsActive = isNewsBlackoutActive();
         document.getElementById('newsFilterStatusTag').innerText = newsActive ? '🚨 BLACKOUT' : '🟢 Clear';
@@ -3107,6 +3130,10 @@ function updateDashboardUI() {
             topSigDir.innerText = `${tr.dir} (${modeLabel})`;
             topSigDir.style.color = tr.dir === 'BUY' ? 'var(--accent-green)' : 'var(--accent-red)';
             topSigLevels.innerText = `E: ${Number(tr.entry).toFixed(2)} | SL: ${Number(tr.sl).toFixed(2)} | TP: ${Number(tr.tp).toFixed(2)}`;
+        } else if (sess.nightCutoff) {
+            topSigDir.innerText = currentLang === 'ar' ? '🌙 توقف ليلي' : '🌙 NIGHT PAUSE';
+            topSigDir.style.color = 'var(--accent-gold)';
+            topSigLevels.innerText = '21:00 – 02:00 GMT+2';
         } else {
             topSigDir.innerText = currentLang === 'ar' ? 'لا توجد صفقة (NONE)' : 'NONE';
             topSigDir.style.color = 'var(--text-secondary)';
@@ -3209,6 +3236,15 @@ function updateDashboardUI() {
                 </div>`;
             homeSigBox.innerHTML = cardHtml;
             activeTabBox.innerHTML = cardHtml;
+        } else if (sess.nightCutoff) {
+            statusTag.innerText = '🌙 NIGHT CUTOFF';
+            const cutoffHtml = `
+                <div class="signal-card">
+                    <div class="sig-row"><strong>🌙 ${currentLang === 'ar' ? 'فترة التوقف الليلي' : 'Night Session Cutoff'}</strong><span class="sig-badge">21:00–02:00 GMT+2</span></div>
+                    <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 4px; line-height:1.4;">${currentLang === 'ar' ? 'تم إيقاف فتح الصفقات الجديدة مؤقتاً خلال فترة انخفاض السيولة (21:00–02:00 GMT+2).' : 'New signal scanning is paused during low-liquidity night hours (21:00–02:00 GMT+2). Existing open trades remain protected.'}</p>
+                </div>`;
+            homeSigBox.innerHTML = cutoffHtml;
+            activeTabBox.innerHTML = cutoffHtml;
         } else {
             statusTag.innerText = '🟡 STANDBY';
             const standbyHtml = `
@@ -3629,7 +3665,7 @@ function startTerminalEngine(isAdmin) {
 
     updateDashboardUI();
     const tzVal = state.timezoneOffset !== undefined ? state.timezoneOffset : 3;
-    logEvent(`🚀 Connected (GMT+${tzVal}).`);
+    logEvent(`🚀 Connected (GMT+${tzVal}) | Night Cutoff: 21:00–02:00 GMT+2.`);
 
     if (isAdmin) {
         runFastAutopilotCycle(true);
